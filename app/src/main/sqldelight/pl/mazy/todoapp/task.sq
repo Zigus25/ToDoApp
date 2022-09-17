@@ -1,0 +1,28 @@
+CREATE TABLE notes (
+    name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    archivied INTEGER AS Boolean NOT NULL
+
+);
+
+insert:
+INSERT INTO notes(name,description,archivied)
+VALUES (?,?,?);
+
+selectNotes:
+SELECT name,description,archivied
+FROM  notes;
+
+updateArchive:
+UPDATE notes
+SET archivied = ((archivied | 1) - (archivied & 1))
+WHERE name = ?;
+
+updateNote:
+UPDATE notes
+SET name = ?, description = ?
+WHERE name = ?
+;
+
+deleteNote:
+DELETE FROM notes WHERE name = ? AND description = ?;

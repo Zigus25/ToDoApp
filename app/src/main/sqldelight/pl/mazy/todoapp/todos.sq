@@ -1,0 +1,28 @@
+import java.lang.Boolean;
+
+CREATE TABLE tasks(
+    name TEXT NOT NULL,
+    checked INTEGER AS Boolean NOT NULL,
+    listName TEXT NOT NULL
+);
+
+insert:
+INSERT INTO tasks(name,checked,listName)
+VALUES (?,?,?);
+
+selectList:
+SELECT name,checked,listName
+FROM  tasks
+WHERE listName = ?;
+
+listOfTask:
+SELECT DISTINCT listName
+FROM tasks;
+
+updateState:
+UPDATE tasks
+SET checked = ((checked | 1) - (checked & 1))
+WHERE name = ?;
+
+deleteTask:
+DELETE FROM tasks WHERE name = ?;
