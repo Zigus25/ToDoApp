@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import org.kodein.di.compose.withDI
 import pl.mazy.todoapp.navigation.NavController
 import pl.mazy.todoapp.ui.components.NoteAdding
-import pl.mazy.todoapp.ui.components.SingleNote
 import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
 import pl.mazy.todoapp.ui.views.NoteList
 import pl.mazy.todoapp.ui.views.TaskList

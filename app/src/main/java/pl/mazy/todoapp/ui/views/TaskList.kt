@@ -89,7 +89,7 @@ fun TaskList(
                     .background(Color.Black.copy(alpha = 0.7F))
                     .blur(8.dp)
                     .clickable { adding = false })
-                TaskAdding(){adding = false}
+                TaskAdding{adding = false}
             }
         }
         BottomAppBar{

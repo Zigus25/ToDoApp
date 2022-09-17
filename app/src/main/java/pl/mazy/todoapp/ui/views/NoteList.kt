@@ -3,11 +3,9 @@ package pl.mazy.todoapp.ui.views
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -33,7 +31,7 @@ fun NoteList(
 ){
     val notesRepository: NotesRepository by localDI().instance()
     var adding by remember { mutableStateOf(false) }
-    var change by remember { mutableStateOf(false) }
+    val change by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     var notes: List<Notes>? by remember { mutableStateOf(null) }
 
@@ -66,7 +64,7 @@ fun NoteList(
                     .background(Color.Black.copy(alpha = 0.7F))
                     .blur(8.dp)
                     .clickable { adding = false })
-                TaskAdding() { adding = false }
+                TaskAdding { adding = false }
             }
         }
         BottomAppBar {

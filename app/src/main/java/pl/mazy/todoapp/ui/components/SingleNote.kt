@@ -18,8 +18,7 @@ import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SingleNote(
-//    modifier: Modifier = Modifier,
-    note: Notes = Notes("Moja notatka"," to jest moja notatka która zawiera jakiś tekst aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",false),
+    note: Notes,
     navController: NavController<Destinations>
 ){
     ToDoAPpTheme {
