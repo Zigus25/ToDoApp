@@ -67,10 +67,6 @@ fun NoteAdding(
         )
 
         BottomAppBar {
-            IconButton(onClick = { /* doSomething() */ }) {
-                Icon(Icons.Filled.Menu, contentDescription = "Menu Icon")
-            }
-            Spacer(modifier = Modifier.weight(1f))
             if (nameM.isNotEmpty()){
                 IconButton(onClick = {
                     navController.navigate(Destinations.Notes)
@@ -79,6 +75,7 @@ fun NoteAdding(
                     Icon(Icons.Filled.Delete, contentDescription = "Menu Icon")
                 }
             }
+            Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.padding(10.dp)) {
                 SmallFloatingActionButton(
                     onClick = {

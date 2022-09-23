@@ -2,6 +2,8 @@ import java.lang.Boolean;
 
 CREATE TABLE tasks(
     name TEXT NOT NULL,
+    description TEXT,
+    date TEXT,
     checked INTEGER AS Boolean NOT NULL,
     listName TEXT NOT NULL
 );
@@ -11,7 +13,7 @@ INSERT INTO tasks(name,checked,listName)
 VALUES (?,?,?);
 
 selectList:
-SELECT name,checked,listName
+SELECT rowid AS id,name,checked,listName
 FROM  tasks
 WHERE listName = ?;
 
@@ -23,6 +25,11 @@ updateState:
 UPDATE tasks
 SET checked = ((checked | 1) - (checked & 1))
 WHERE name = ?;
+
+updateTask:
+UPDATE tasks
+SET name = ?, description = ?,date = ?,listName = ?
+WHERE name = ? AND listName = ?;
 
 deleteTask:
 DELETE FROM tasks WHERE name = ?;

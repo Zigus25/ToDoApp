@@ -16,14 +16,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pl.mazy.todoapp.Tasks
+import pl.mazy.todoapp.logic.dataClass.Task
 import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SingleTask(
-    task:Tasks,
-    check:() -> Unit,
-    delete:() -> Unit
+    task: Task,
+    check:() -> Unit
 ){
     ToDoAPpTheme {
         Card(
@@ -47,12 +47,6 @@ fun SingleTask(
                     }else{
                         TextStyle(textDecoration = TextDecoration.None)
                     }
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .clickable { delete() }
                     )
                 Checkbox(checked = task.checked, onCheckedChange = {
                     check()

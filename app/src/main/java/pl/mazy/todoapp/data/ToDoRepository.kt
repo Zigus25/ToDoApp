@@ -1,14 +1,14 @@
 package pl.mazy.todoapp.data
 
 import pl.mazy.todoapp.Database
-import pl.mazy.todoapp.Tasks
+import pl.mazy.todoapp.logic.dataClass.Task
 
 class ToDoRepository(
     private var database: Database
 ) {
-    fun getToDos(listName:String): List<Tasks> =
+    fun getToDos(listName:String): List<Task> =
         database.todosQueries.selectList(listName).executeAsList().map {
-           it
+           Task(it.id, it.name,it.checked,it.listName)
         }
 
     fun addToDo(name:String,taskListName:String) =

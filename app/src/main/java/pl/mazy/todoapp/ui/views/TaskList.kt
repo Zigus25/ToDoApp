@@ -76,11 +76,8 @@ fun TaskList(
                         check = {
                             toDoRepository.updateState(task.name)
                             change = !change
-                        },
-                        delete = {
-                            toDoRepository.deleteTask(task.name)
-                            change = !change
-                        })
+                        }
+                    )
                 }
             }
             if (adding){
