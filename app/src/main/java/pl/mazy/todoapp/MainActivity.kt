@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import org.kodein.di.compose.withDI
 import pl.mazy.todoapp.navigation.NavController
 import pl.mazy.todoapp.ui.components.NoteAdding
+import pl.mazy.todoapp.ui.components.TaskEdit
 import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
 import pl.mazy.todoapp.ui.views.NoteList
 import pl.mazy.todoapp.ui.views.TaskList
@@ -32,7 +33,8 @@ class MainActivity : ComponentActivity() {
                         Box(modifier = Modifier.weight(1f)) {
                             when (val x = controller.currentBackStackEntry.value) {
                                 is Destinations.TaskList -> TaskList(controller)
-                                is Destinations.Details -> NoteAdding(controller,x.name,x.des)
+                                is Destinations.NoteDetails -> NoteAdding(controller,x.name,x.des)
+                                is Destinations.TaskDetails -> TaskEdit(controller,x.task)
                                 is Destinations.Notes -> NoteList(controller)
                                 is Destinations.CreateNote -> NoteAdding(controller,"","")
                             }

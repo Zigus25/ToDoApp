@@ -22,8 +22,8 @@ import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.Destinations
-import pl.mazy.todoapp.Tasks
 import pl.mazy.todoapp.data.ToDoRepository
+import pl.mazy.todoapp.logic.dataClass.Task
 import pl.mazy.todoapp.navigation.NavController
 import pl.mazy.todoapp.ui.components.SingleTask
 import pl.mazy.todoapp.ui.components.TaskAdding
@@ -38,7 +38,7 @@ fun TaskList(
     var change by remember { mutableStateOf(false) }
     var category by remember { mutableStateOf("Main") }
     val scope = rememberCoroutineScope()
-    var todos: List<Tasks>? by remember { mutableStateOf(null) }
+    var todos: List<Task>? by remember { mutableStateOf(null) }
 
     if (titles.isEmpty()){
         toDoRepository.addToDo("Hello","Main")
@@ -72,7 +72,7 @@ fun TaskList(
                 Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
             ){
                 items(todos?: listOf()) { task->
-                    SingleTask(task,
+                    SingleTask(navController,task,
                         check = {
                             toDoRepository.updateState(task.name)
                             change = !change

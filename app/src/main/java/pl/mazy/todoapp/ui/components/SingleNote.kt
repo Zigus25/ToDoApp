@@ -28,7 +28,7 @@ fun SingleNote(
                 .padding(10.dp)
                 .background(MaterialTheme.colorScheme.background)
                 .clickable {
-                    navController.navigate(Destinations.Details(note.name,note.description))
+                    navController.navigate(Destinations.NoteDetails(note.name,note.description))
             },
         ) {
             Column(

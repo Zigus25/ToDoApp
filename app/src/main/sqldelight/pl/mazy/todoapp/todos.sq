@@ -8,6 +8,10 @@ CREATE TABLE tasks(
     listName TEXT NOT NULL
 );
 
+CREATE TABLE category(
+    name TEXT NOT NULL
+);
+
 insert:
 INSERT INTO tasks(name,checked,listName)
 VALUES (?,?,?);
@@ -16,10 +20,6 @@ selectList:
 SELECT rowid AS id,name,checked,listName
 FROM  tasks
 WHERE listName = ?;
-
-listOfTask:
-SELECT DISTINCT listName
-FROM tasks;
 
 updateState:
 UPDATE tasks
@@ -33,3 +33,6 @@ WHERE name = ? AND listName = ?;
 
 deleteTask:
 DELETE FROM tasks WHERE name = ?;
+
+groups:
+SELECT name FROM category;

@@ -15,7 +15,7 @@ class ToDoRepository(
             database.todosQueries.insert(name,false,taskListName)
 
     fun getTusk(): List<String> =
-        database.todosQueries.listOfTask().executeAsList()
+        database.todosQueries.groups().executeAsList()
 
     fun updateState(name: String) =
         database.todosQueries.updateState(name)

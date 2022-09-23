@@ -15,20 +15,23 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import pl.mazy.todoapp.Destinations
 import pl.mazy.todoapp.Tasks
 import pl.mazy.todoapp.logic.dataClass.Task
+import pl.mazy.todoapp.navigation.NavController
 import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SingleTask(
+    navController: NavController<Destinations>,
     task: Task,
     check:() -> Unit
 ){
     ToDoAPpTheme {
         Card(
             border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary),
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp).clickable { navController.navigate(Destinations.TaskDetails(task)) }
         ) {
             Row (
                 modifier = Modifier
