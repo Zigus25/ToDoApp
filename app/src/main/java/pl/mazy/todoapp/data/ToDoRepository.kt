@@ -6,16 +6,22 @@ import pl.mazy.todoapp.logic.dataClass.Task
 class ToDoRepository(
     private var database: Database
 ) {
+    fun addCategory(taskListName: String)=
+        database.todosQueries.insertCategory(taskListName)
+
     fun getToDos(listName:String): List<Task> =
         database.todosQueries.selectList(listName).executeAsList().map {
            Task(it.id, it.name,it.checked,it.listName)
         }
 
     fun addToDo(name:String,taskListName:String) =
-            database.todosQueries.insert(name,false,taskListName)
+            database.todosQueries.insertTask(name,false,taskListName)
 
     fun getTusk(): List<String> =
         database.todosQueries.groups().executeAsList()
+
+    fun updateTask(newName:String, description:String,date:String,newListName:String,oldName:String,id:Long) =
+        database.todosQueries.updateTask(newName,description,date,newListName,oldName,id)
 
     fun updateState(name: String) =
         database.todosQueries.updateState(name)

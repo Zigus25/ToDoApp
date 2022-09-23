@@ -32,6 +32,7 @@ import pl.mazy.todoapp.ui.components.TaskAdding
 fun TaskList(
     navController: NavController<Destinations>,
 ){
+    var selAdd = false
     val toDoRepository: ToDoRepository by localDI().instance()
     var titles = toDoRepository.getTusk()
     var adding by remember { mutableStateOf(false) }
@@ -41,7 +42,7 @@ fun TaskList(
     var todos: List<Task>? by remember { mutableStateOf(null) }
 
     if (titles.isEmpty()){
-        toDoRepository.addToDo("Hello","Main")
+        toDoRepository.addCategory("Main")
     }
 
     fun refreshTusk() = scope.launch {
@@ -58,7 +59,7 @@ fun TaskList(
     }
 
     Column(modifier = Modifier.fillMaxSize()){
-        val i = titles.indexOf(category)
+        var i = titles.indexOf(category)
         TabRow(selectedTabIndex = i) {
             titles.forEachIndexed{index,title ->
                 Tab(
@@ -66,10 +67,18 @@ fun TaskList(
                     onClick = { category = title },
                     text = { Text(text = title,maxLines = 1) })
             }
+            Tab(
+                selected = selAdd,
+                onClick = {
+                    selAdd = true
+                },
+                text = { Text(text = "Add new",maxLines = 1) })
         }
         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.BottomCenter){
             LazyColumn (
-                Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
+                Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)
             ){
                 items(todos?: listOf()) { task->
                     SingleTask(navController,task,

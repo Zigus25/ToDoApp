@@ -12,7 +12,10 @@ CREATE TABLE category(
     name TEXT NOT NULL
 );
 
-insert:
+insertCategory:
+INSERT INTO category(name) VALUES (?);
+
+insertTask:
 INSERT INTO tasks(name,checked,listName)
 VALUES (?,?,?);
 
@@ -29,7 +32,7 @@ WHERE name = ?;
 updateTask:
 UPDATE tasks
 SET name = ?, description = ?,date = ?,listName = ?
-WHERE name = ? AND listName = ?;
+WHERE name = ? AND rowid = ?;
 
 deleteTask:
 DELETE FROM tasks WHERE name = ?;

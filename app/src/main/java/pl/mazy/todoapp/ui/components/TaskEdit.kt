@@ -1,3 +1,5 @@
+@file:Suppress("OPT_IN_IS_NOT_ENABLED")
+
 package pl.mazy.todoapp.ui.components
 
 import androidx.compose.foundation.background
@@ -6,12 +8,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.SaveAs
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -23,7 +26,6 @@ import pl.mazy.todoapp.data.ToDoRepository
 import pl.mazy.todoapp.logic.dataClass.Task
 import pl.mazy.todoapp.navigation.NavController
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskEdit(
     navController: NavController<Destinations>,
@@ -35,37 +37,29 @@ fun TaskEdit(
 
     val options = toDoRepository.getTusk()
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember { mutableStateOf(options[0]) }
-    var text by remember { mutableStateOf(task.category) }
+    var category by remember { mutableStateOf(task.category) }
     val name by remember { mutableStateOf(task.name) }
+    val description by remember { mutableStateOf("") }
+    val date by remember { mutableStateOf("") }
+
     Column(modifier = Modifier
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.background)) {
         Row{
-            ExposedDropdownMenuBox(
-                modifier = Modifier.width(200.dp),
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded },
-            ) {
-                TextField(
-                    value = selectedOptionText,
-                    onValueChange = { selectedOptionText = it },
-                    readOnly = true,
-                    label = { Text("Group") },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                )
-                // filter options based on text field value
-                ExposedDropdownMenu(
+            Row(modifier = Modifier.clickable{ expanded = true }.padding(10.dp)) {
+                Text(
+                    text = category,
+                    color = MaterialTheme.colorScheme.onBackground)
+                Icon(imageVector = Icons.Default.ExpandMore, contentDescription = null)
+                DropdownMenu(
                     expanded = expanded,
-                    onDismissRequest = { expanded = false },
+                    onDismissRequest = { expanded = false }
                 ) {
                     options.forEach { selectionOption ->
                         DropdownMenuItem(
                             text = { Text(selectionOption) },
                             onClick = {
-                                selectedOptionText = selectionOption
+                                category = selectionOption
                                 expanded = false
                             }
                         )
@@ -82,13 +76,14 @@ fun TaskEdit(
                 textStyle= TextStyle(
                     color = MaterialTheme.colorScheme.onBackground,
                 ),
-                onValueChange = { text = it },
+                onValueChange = { category = it },
                 keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(
                     FocusDirection.Down) }),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 label = { Text("Task name") },
             )
         }
+        Spacer(modifier = Modifier.weight(1f))
         BottomAppBar {
             if (task.name.isNotEmpty()){
                 Icon(
@@ -106,7 +101,7 @@ fun TaskEdit(
                 SmallFloatingActionButton(
                     onClick = {
                         navController.navigate(Destinations.Notes)
-//                        toDoRepository.updateNote(name,text,nameM)
+                        toDoRepository.updateTask(name,description,date,category,task.name,task.ID)
                     },
                     modifier = Modifier
                         .height(50.dp)
