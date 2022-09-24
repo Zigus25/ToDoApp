@@ -38,4 +38,4 @@ deleteTask:
 DELETE FROM tasks WHERE name = ?;
 
 groups:
-SELECT name FROM category;
+SELECT DISTINCT name FROM category;

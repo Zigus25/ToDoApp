@@ -38,7 +38,7 @@ fun TaskEdit(
     val options = toDoRepository.getTusk()
     var expanded by remember { mutableStateOf(false) }
     var category by remember { mutableStateOf(task.category) }
-    val name by remember { mutableStateOf(task.name) }
+    var name by remember { mutableStateOf(task.name) }
     val description by remember { mutableStateOf("") }
     val date by remember { mutableStateOf("") }
 
@@ -76,7 +76,7 @@ fun TaskEdit(
                 textStyle= TextStyle(
                     color = MaterialTheme.colorScheme.onBackground,
                 ),
-                onValueChange = { category = it },
+                onValueChange = { name = it },
                 keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(
                     FocusDirection.Down) }),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -92,6 +92,7 @@ fun TaskEdit(
                     modifier = Modifier
                         .padding(start = 10.dp)
                         .clickable {
+                            navController.navigate(Destinations.TaskList)
                             toDoRepository.deleteTask(task.name)
                         }
                 )
@@ -100,7 +101,7 @@ fun TaskEdit(
             Box(modifier = Modifier.padding(10.dp)) {
                 SmallFloatingActionButton(
                     onClick = {
-                        navController.navigate(Destinations.Notes)
+                        navController.navigate(Destinations.TaskList)
                         toDoRepository.updateTask(name,description,date,category,task.name,task.ID)
                     },
                     modifier = Modifier

@@ -22,6 +22,7 @@ import pl.mazy.todoapp.Destinations
 import pl.mazy.todoapp.Notes
 import pl.mazy.todoapp.data.NotesRepository
 import pl.mazy.todoapp.navigation.NavController
+import pl.mazy.todoapp.ui.components.NoteAdding
 import pl.mazy.todoapp.ui.components.SingleNote
 import pl.mazy.todoapp.ui.components.TaskAdding
 
@@ -64,7 +65,7 @@ fun NoteList(
                     .background(Color.Black.copy(alpha = 0.7F))
                     .blur(8.dp)
                     .clickable { adding = false })
-                TaskAdding { adding = false }
+                NoteAdding(navController)
             }
         }
         BottomAppBar {

@@ -27,6 +27,7 @@ import pl.mazy.todoapp.logic.dataClass.Task
 import pl.mazy.todoapp.navigation.NavController
 import pl.mazy.todoapp.ui.components.SingleTask
 import pl.mazy.todoapp.ui.components.TaskAdding
+import pl.mazy.todoapp.ui.components.GroupAdd
 
 @Composable
 fun TaskList(
@@ -35,7 +36,8 @@ fun TaskList(
     var selAdd = false
     val toDoRepository: ToDoRepository by localDI().instance()
     var titles = toDoRepository.getTusk()
-    var adding by remember { mutableStateOf(false) }
+    var addingTask by remember { mutableStateOf(false) }
+    var addingGroup by remember { mutableStateOf(false) }
     var change by remember { mutableStateOf(false) }
     var category by remember { mutableStateOf("Main") }
     val scope = rememberCoroutineScope()
@@ -43,6 +45,7 @@ fun TaskList(
 
     if (titles.isEmpty()){
         toDoRepository.addCategory("Main")
+        toDoRepository.addToDo("Hello","Main")
     }
 
     fun refreshTusk() = scope.launch {
@@ -53,13 +56,13 @@ fun TaskList(
         todos = toDoRepository.getToDos(category)
     }
 
-    LaunchedEffect (adding,category,change) {
+    LaunchedEffect (addingTask,category,change) {
         refreshTusk()
         loadTodos()
     }
 
     Column(modifier = Modifier.fillMaxSize()){
-        var i = titles.indexOf(category)
+        val i = titles.indexOf(category)
         TabRow(selectedTabIndex = i) {
             titles.forEachIndexed{index,title ->
                 Tab(
@@ -71,6 +74,7 @@ fun TaskList(
                 selected = selAdd,
                 onClick = {
                     selAdd = true
+                    addingGroup = true
                 },
                 text = { Text(text = "Add new",maxLines = 1) })
         }
@@ -89,13 +93,21 @@ fun TaskList(
                     )
                 }
             }
-            if (adding){
+            if (addingTask){
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.7F))
                     .blur(8.dp)
-                    .clickable { adding = false })
-                TaskAdding{adding = false}
+                    .clickable { addingTask = false })
+                TaskAdding({addingTask = false},category)
+            }
+            if (addingGroup){
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.7F))
+                    .blur(8.dp)
+                    .clickable { addingGroup = false })
+                GroupAdd {addingGroup = false}
             }
         }
         BottomAppBar{
@@ -104,7 +116,7 @@ fun TaskList(
             }
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.weight(1f)){
-                SmallFloatingActionButton(onClick = { adding = true },
+                SmallFloatingActionButton(onClick = { addingTask = true },
                     modifier = Modifier
                         .height(50.dp)
                         .width(50.dp)) {
