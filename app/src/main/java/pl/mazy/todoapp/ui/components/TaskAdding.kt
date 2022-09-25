@@ -1,6 +1,7 @@
 package pl.mazy.todoapp.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -71,22 +72,24 @@ fun TaskAdding(
                     contentDescription = null,
                 )
 
-                Text(
-                    text = category,
-                    color = MaterialTheme.colorScheme.onBackground)
-                Icon(imageVector = Icons.Default.ExpandMore, contentDescription = null)
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    options.forEach { selectionOption ->
-                        DropdownMenuItem(
-                            text = { Text(selectionOption) },
-                            onClick = {
-                                category = selectionOption
-                                expanded = false
-                            }
-                        )
+                Row(modifier = Modifier.clickable{ expanded = true }.padding(10.dp)) {
+                    Text(
+                        text = category,
+                        color = MaterialTheme.colorScheme.onBackground)
+                    Icon(imageVector = Icons.Default.ExpandMore, contentDescription = null)
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        options.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                text = { Text(selectionOption) },
+                                onClick = {
+                                    category = selectionOption
+                                    expanded = false
+                                }
+                            )
+                        }
                     }
                 }
 
