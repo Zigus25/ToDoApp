@@ -26,6 +26,12 @@ class ToDoRepository(
     fun updateState(name: String) =
         database.todosQueries.updateState(name)
 
+    fun deleteGroup(name:String) {
+        database.todosQueries.deleteGroup(name)
+        database.todosQueries.deleteFromGroup(name)
+    }
+
+
     fun deleteTask(name: String) =
         database.todosQueries.deleteTask(name)
 }

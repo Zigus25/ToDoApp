@@ -6,10 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
@@ -39,7 +36,6 @@ fun TaskList(
     var addingTask by remember { mutableStateOf(false) }
     var addingGroup by remember { mutableStateOf(false) }
     var change by remember { mutableStateOf(false) }
-    var category by remember { mutableStateOf("Main") }
     val scope = rememberCoroutineScope()
     var todos: List<Task>? by remember { mutableStateOf(null) }
 
@@ -47,6 +43,8 @@ fun TaskList(
         toDoRepository.addCategory("Main")
         toDoRepository.addToDo("Hello","Main")
     }
+
+    var category by remember { mutableStateOf(titles[0]) }
 
     fun refreshTusk() = scope.launch {
         titles = toDoRepository.getTusk()
@@ -110,9 +108,28 @@ fun TaskList(
                 GroupAdd {addingGroup = false}
             }
         }
+        var expandedD by remember { mutableStateOf(false) }
         BottomAppBar{
-            IconButton(onClick = { /* doSomething() */ }) {
-                Icon(Icons.Filled.Menu, contentDescription = "Menu Icon")
+            Box{
+                IconButton(onClick = { expandedD = true }) {
+                    Icon(Icons.Filled.Menu, contentDescription = "Menu Icon")
+                }
+                DropdownMenu(
+                    expanded = expandedD,
+                    onDismissRequest = { expandedD = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Delete group") },
+                        onClick = {
+                            expandedD = false
+                            toDoRepository.deleteGroup(category)
+                            titles = toDoRepository.getTusk()
+                            category = titles[0]
+                            change = !change
+                        }
+                    )
+
+                }
             }
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.weight(1f)){

@@ -37,5 +37,11 @@ WHERE name = ? AND rowid = ?;
 deleteTask:
 DELETE FROM tasks WHERE name = ?;
 
+deleteGroup:
+DELETE FROM category WHERE  name = ?;
+
+deleteFromGroup:
+DELETE FROM tasks WHERE listName = ?;
+
 groups:
 SELECT DISTINCT name FROM category;
