@@ -61,7 +61,7 @@ fun TaskList(
 
     Column(modifier = Modifier.fillMaxSize()){
         val i = titles.indexOf(category)
-        ScrollableTabRow(selectedTabIndex = i) {
+        ScrollableTabRow(selectedTabIndex = i,edgePadding = 0.dp) {
             titles.forEachIndexed{index,title ->
                 Tab(
                     selected = i == index,
