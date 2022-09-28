@@ -11,7 +11,7 @@ class ToDoRepository(
 
     fun getToDos(listName:String): List<Task> =
         database.todosQueries.selectList(listName).executeAsList().map {
-           Task(it.id, it.name,it.checked,it.listName)
+           Task(it.id, it.name,it.checked, it.subTasks, it.listName)
         }
 
     fun addToDo(name:String,taskListName:String) =

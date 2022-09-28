@@ -5,7 +5,7 @@ CREATE TABLE tasks(
     description TEXT,
     date TEXT,
     checked INTEGER AS Boolean NOT NULL,
-    subTask TEXT,
+    subTasks TEXT,
     listName TEXT NOT NULL
 );
 
@@ -21,7 +21,7 @@ INSERT INTO tasks(name,checked,listName)
 VALUES (?,?,?);
 
 selectList:
-SELECT rowid AS id,name,checked,listName
+SELECT rowid AS id,name,checked,subTasks,listName
 FROM  tasks
 WHERE listName = ?;
 
@@ -32,7 +32,7 @@ WHERE name = ?;
 
 updateTask:
 UPDATE tasks
-SET name = ?, description = ?,date = ?,listName = ?, subTask = ?
+SET name = ?, description = ?,date = ?,listName = ?, subTasks = ?
 WHERE name = ? AND rowid = ?;
 
 deleteTask:
