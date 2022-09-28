@@ -11,10 +11,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -99,10 +97,11 @@ fun TaskEdit(
             }
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.padding(10.dp)) {
+                val subList:List<Task> = listOf(Task(1,"Apl",false,"Main"))
                 SmallFloatingActionButton(
                     onClick = {
                         navController.navigate(Destinations.TaskList)
-                        toDoRepository.updateTask(name,description,date,category,task.name,task.ID)
+                        toDoRepository.updateTask(name,description,date,category,subList,task.name,task.ID)
                     },
                     modifier = Modifier
                         .height(50.dp)

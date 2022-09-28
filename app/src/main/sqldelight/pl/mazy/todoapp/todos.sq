@@ -32,7 +32,7 @@ WHERE name = ?;
 
 updateTask:
 UPDATE tasks
-SET name = ?, description = ?,date = ?,listName = ?
+SET name = ?, description = ?,date = ?,listName = ?, subTask = ?
 WHERE name = ? AND rowid = ?;
 
 deleteTask:
