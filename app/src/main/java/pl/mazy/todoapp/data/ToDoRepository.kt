@@ -32,6 +32,6 @@ class ToDoRepository(
     }
 
 
-    fun deleteTask(name: String) =
-        database.todosQueries.deleteTask(name)
+    fun deleteTask(name: String,id:Long) =
+        database.todosQueries.deleteTask(name,id)
 }

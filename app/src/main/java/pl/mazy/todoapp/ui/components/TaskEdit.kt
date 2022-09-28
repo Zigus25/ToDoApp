@@ -93,7 +93,7 @@ fun TaskEdit(
                         .padding(start = 10.dp)
                         .clickable {
                             navController.navigate(Destinations.TaskList)
-                            toDoRepository.deleteTask(task.name)
+                            toDoRepository.deleteTask(task.name,task.ID)
                         }
                 )
             }

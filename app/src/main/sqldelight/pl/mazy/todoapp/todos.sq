@@ -5,13 +5,12 @@ CREATE TABLE tasks(
     description TEXT,
     date TEXT,
     checked INTEGER AS Boolean NOT NULL,
-    subTask INTEGER AS Boolean,
-    mainTask TEXT,
+    subTask TEXT,
     listName TEXT NOT NULL
 );
 
 CREATE TABLE category(
-    name TEXT NOT NULL
+    name TEXT UNIQUE NOT NULL
 );
 
 insertCategory:
@@ -37,7 +36,7 @@ SET name = ?, description = ?,date = ?,listName = ?
 WHERE name = ? AND rowid = ?;
 
 deleteTask:
-DELETE FROM tasks WHERE name = ?;
+DELETE FROM tasks WHERE name = ? AND rowid = ?;
 
 deleteGroup:
 DELETE FROM category WHERE  name = ?;
