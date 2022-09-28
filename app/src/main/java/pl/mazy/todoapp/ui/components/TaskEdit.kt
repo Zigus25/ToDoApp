@@ -97,7 +97,7 @@ fun TaskEdit(
             }
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.padding(10.dp)) {
-                val subList:List<Task> = listOf(Task(1,"Apl",false,"Main"))
+                val subList:List<Task> = listOf(Task(1,"Apl",false,null,"Main"))
                 SmallFloatingActionButton(
                     onClick = {
                         navController.navigate(Destinations.TaskList)
