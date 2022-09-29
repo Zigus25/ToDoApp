@@ -21,6 +21,7 @@ import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.Destinations
 import pl.mazy.todoapp.data.ToDoRepository
+import pl.mazy.todoapp.logic.dataClass.SubList
 import pl.mazy.todoapp.logic.dataClass.Task
 import pl.mazy.todoapp.navigation.NavController
 
@@ -97,7 +98,7 @@ fun TaskEdit(
             }
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.padding(10.dp)) {
-                val subList:List<Task> = listOf(Task(1,"Apl",false,null,"Main"))
+                val subList:List<SubList> = listOf(SubList("Apl",false,1))
                 SmallFloatingActionButton(
                     onClick = {
                         navController.navigate(Destinations.TaskList)

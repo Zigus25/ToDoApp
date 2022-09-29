@@ -1,6 +1,7 @@
 package pl.mazy.todoapp.data
 
 import pl.mazy.todoapp.Database
+import pl.mazy.todoapp.logic.dataClass.SubList
 import pl.mazy.todoapp.logic.dataClass.Task
 
 class ToDoRepository(
@@ -14,13 +15,20 @@ class ToDoRepository(
            Task(it.id, it.name,it.checked, it.subTasks, it.listName)
         }
 
-    fun addToDo(name:String,taskListName:String) =
+    fun addToDo(
+        name:String,
+        taskListName:String) =
             database.todosQueries.insertTask(name,false,taskListName)
 
     fun getTusk(): List<String> =
         database.todosQueries.groups().executeAsList()
 
-    fun updateTask(newName:String, description:String,date:String,newListName:String, subTasks:List<Task>,oldName:String,id:Long) =
+    fun updateTask(
+        newName:String, description:String,
+        date:String,
+        newListName:String, subTasks: List<SubList>,
+        oldName:String,
+        id:Long) =
         database.todosQueries.updateTask(newName,description,date,newListName,subTasks.toString(),oldName,id)
 
     fun updateState(name: String) =
@@ -32,6 +40,8 @@ class ToDoRepository(
     }
 
 
-    fun deleteTask(name: String,id:Long) =
+    fun deleteTask(
+        name: String,
+        id:Long) =
         database.todosQueries.deleteTask(name,id)
 }
