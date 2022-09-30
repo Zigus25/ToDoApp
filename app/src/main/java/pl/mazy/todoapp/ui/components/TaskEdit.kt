@@ -41,6 +41,8 @@ fun TaskEdit(
     val description by remember { mutableStateOf("") }
     val date by remember { mutableStateOf("") }
 
+    val list:String = task.subList!!.substring( 1, task.subList.length - 1 )
+
     Column(modifier = Modifier
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.background)) {
@@ -97,8 +99,8 @@ fun TaskEdit(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
+            val subList:List<SubList> = listOf(SubList("Apl",false,1),SubList("Apl",false,2))
             Box(modifier = Modifier.padding(10.dp)) {
-                val subList:List<SubList> = listOf(SubList("Apl",false,1))
                 SmallFloatingActionButton(
                     onClick = {
                         navController.navigate(Destinations.TaskList)
