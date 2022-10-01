@@ -1,4 +1,5 @@
 # ToDoApp
+By Maciej Zygmunt
 ## General info
 This is project that combine three apps
 * ToDo list
