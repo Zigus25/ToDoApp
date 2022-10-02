@@ -10,3 +10,6 @@ This is project that combine three apps
 * Matherial theme 3
 * Gradle
 * SQLDelight
+## Goals
+* Calendar
+*import/export ToDo lists
