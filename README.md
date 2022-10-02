@@ -12,4 +12,4 @@ This is project that combine three apps
 * SQLDelight
 ## Goals
 * Calendar
-*import/export ToDo lists
+* import/export ToDo lists
