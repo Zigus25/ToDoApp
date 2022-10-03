@@ -12,5 +12,6 @@ This is project that combine three apps
 * Gradle
 * SQLDelight
 ## Goals
-* Calendar
+* Subtasks in task
 * import/export ToDo lists
+* Calendar
