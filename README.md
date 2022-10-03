@@ -8,6 +8,7 @@ This is project that combine three apps
 ## Technologies
 * Kotlin
 * Matherial theme 3
+* Android 6.0
 * Gradle
 * SQLDelight
 ## Goals
