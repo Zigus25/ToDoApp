@@ -10,7 +10,7 @@ This is project that combine three apps
 * Matherial theme 3
 * Android 6.0
 * Gradle
-* SQLDelight
+* SQLight
 ## Goals
 * Subtasks in task
 * import/export ToDo lists
