@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import pl.mazy.todoapp.Destinations
+import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.Notes
 import pl.mazy.todoapp.logic.navigation.NavController
 import pl.mazy.todoapp.ui.theme.ToDoAPpTheme

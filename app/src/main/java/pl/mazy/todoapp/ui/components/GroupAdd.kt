@@ -46,7 +46,7 @@ fun GroupAdd(closeAdder: () -> Unit = {}){
                     keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(
                         FocusDirection.Down) }),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    label = { Text("New Task") },
+                    label = { Text("New Group") },
                 )
             }
             Row(verticalAlignment = Alignment.CenterVertically) {

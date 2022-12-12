@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.Destinations
+import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.data.ToDoRepository
 import pl.mazy.todoapp.logic.dataClass.Task
 import pl.mazy.todoapp.logic.navigation.NavController
