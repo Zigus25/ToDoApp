@@ -17,8 +17,8 @@ import androidx.compose.ui.unit.dp
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.Destinations
-import pl.mazy.todoapp.data.NotesRepository
-import pl.mazy.todoapp.navigation.NavController
+import pl.mazy.todoapp.logic.data.NotesRepository
+import pl.mazy.todoapp.logic.navigation.NavController
 
 @Composable
 fun NoteAdding(

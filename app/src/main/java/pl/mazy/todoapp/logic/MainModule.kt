@@ -5,8 +5,8 @@ import org.kodein.di.DI
 import org.kodein.di.bindSingleton
 import org.kodein.di.instance
 import pl.mazy.todoapp.Database
-import pl.mazy.todoapp.data.NotesRepository
-import pl.mazy.todoapp.data.ToDoRepository
+import pl.mazy.todoapp.logic.data.NotesRepository
+import pl.mazy.todoapp.logic.data.ToDoRepository
 
 
 val mainModule = DI.Module("main") {

@@ -1,4 +1,4 @@
-package pl.mazy.todoapp.data
+package pl.mazy.todoapp.logic.data
 
 import pl.mazy.todoapp.Database
 import pl.mazy.todoapp.Notes

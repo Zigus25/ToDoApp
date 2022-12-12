@@ -1,4 +1,4 @@
-package pl.mazy.todoapp.navigation
+package pl.mazy.todoapp.logic.navigation
 
 import androidx.compose.runtime.mutableStateOf
 

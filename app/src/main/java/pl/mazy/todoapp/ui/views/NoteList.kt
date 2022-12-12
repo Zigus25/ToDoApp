@@ -20,8 +20,8 @@ import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.Destinations
 import pl.mazy.todoapp.Notes
-import pl.mazy.todoapp.data.NotesRepository
-import pl.mazy.todoapp.navigation.NavController
+import pl.mazy.todoapp.logic.data.NotesRepository
+import pl.mazy.todoapp.logic.navigation.NavController
 import pl.mazy.todoapp.ui.components.NoteAdding
 import pl.mazy.todoapp.ui.components.SingleNote
 import pl.mazy.todoapp.ui.components.TaskAdding

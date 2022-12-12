@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import pl.mazy.todoapp.Destinations
 import pl.mazy.todoapp.Notes
-import pl.mazy.todoapp.navigation.NavController
+import pl.mazy.todoapp.logic.navigation.NavController
 import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
