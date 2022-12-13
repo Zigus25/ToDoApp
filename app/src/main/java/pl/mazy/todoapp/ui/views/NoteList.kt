@@ -92,7 +92,7 @@ fun NoteList(
                     contentDescription = "Calendar Icon",
                 )
             }
-            IconButton(onClick = { /* doSomething() */ }) {
+            IconButton(onClick = { navController.navigate(Destinations.Schedule) }) {
                 Icon(
                     Icons.Filled.CalendarMonth,
                     contentDescription = "Calendar Icon",

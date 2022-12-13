@@ -16,6 +16,7 @@ import pl.mazy.todoapp.ui.components.NoteAdding
 import pl.mazy.todoapp.ui.components.TaskEdit
 import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
 import pl.mazy.todoapp.ui.views.NoteList
+import pl.mazy.todoapp.ui.views.ScheduleView
 import pl.mazy.todoapp.ui.views.TaskList
 
 class MainActivity : ComponentActivity() {
@@ -37,6 +38,7 @@ class MainActivity : ComponentActivity() {
                                 is Destinations.NoteDetails -> NoteAdding(controller,x.name,x.des)
                                 is Destinations.TaskDetails -> TaskEdit(controller,x.task)
                                 is Destinations.Notes -> NoteList(controller)
+                                is Destinations.Schedule -> ScheduleView(controller)
                                 is Destinations.CreateNote -> NoteAdding(controller,"","")
                             }
                         }
