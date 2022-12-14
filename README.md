@@ -11,7 +11,5 @@ This is project that combine three apps
 * Android 6.0
 * Gradle
 * SQLight
-## Goals
-* Subtasks in task
-* import/export ToDo lists
-* Calendar
+## Documentatiot
+
