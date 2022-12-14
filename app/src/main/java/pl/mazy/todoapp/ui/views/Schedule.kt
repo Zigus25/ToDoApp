@@ -15,7 +15,7 @@ import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
 
 @Composable
-fun ScheduleView(
+fun Schedule(
     navController: NavController<Destinations>,
 ){
     Column(modifier = Modifier.fillMaxSize()) {
