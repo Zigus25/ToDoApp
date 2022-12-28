@@ -1,6 +1,6 @@
 import java.lang.Boolean;
 
-CREATE TABLE tasks(
+CREATE TABLE IF NOT EXISTS tasks(
     name TEXT NOT NULL,
     description TEXT,
     date TEXT,

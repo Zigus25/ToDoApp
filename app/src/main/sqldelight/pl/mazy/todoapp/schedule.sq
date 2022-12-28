@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS schedule(
+    Name TEXT,
+    Description TEXT,
+    TimeStart TEXT,
+    TimeEnd TEXT,
+    Date TEXT,
+    Type TEXT
+);

@@ -1,4 +1,4 @@
-CREATE TABLE notes (
+CREATE TABLE IF NOT EXISTS notes (
     name TEXT NOT NULL,
     description TEXT NOT NULL,
     archivied INTEGER AS Boolean NOT NULL

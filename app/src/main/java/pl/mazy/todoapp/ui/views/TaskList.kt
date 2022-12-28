@@ -22,9 +22,7 @@ import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.data.ToDoRepository
 import pl.mazy.todoapp.logic.dataClass.Task
 import pl.mazy.todoapp.logic.navigation.NavController
-import pl.mazy.todoapp.ui.components.SingleTask
-import pl.mazy.todoapp.ui.components.TaskAdding
-import pl.mazy.todoapp.ui.components.GroupAdd
+import pl.mazy.todoapp.ui.components.task.*
 
 @Composable
 fun TaskList(

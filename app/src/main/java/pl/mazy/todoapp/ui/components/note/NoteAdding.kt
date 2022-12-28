@@ -1,4 +1,4 @@
-package pl.mazy.todoapp.ui.components
+package pl.mazy.todoapp.ui.components.note
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

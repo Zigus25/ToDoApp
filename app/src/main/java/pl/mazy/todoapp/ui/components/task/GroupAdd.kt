@@ -1,4 +1,4 @@
-package pl.mazy.todoapp.ui.components
+package pl.mazy.todoapp.ui.components.task
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*

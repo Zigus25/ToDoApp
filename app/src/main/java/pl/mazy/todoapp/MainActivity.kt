@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 import org.kodein.di.compose.withDI
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
-import pl.mazy.todoapp.ui.components.NoteAdding
-import pl.mazy.todoapp.ui.components.TaskEdit
+import pl.mazy.todoapp.ui.components.note.NoteAdding
+import pl.mazy.todoapp.ui.components.task.TaskEdit
 import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
 import pl.mazy.todoapp.ui.views.NoteList
 import pl.mazy.todoapp.ui.views.Schedule

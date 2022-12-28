@@ -1,6 +1,4 @@
-@file:Suppress("OPT_IN_IS_NOT_ENABLED")
-
-package pl.mazy.todoapp.ui.components
+package pl.mazy.todoapp.ui.components.task
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,8 +38,6 @@ fun TaskEdit(
     var name by remember { mutableStateOf(task.name) }
     val description by remember { mutableStateOf("") }
     val date by remember { mutableStateOf("") }
-
-    val list:String = task.subList!!.substring( 1, task.subList.length - 1 )
 
     Column(modifier = Modifier
         .fillMaxSize()
