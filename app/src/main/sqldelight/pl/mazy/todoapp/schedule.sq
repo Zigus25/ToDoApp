@@ -1,10 +1,11 @@
 CREATE TABLE IF NOT EXISTS schedule(
-    Name TEXT,
+    Name TEXT NOT NULL,
     Description TEXT,
     TimeStart TEXT,
     TimeEnd TEXT,
     Date TEXT,
-    Type TEXT
+    Type TEXT,
+    Color TEXT NOT NULL
 );
 
 selFromDay:
