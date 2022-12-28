@@ -1,3 +1,5 @@
+@file:Suppress("OPT_IN_IS_NOT_ENABLED")
+
 package pl.mazy.todoapp.ui.components.task
 
 import androidx.compose.foundation.BorderStroke

@@ -6,3 +6,6 @@ CREATE TABLE IF NOT EXISTS schedule(
     Date TEXT,
     Type TEXT
 );
+
+selFromDay:
+SELECT * FROM schedule WHERE Date = ?;

@@ -16,10 +16,5 @@ class NavController<DestinationBase>(beginning: DestinationBase) {
         backStack.add(destination)
         currentBackStackEntry.value = destination
     }
-
-    fun absoluteNavigate(destination: DestinationBase) {
-        backStack.clear()
-        navigate(destination)
-    }
     fun isLast() = backStack.size == 1
 }
