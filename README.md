@@ -4,7 +4,7 @@ by: Maciej Zygmunt
 This is project that combine three apps
 * ToDo list
 * Notebook
-* Calendar
+* Schedule
 ## Technologies
 * Kotlin
 * Matherial theme 3
