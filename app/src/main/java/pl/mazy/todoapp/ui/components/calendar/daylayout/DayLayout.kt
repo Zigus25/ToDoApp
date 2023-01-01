@@ -1,7 +1,6 @@
-package pl.mazy.todoapp.ui.components
+package pl.mazy.todoapp.ui.components.calendar.daylayout
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,7 +8,7 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import pl.mazy.todoapp.Schedule
-import pl.mazy.todoapp.ui.components.events.SingleEvent
+import pl.mazy.todoapp.ui.components.calendar.schedule.SingleEvent
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit

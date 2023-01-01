@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS schedule(
     Color TEXT NOT NULL
 );
 
-selFromDay:
-SELECT * FROM schedule WHERE Date = ?;
+selBetweenDate:
+SELECT * FROM schedule WHERE Date BETWEEN ? AND ?;

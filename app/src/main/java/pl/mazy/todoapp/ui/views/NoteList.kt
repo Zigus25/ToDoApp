@@ -30,19 +30,17 @@ fun NoteList(
 ){
     val notesRepository: NotesRepository by localDI().instance()
     var adding by remember { mutableStateOf(false) }
-    val change by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     var notes: List<Notes>? by remember { mutableStateOf(null) }
 
-    if (notes?.isEmpty() == true){
-        notesRepository.addNote("Hello","This is sample description")
-    }
-
     fun loadTodos() = scope.launch {
         notes = notesRepository.getNotes()
+        if (notes?.isEmpty() == true){
+            notesRepository.addNote("Hello","This is sample description")
+        }
     }
 
-    LaunchedEffect (adding,change) {
+    LaunchedEffect (adding) {
         loadTodos()
     }
     Column(modifier = Modifier.fillMaxSize()) {
@@ -54,7 +52,7 @@ fun NoteList(
                 columns = GridCells.Adaptive(150.dp)
             ) {
                 items(notes ?: listOf()) { note ->
-                        SingleNote(note,navController)
+                    SingleNote(note,navController)
                 }
             }
             if (adding) {

@@ -4,8 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.BottomAppBar
@@ -15,106 +14,96 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import pl.mazy.todoapp.logic.data.ScheduleRepository
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
+import org.kodein.di.compose.localDI
+import org.kodein.di.instance
+import pl.mazy.todoapp.Schedule
+import pl.mazy.todoapp.logic.data.CalendarRepository
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
-import pl.mazy.todoapp.ui.components.CalendarLayout
-import pl.mazy.todoapp.ui.components.events.SingleEvent
-import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
-import java.time.LocalTime
+import pl.mazy.todoapp.ui.components.calendar.schedule.SingleEvent
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Schedule(
     navController: NavController<Destinations>,
 ){
-    ToDoAPpTheme {
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)) {
-            Row(
-                Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())) {
-                Box(
-                    Modifier
-                        .width(60.dp)) {
-                    for (i in 0..24){
-                        Text(
-                            text = if (i < 10){"0$i:00"}else "$i:00",
-                            modifier = Modifier.padding(top = (180*i).dp),
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                }
-                CalendarLayout(
-                    Modifier
-                        .weight(1f)) {
-                    aaa( pl.mazy.todoapp.Schedule(
-                                "Sample Event",
-                                "Lorem Ipsum this is my test description",
-                                "01:00",
-                                "02:00",
-                                "12",
-                                "0",
-                                "#ff0012"
-                            ))
+    val calendarRepository: CalendarRepository by localDI().instance()
+    var events: List<Schedule>? by remember { mutableStateOf(null) }
+    val scope = rememberCoroutineScope()
+    var date:String? = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")).toString()
+    var dateD = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+    fun loadEvents() = scope.launch {
+        events = calendarRepository.selTwoWeek()
+    }
 
-                    aaa( pl.mazy.todoapp.Schedule(
-                        "Sample Event",
-                        "Lorem Ipsum this is my test description",
-                        "01:00",
-                        "02:00",
-                        "12",
-                        "0",
-                        "#00ff12"
-                    ))
-                    aaa( pl.mazy.todoapp.Schedule(
-                        "Sample Event",
-                        "Lorem Ipsum this is my test description",
-                        "01:20",
-                        "01:40",
-                        "12",
-                        "0",
-                        "#ffff12"
-                    ))
-                }
-            }
-            BottomAppBar {
-                IconButton(onClick = { /* doSomething() */ }) {
-                    Icon(Icons.Filled.Menu, contentDescription = "Menu Icon")
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                Box(modifier = Modifier.weight(1f)) {
-                    SmallFloatingActionButton(
-                        onClick = { navController.navigate(Destinations.CreateNote) },
-                        modifier = Modifier
-                            .height(50.dp)
-                            .width(50.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                        )
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)) {
+        LazyColumn(modifier = Modifier.weight(1f)){
+            item { dateShow(dateD) }
+            if (events!=null) {
+                for (ev in events!!) {
+                    if (ev.Date!=date){
+                        date = ev.Date
+                        dateD = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                        item { dateShow(dateD) }
                     }
-                }
-
-                IconButton(onClick = { navController.navigate(Destinations.TaskList) }) {
-                    Icon(
-                        Icons.Filled.Checklist,
-                        contentDescription = "Calendar Icon",
-                    )
-                }
-                IconButton(onClick = { navController.navigate(Destinations.Notes) }) {
-                    Icon(
-                        Icons.Filled.Edit,
-                        contentDescription = "Calendar Icon",
-                    )
+                    item {
+                        SingleEvent(schedule = ev)
+                    }
                 }
             }
         }
+        BottomAppBar {
+            IconButton(onClick = { /* doSomething() */ }) {
+                Icon(Icons.Filled.Menu, contentDescription = "Menu Icon")
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Box(modifier = Modifier.weight(1f)) {
+                SmallFloatingActionButton(
+                    onClick = { navController.navigate(Destinations.CreateNote) },
+                    modifier = Modifier
+                        .height(50.dp)
+                        .width(50.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                    )
+                }
+            }
+
+            IconButton(onClick = { navController.navigate(Destinations.TaskList) }) {
+                Icon(
+                    Icons.Filled.Checklist,
+                    contentDescription = "Calendar Icon",
+                )
+            }
+            IconButton(onClick = { navController.navigate(Destinations.Notes) }) {
+                Icon(
+                    Icons.Filled.Edit,
+                    contentDescription = "Calendar Icon",
+                )
+            }
+        }
     }
+}
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun dateShow(dateD: LocalDate) {
+    Text(text = dateD.dayOfWeek.toString()+", "+dateD.dayOfMonth.toString()+" "+dateD.month.toString(),
+        fontSize = 20.sp,
+        modifier = Modifier.padding(start = 10.dp, top = 20.dp, bottom = 10.dp),
+        color = MaterialTheme.colorScheme.onBackground)
 }
