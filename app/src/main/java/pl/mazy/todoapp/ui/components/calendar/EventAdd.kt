@@ -58,39 +58,46 @@ fun EventAdd(navController: NavController<Destinations>, sched: Schedule? = null
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        OutlinedTextField(
-            modifier = Modifier
-                .padding(5.dp)
-                .fillMaxWidth(),
-            value = name,
-            textStyle = TextStyle(
-                color = MaterialTheme.colorScheme.onBackground,
-            ),
-            onValueChange = { name = it },
-            keyboardActions = KeyboardActions(onDone = {
-                focusManager.moveFocus(
-                    FocusDirection.Down
-                )
-            }),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            label = { Text("Name") }
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .fillMaxWidth(),
+                value = name,
+                textStyle = TextStyle(
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
+                onValueChange = {
+                    name = it
+                    schedule!!.Name = it
+                },
+                keyboardActions = KeyboardActions(onDone = {
+                    focusManager.moveFocus(
+                        FocusDirection.Down
+                    )
+                }),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                label = { Text("Name") }
+            )
 
-        OutlinedTextField(
-            modifier = Modifier
-                .height(200.dp)
-                .fillMaxWidth()
-                .padding(5.dp),
-            value = text,
-            textStyle = TextStyle(
-                color = MaterialTheme.colorScheme.onBackground,
-            ),
-            onValueChange = { text = it },
-            label = { Text("Description") }
-        )
+            OutlinedTextField(
+                modifier = Modifier
+                    .height(200.dp)
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                value = text,
+                textStyle = TextStyle(
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
+                onValueChange = {
+                    text = it
+                    schedule!!.Description = it
+                },
+                label = { Text("Description") }
+            )
 
 
-
+        }
         BottomAppBar {
             if (sched != null) {
                 IconButton(onClick = {
