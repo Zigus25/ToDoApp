@@ -43,6 +43,7 @@ fun Schedule(
     val scope = rememberCoroutineScope()
     var date:String? = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")).toString()
     var dateD = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+
     fun loadEvents() = scope.launch {
         events = calendarRepository.selTwoWeek()
     }
@@ -54,8 +55,8 @@ fun Schedule(
             item { dateShow(dateD) }
             if (events!=null) {
                 for (ev in events!!) {
-                    if (ev.Date!=date){
-                        date = ev.Date
+                    if (ev.DateStart!=date){
+                        date = ev.DateStart
                         dateD = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
                         item { dateShow(dateD) }
                     }
@@ -72,7 +73,7 @@ fun Schedule(
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.weight(1f)) {
                 SmallFloatingActionButton(
-                    onClick = { navController.navigate(Destinations.CreateNote) },
+                    onClick = { navController.navigate(Destinations.EventAdd) },
                     modifier = Modifier
                         .height(50.dp)
                         .width(50.dp)

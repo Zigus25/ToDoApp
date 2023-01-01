@@ -19,4 +19,16 @@ class CalendarRepository (
         val end = today.plus(2, ChronoUnit.WEEKS)
         return database.calendarQueries.selBetweenDate(today.toString(),end.toString()).executeAsList()
     }
+
+    fun deleteEvent(schedule: Schedule){
+        database.calendarQueries.deleteEvent(schedule.Name,schedule.Description,schedule.DateStart,schedule.Color)
+    }
+
+    fun addEvent(schedule: Schedule){
+        database.calendarQueries.addEvent(schedule.Name,schedule.Description,schedule.TimeStart,schedule.TimeEnd,schedule.DateStart,schedule.DateEnd,schedule.Type,schedule.Color)
+    }
+
+    fun updateEvent(schedule: Schedule,scheduleOld: Schedule){
+        database.calendarQueries.updateEvent(schedule.Name,schedule.Description,schedule.TimeStart,schedule.TimeEnd,schedule.DateStart,schedule.DateEnd,schedule.Type,schedule.Color,scheduleOld.Name,scheduleOld.Description,scheduleOld.DateStart,scheduleOld.Color)
+    }
 }

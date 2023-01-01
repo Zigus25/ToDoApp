@@ -1,9 +1,11 @@
 package pl.mazy.todoapp
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +14,7 @@ import androidx.compose.ui.Modifier
 import org.kodein.di.compose.withDI
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
+import pl.mazy.todoapp.ui.components.calendar.EventAdd
 import pl.mazy.todoapp.ui.components.note.NoteAdding
 import pl.mazy.todoapp.ui.components.task.TaskEdit
 import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
@@ -20,6 +23,7 @@ import pl.mazy.todoapp.ui.views.Schedule
 import pl.mazy.todoapp.ui.views.TaskList
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -39,6 +43,7 @@ class MainActivity : ComponentActivity() {
                                 is Destinations.TaskDetails -> TaskEdit(controller,x.task)
                                 is Destinations.Notes -> NoteList(controller)
                                 is Destinations.Schedule -> Schedule(controller)
+                                is Destinations.EventAdd -> EventAdd(controller)
                                 is Destinations.CreateNote -> NoteAdding(controller,"","")
                             }
                         }

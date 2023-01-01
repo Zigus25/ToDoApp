@@ -1,12 +1,32 @@
 CREATE TABLE IF NOT EXISTS schedule(
     Name TEXT NOT NULL,
-    Description TEXT,
-    TimeStart TEXT,
-    TimeEnd TEXT,
-    Date TEXT,
-    Type TEXT,
+    Description TEXT NOT NULL,
+    TimeStart TEXT NOT NULL,
+    TimeEnd TEXT NOT NULL,
+    DateStart TEXT NOT NULL,
+    DateEnd TEXT NOT NULL,
+    Type TEXT NOT NULL,
     Color TEXT NOT NULL
 );
 
 selBetweenDate:
-SELECT * FROM schedule WHERE Date BETWEEN ? AND ?;
+SELECT * FROM schedule WHERE DateStart BETWEEN ? AND ?;
+
+addEvent:
+INSERT INTO schedule VALUES (?,?,?,?,?,?,?,?);
+
+updateEvent:
+UPDATE schedule
+    SET
+        Name = ?,
+        Description = ?,
+        TimeStart = ?,
+        TimeEnd = ?,
+        DateStart = ?,
+        DateEnd = ?,
+        Type = ?,
+        Color = ?
+    WHERE Name = ? AND Description = ? AND DateStart = ? AND Color = ?;
+
+deleteEvent:
+DELETE FROM schedule WHERE Name = ? AND Description = ? AND DateStart = ? AND Color = ?;
