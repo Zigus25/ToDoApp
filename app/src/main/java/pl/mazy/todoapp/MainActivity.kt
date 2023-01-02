@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import org.kodein.di.compose.withDI
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
-import pl.mazy.todoapp.ui.components.calendar.EventAdd
+import pl.mazy.todoapp.ui.components.calendar.EventAddEdit
 import pl.mazy.todoapp.ui.components.note.NoteAdding
 import pl.mazy.todoapp.ui.components.task.TaskEdit
 import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
                                 is Destinations.TaskDetails -> TaskEdit(controller,x.task)
                                 is Destinations.Notes -> NoteList(controller)
                                 is Destinations.Schedule -> Schedule(controller)
-                                is Destinations.EventAdd -> EventAdd(controller)
+                                is Destinations.EventAdd -> EventAddEdit(controller)
                                 is Destinations.CreateNote -> NoteAdding(controller,"","")
                             }
                         }
