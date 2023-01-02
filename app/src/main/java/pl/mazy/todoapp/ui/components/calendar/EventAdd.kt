@@ -1,5 +1,6 @@
 package pl.mazy.todoapp.ui.components.calendar
 
+import android.graphics.Color.parseColor
 import android.widget.TimePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -42,6 +44,7 @@ fun EventAdd(navController: NavController<Destinations>, sched: Schedule? = null
     val options = toDoRepository.getTusk()
     var expanded by remember { mutableStateOf(false) }
     var category:String = sched?.Categoty ?: options[0]
+    var color = "#005291"
 
     if (sched != null){
         text = sched.Description
@@ -81,7 +84,7 @@ fun EventAdd(navController: NavController<Destinations>, sched: Schedule? = null
                         text = category,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                    Icon(imageVector = Icons.Default.ExpandMore, contentDescription = null)
+                    Icon(imageVector = Icons.Default.ExpandMore, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground)
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
@@ -99,7 +102,22 @@ fun EventAdd(navController: NavController<Destinations>, sched: Schedule? = null
                     }
 
                 }
-
+                Box(modifier = Modifier.clickable {  }){
+                    Row() {
+                       Text(text = "Color: ", color = MaterialTheme.colorScheme.onBackground)
+                       Box(modifier = Modifier
+                           .height(20.dp)
+                           .width(20.dp)
+                           .background(
+                               Color(
+                                   parseColor(
+                                       schedule?.Color ?: color
+                                   )
+                               )
+                           )
+                           .padding(start = 20.dp))
+                    }
+                }
             }
             OutlinedTextField(
                 modifier = Modifier

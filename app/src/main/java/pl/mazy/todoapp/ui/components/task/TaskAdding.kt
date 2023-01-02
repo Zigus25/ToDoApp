@@ -72,7 +72,7 @@ fun TaskAdding(
                     Text(
                         text = category,
                         color = MaterialTheme.colorScheme.onBackground)
-                    Icon(imageVector = Icons.Default.ExpandMore, contentDescription = null)
+                    Icon(imageVector = Icons.Default.ExpandMore, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground)
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
