@@ -64,10 +64,6 @@ fun TaskAdding(
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = null,
-                )
-                Icon(
                     imageVector = Icons.Default.CalendarMonth,
                     contentDescription = null,
                 )

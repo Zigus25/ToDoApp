@@ -2,26 +2,15 @@ package pl.mazy.todoapp.ui.components.calendar
 
 import android.widget.TimePicker
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.SaveAs
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,17 +26,22 @@ import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.Schedule
 import pl.mazy.todoapp.logic.data.CalendarRepository
+import pl.mazy.todoapp.logic.data.ToDoRepository
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
 
 @Composable
 fun EventAdd(navController: NavController<Destinations>, sched: Schedule? = null) {
 
+    val toDoRepository: ToDoRepository by localDI().instance()
     val focusManager = LocalFocusManager.current
     val calendarRepository: CalendarRepository by localDI().instance()
     var text by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var schedule by remember { mutableStateOf(sched) }
+    val options = toDoRepository.getTusk()
+    var expanded by remember { mutableStateOf(false) }
+    var category:String = sched?.Categoty ?: options[0]
 
     if (sched != null){
         text = sched.Description
@@ -69,7 +63,7 @@ fun EventAdd(navController: NavController<Destinations>, sched: Schedule? = null
                 ),
                 onValueChange = {
                     name = it
-                    schedule!!.Name = it
+                    schedule= schedule?.copy(Name = it)
                 },
                 keyboardActions = KeyboardActions(onDone = {
                     focusManager.moveFocus(
@@ -79,7 +73,34 @@ fun EventAdd(navController: NavController<Destinations>, sched: Schedule? = null
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 label = { Text("Name") }
             )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Row(modifier = Modifier
+                    .clickable { expanded = true }
+                    .padding(10.dp)) {
+                    Text(
+                        text = category,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Icon(imageVector = Icons.Default.ExpandMore, contentDescription = null)
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        options.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                text = { Text(selectionOption) },
+                                onClick = {
+                                    category = selectionOption
+                                    schedule = schedule?.copy(Categoty = selectionOption)
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
 
+                }
+
+            }
             OutlinedTextField(
                 modifier = Modifier
                     .height(200.dp)
@@ -91,7 +112,7 @@ fun EventAdd(navController: NavController<Destinations>, sched: Schedule? = null
                 ),
                 onValueChange = {
                     text = it
-                    schedule!!.Description = it
+                    schedule= schedule?.copy(Description = it)
                 },
                 label = { Text("Description") }
             )

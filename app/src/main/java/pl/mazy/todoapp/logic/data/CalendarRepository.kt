@@ -21,14 +21,14 @@ class CalendarRepository (
     }
 
     fun deleteEvent(schedule: Schedule){
-        database.calendarQueries.deleteEvent(schedule.Name,schedule.Description,schedule.DateStart,schedule.Color)
+        database.calendarQueries.deleteEvent(schedule.Name,schedule.Categoty,schedule.Description,schedule.DateStart,schedule.Color)
     }
 
     fun addEvent(schedule: Schedule){
-        database.calendarQueries.addEvent(schedule.Name,schedule.Description,schedule.TimeStart,schedule.TimeEnd,schedule.DateStart,schedule.DateEnd,schedule.Type,schedule.Color)
+        database.calendarQueries.addEvent(schedule.Name,schedule.Description,schedule.Categoty,schedule.TimeStart,schedule.TimeEnd,schedule.DateStart,schedule.DateEnd,schedule.Type,schedule.Color)
     }
 
     fun updateEvent(schedule: Schedule,scheduleOld: Schedule){
-        database.calendarQueries.updateEvent(schedule.Name,schedule.Description,schedule.TimeStart,schedule.TimeEnd,schedule.DateStart,schedule.DateEnd,schedule.Type,schedule.Color,scheduleOld.Name,scheduleOld.Description,scheduleOld.DateStart,scheduleOld.Color)
+        database.calendarQueries.updateEvent(schedule.Name,schedule.Description,schedule.Categoty,schedule.TimeStart,schedule.TimeEnd,schedule.DateStart,schedule.DateEnd,schedule.Type,schedule.Color,scheduleOld.Name,schedule.Categoty,scheduleOld.Description,scheduleOld.DateStart,scheduleOld.Color)
     }
 }
