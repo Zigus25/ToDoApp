@@ -40,7 +40,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
     val focusManager = LocalFocusManager.current
     val calendarRepository: CalendarRepository by localDI().instance()
     var colorPicker by remember { mutableStateOf(false) }
-    var schedule by remember { mutableStateOf(sched ?:Schedule("","","","","","","","","#005291")) }
+    var schedule by remember { mutableStateOf(sched ?:Schedule("","","","","","","","","#2471a3")) }
     val options = toDoRepository.getTusk()
     var expanded by remember { mutableStateOf(false) }
     var category:String = sched?.Categoty ?: options[0]
@@ -51,106 +51,101 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
             .background(MaterialTheme.colorScheme.background)
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Box {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .fillMaxWidth(),
-                    value = schedule.Name,
-                    textStyle = TextStyle(
-                        color = MaterialTheme.colorScheme.onBackground,
-                    ),
-                    onValueChange = {
-                        schedule = schedule.copy(Name = it)
-                    },
-                    keyboardActions = KeyboardActions(onDone = {
-                        focusManager.moveFocus(
-                            FocusDirection.Down
-                        )
-                    }),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    label = { Text("Name") }
-                )
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(modifier = Modifier
-                        .clickable { expanded = true }
-                        .padding(start = 20.dp)) {
-                        Text(
-                            text = category,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ExpandMore,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            options.forEach { selectionOption ->
-                                DropdownMenuItem(
-                                    text = { Text(selectionOption) },
-                                    onClick = {
-                                        category = selectionOption
-                                        schedule = schedule.copy(Categoty = selectionOption)
-                                        expanded = false
-                                    }
-                                )
-                            }
-                        }
-
-                    }
-                    Spacer(modifier = Modifier.weight(1f))
-                    Box(modifier = Modifier
-                        .clickable { colorPicker = true }
-                        .padding(end = 20.dp)) {
-                        Row {
-                            Text(text = "Color: ", color = MaterialTheme.colorScheme.onBackground)
-                            Box(
-                                modifier = Modifier
-                                    .height(20.dp)
-                                    .width(20.dp)
-                                    .background(
-                                        Color(
-                                            parseColor(
-                                                schedule.Color
-                                            )
-                                        )
-                                    )
-                                    .padding(start = 20.dp)
+            OutlinedTextField(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .fillMaxWidth(),
+                value = schedule.Name,
+                textStyle = TextStyle(
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
+                onValueChange = {
+                    schedule = schedule.copy(Name = it)
+                },
+                keyboardActions = KeyboardActions(onDone = {
+                    focusManager.moveFocus(
+                        FocusDirection.Down
+                    )
+                }),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                label = { Text("Name") }
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(modifier = Modifier
+                    .clickable { expanded = true }
+                    .padding(start = 20.dp)) {
+                    Text(
+                        text = category,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ExpandMore,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        options.forEach { selectionOption ->
+                            DropdownMenuItem(
+                                text = { Text(selectionOption) },
+                                onClick = {
+                                    category = selectionOption
+                                    schedule = schedule.copy(Categoty = selectionOption)
+                                    expanded = false
+                                }
                             )
                         }
                     }
+
                 }
-                OutlinedTextField(
-                    modifier = Modifier
-                        .height(200.dp)
-                        .fillMaxWidth()
-                        .padding(5.dp),
-                    value = schedule.Description,
-                    textStyle = TextStyle(
-                        color = MaterialTheme.colorScheme.onBackground,
-                    ),
-                    onValueChange = {
-                        schedule = schedule.copy(Description = it)
-                    },
-                    label = { Text("Description") }
-                )
-
-
+                Spacer(modifier = Modifier.weight(1f))
+                Box(modifier = Modifier
+                    .clickable { colorPicker = true }
+                    .padding(end = 20.dp)) {
+                    Row {
+                        Text(text = "Color: ", color = MaterialTheme.colorScheme.onBackground)
+                        Box(
+                            modifier = Modifier
+                                .height(20.dp)
+                                .width(20.dp)
+                                .background(
+                                    Color(
+                                        parseColor(
+                                            schedule.Color
+                                        )
+                                    )
+                                )
+                                .padding(start = 20.dp)
+                        )
+                    }
+                }
             }
+            OutlinedTextField(
+                modifier = Modifier
+                    .height(200.dp)
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                value = schedule.Description,
+                textStyle = TextStyle(
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
+                onValueChange = {
+                    schedule = schedule.copy(Description = it)
+                },
+                label = { Text("Description") }
+            )
             if (colorPicker){
                 Box(modifier = Modifier
-                    .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.7F))
                     .blur(8.dp)
                     .clickable { colorPicker = false })
-                schedule = schedule.copy(Color =  pickAColor { colorPicker = false })
+                PickAColor ({ colorPicker = false },{schedule = schedule.copy(Color = it)})
             }
         }
         BottomAppBar {
@@ -189,6 +184,30 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
 }
 
 @Composable
-fun pickAColor(closeAdder: () -> Unit = {}):String{
-    return "#252525"
+fun PickAColor(closeAdder: () -> Unit = {},returnString: (String) -> Unit){
+    val listOfColors = listOf("#cb4335","#884ea0","#2471a3","#17a589","#229954","#d4ac0d","#f39c12","#ba4a00","#839192")
+    fun closeAdderAndReturn(color:Int): String {
+        closeAdder()
+        return listOfColors[color]
+    }
+    Row(modifier = Modifier.fillMaxWidth().height(400.dp)){
+        for (i in listOfColors) {
+            Box(
+                modifier = Modifier
+                    .height(60.dp)
+                    .width(60.dp)
+                    .background(
+                        Color(
+                            parseColor(
+                                listOfColors[listOfColors.indexOf(i)]
+                            )
+                        )
+                    )
+                    .clickable {
+                        returnString(closeAdderAndReturn(listOfColors.indexOf(i)))
+                    }
+                    .padding(20.dp)
+            )
+        }
+    }
 }
