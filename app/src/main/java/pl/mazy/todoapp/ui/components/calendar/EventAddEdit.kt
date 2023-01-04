@@ -216,7 +216,6 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                             )
                         }, fYear, fMonth, fDay
                     )
-
                     Row(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
                         Box(modifier = Modifier.clickable {
                             tDatePickerDialog.show()
