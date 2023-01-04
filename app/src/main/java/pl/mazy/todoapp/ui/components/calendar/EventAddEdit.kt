@@ -1,6 +1,8 @@
 package pl.mazy.todoapp.ui.components.calendar
 
+import android.app.DatePickerDialog
 import android.graphics.Color.parseColor
+import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,10 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.Schedule
@@ -34,18 +38,49 @@ import pl.mazy.todoapp.logic.data.CalendarRepository
 import pl.mazy.todoapp.logic.data.ToDoRepository
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 @Composable
 fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = null) {
 
     val toDoRepository: ToDoRepository by localDI().instance()
-    val focusManager = LocalFocusManager.current
     val calendarRepository: CalendarRepository by localDI().instance()
+
+    val focusManager = LocalFocusManager.current
+
     var colorPicker by remember { mutableStateOf(false) }
-    var schedule by remember { mutableStateOf(sched ?:Schedule("","","","","","","","","#2471a3")) }
+
     val options = toDoRepository.getTusk()
     var expanded by remember { mutableStateOf(false) }
     var category:String = sched?.Categoty ?: options[0]
+    var schedule by remember {
+        mutableStateOf(
+            sched ?:Schedule(
+                "",
+                "",
+                options[0],
+                "",
+                "",
+                LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                "",
+                "#2471a3")) }
+    val mYear: Int
+    val mMonth: Int
+    val mDay: Int
+    val mCalendar = Calendar.getInstance()
+    mYear = mCalendar.get(Calendar.YEAR)
+    mMonth = mCalendar.get(Calendar.MONTH)
+    mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
+    mCalendar.time = Date()
+    val mDatePickerDialog = DatePickerDialog(
+        LocalContext.current,
+    { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+        schedule = schedule.copy(DateStart = "${if(mDayOfMonth < 10){"0${mDayOfMonth}"}else{mDayOfMonth}}.${if(mMonth+1 < 10){"0${mMonth+1}"}else{mMonth+1}}.$mYear")
+        }, mYear, mMonth, mDay
+    )
 
     Column(
         modifier = Modifier
@@ -151,7 +186,16 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                         },
                         label = { Text("Description") }
                     )
+
+                    Row(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
+                        Box(modifier = Modifier.clickable {
+                            mDatePickerDialog.show()
+                        }) {
+                            Text(text = schedule.DateStart, fontSize = 22.sp, color = MaterialTheme.colorScheme.onBackground)
+                        }
+                    }
                 }
+
                 if (colorPicker) {
                     Box(modifier = Modifier
                         .fillMaxSize()
