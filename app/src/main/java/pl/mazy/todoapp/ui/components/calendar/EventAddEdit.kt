@@ -30,7 +30,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.Schedule
@@ -175,14 +174,17 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                     )
 
                     val fCalendar = Calendar.getInstance()
-                    val fYear = fCalendar.get(Calendar.YEAR)
-                    val fMonth = fCalendar.get(Calendar.MONTH)
-                    val fDay = fCalendar.get(Calendar.DAY_OF_MONTH)
+                    var fYear = fCalendar.get(Calendar.YEAR)
+                    var fMonth = fCalendar.get(Calendar.MONTH)
+                    var fDay = fCalendar.get(Calendar.DAY_OF_MONTH)
                     fCalendar.time = Date()
                     val fDatePickerDialog = DatePickerDialog(
                         LocalContext.current,
                         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
                             schedule = schedule.copy(DateStart = "${if(mDayOfMonth < 10){"0${mDayOfMonth}"}else{mDayOfMonth}}.${if(mMonth+1 < 10){"0${mMonth+1}"}else{mMonth+1}}.$mYear")
+                            fYear = mYear
+                            fMonth = mMonth
+                            fDay = mDayOfMonth
                         }, fYear, fMonth, fDay
                     )
 
@@ -193,16 +195,26 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                             Text(text = schedule.DateStart, color = MaterialTheme.colorScheme.onBackground)
                         }
                     }
-                    val tCalendar = Calendar.getInstance()
-                    val tYear = tCalendar.get(Calendar.YEAR)
-                    val tMonth = tCalendar.get(Calendar.MONTH)
-                    val tDay = tCalendar.get(Calendar.DAY_OF_MONTH)
-                    tCalendar.time = Date()
+
                     val tDatePickerDialog = DatePickerDialog(
                         LocalContext.current,
                         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-                            schedule = schedule.copy(DateEnd = "${if(mDayOfMonth < 10){"0${mDayOfMonth}"}else{mDayOfMonth}}.${if(mMonth+1 < 10){"0${mMonth+1}"}else{mMonth+1}}.$mYear")
-                        }, tYear, tMonth, tDay
+                            schedule = schedule.copy(
+                                DateEnd = "${
+                                    if (mDayOfMonth < 10) {
+                                        "0${mDayOfMonth}"
+                                    } else {
+                                        mDayOfMonth
+                                    }
+                                }.${
+                                    if (mMonth + 1 < 10) {
+                                        "0${mMonth + 1}"
+                                    } else {
+                                        mMonth + 1
+                                    }
+                                }.$mYear"
+                            )
+                        }, fYear, fMonth, fDay
                     )
 
                     Row(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
