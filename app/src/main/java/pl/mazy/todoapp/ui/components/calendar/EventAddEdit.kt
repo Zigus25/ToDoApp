@@ -67,20 +67,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                 "",
                 "#2471a3")) }
-    val mYear: Int
-    val mMonth: Int
-    val mDay: Int
-    val mCalendar = Calendar.getInstance()
-    mYear = mCalendar.get(Calendar.YEAR)
-    mMonth = mCalendar.get(Calendar.MONTH)
-    mDay = mCalendar.get(Calendar.DAY_OF_MONTH)
-    mCalendar.time = Date()
-    val mDatePickerDialog = DatePickerDialog(
-        LocalContext.current,
-    { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-        schedule = schedule.copy(DateStart = "${if(mDayOfMonth < 10){"0${mDayOfMonth}"}else{mDayOfMonth}}.${if(mMonth+1 < 10){"0${mMonth+1}"}else{mMonth+1}}.$mYear")
-        }, mYear, mMonth, mDay
-    )
+
 
     Column(
         modifier = Modifier
@@ -187,11 +174,42 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                         label = { Text("Description") }
                     )
 
+                    val fCalendar = Calendar.getInstance()
+                    val fYear = fCalendar.get(Calendar.YEAR)
+                    val fMonth = fCalendar.get(Calendar.MONTH)
+                    val fDay = fCalendar.get(Calendar.DAY_OF_MONTH)
+                    fCalendar.time = Date()
+                    val fDatePickerDialog = DatePickerDialog(
+                        LocalContext.current,
+                        { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+                            schedule = schedule.copy(DateStart = "${if(mDayOfMonth < 10){"0${mDayOfMonth}"}else{mDayOfMonth}}.${if(mMonth+1 < 10){"0${mMonth+1}"}else{mMonth+1}}.$mYear")
+                        }, fYear, fMonth, fDay
+                    )
+
                     Row(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
                         Box(modifier = Modifier.clickable {
-                            mDatePickerDialog.show()
+                            fDatePickerDialog.show()
                         }) {
-                            Text(text = schedule.DateStart, fontSize = 22.sp, color = MaterialTheme.colorScheme.onBackground)
+                            Text(text = schedule.DateStart, color = MaterialTheme.colorScheme.onBackground)
+                        }
+                    }
+                    val tCalendar = Calendar.getInstance()
+                    val tYear = tCalendar.get(Calendar.YEAR)
+                    val tMonth = tCalendar.get(Calendar.MONTH)
+                    val tDay = tCalendar.get(Calendar.DAY_OF_MONTH)
+                    tCalendar.time = Date()
+                    val tDatePickerDialog = DatePickerDialog(
+                        LocalContext.current,
+                        { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+                            schedule = schedule.copy(DateEnd = "${if(mDayOfMonth < 10){"0${mDayOfMonth}"}else{mDayOfMonth}}.${if(mMonth+1 < 10){"0${mMonth+1}"}else{mMonth+1}}.$mYear")
+                        }, tYear, tMonth, tDay
+                    )
+
+                    Row(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
+                        Box(modifier = Modifier.clickable {
+                            tDatePickerDialog.show()
+                        }) {
+                            Text(text = schedule.DateEnd, color = MaterialTheme.colorScheme.onBackground)
                         }
                     }
                 }
