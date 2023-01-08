@@ -209,7 +209,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                     val fTimePickerDialog = TimePickerDialog(
                         LocalContext.current,
                         {_, mHour:Int, mMinute:Int ->
-                            schedule = schedule.copy(TimeStart = "$mHour:$mMinute")
+                            schedule = schedule.copy(TimeStart = "$mHour:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
                         },hour,minute,true
                     )
 
@@ -253,7 +253,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                     val tTimePickerDialog = TimePickerDialog(
                         LocalContext.current,
                         {_, mHour:Int, mMinute:Int ->
-                            schedule = schedule.copy(TimeEnd = "$mHour:$mMinute")
+                            schedule = schedule.copy(TimeEnd = "$mHour:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
                         },hour,minute,true
                     )
                     Row(modifier = Modifier
