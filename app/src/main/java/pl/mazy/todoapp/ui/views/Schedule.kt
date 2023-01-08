@@ -47,7 +47,7 @@ fun Schedule(
     fun loadEvents() = scope.launch {
         events = calendarRepository.selTwoWeek()
     }
-
+    loadEvents()
     Column(modifier = Modifier
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.background)) {
@@ -100,7 +100,6 @@ fun Schedule(
         }
     }
 }
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun dateShow(dateD: LocalDate) {
     Text(text = dateD.dayOfWeek.toString()+", "+dateD.dayOfMonth.toString()+" "+dateD.month.toString(),

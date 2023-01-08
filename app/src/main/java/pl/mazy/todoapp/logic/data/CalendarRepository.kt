@@ -13,11 +13,8 @@ class CalendarRepository (
     private var database: Database
 ) {
     @SuppressLint("WeekBasedYear")
-    @RequiresApi(Build.VERSION_CODES.O)
     fun selTwoWeek():List<Schedule>{
-        val today = LocalDate.now()
-        val end = today.plus(2, ChronoUnit.WEEKS)
-        return database.calendarQueries.selBetweenDate(today.toString(),end.toString()).executeAsList()
+        return database.calendarQueries.selBetweenDate().executeAsList()
     }
 
     fun deleteEvent(schedule: Schedule){

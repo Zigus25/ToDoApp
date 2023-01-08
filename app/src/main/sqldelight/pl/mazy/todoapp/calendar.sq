@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS schedule(
 );
 
 selBetweenDate:
-SELECT * FROM schedule WHERE DateStart BETWEEN ? AND ?;
+SELECT * FROM schedule ORDER BY DateStart,TimeStart;
 
 addEvent:
 INSERT INTO schedule VALUES (?,?,?,?,?,?,?,?,?);

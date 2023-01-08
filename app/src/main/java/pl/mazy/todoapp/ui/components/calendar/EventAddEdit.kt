@@ -1,13 +1,12 @@
 package pl.mazy.todoapp.ui.components.calendar
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.graphics.Color.parseColor
 import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -41,6 +40,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = null) {
 
@@ -51,6 +51,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
 
     var colorPicker by remember { mutableStateOf(false) }
 
+    val calendar = Calendar.getInstance()
     val options = toDoRepository.getTusk()
     var expanded by remember { mutableStateOf(false) }
     var category:String = sched?.Categoty ?: options[0]
@@ -60,11 +61,11 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                 "",
                 "",
                 options[0],
-                "",
-                "",
+                "${calendar[Calendar.HOUR_OF_DAY]}:00",
+                "${calendar[Calendar.HOUR_OF_DAY]+1}:00",
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                "",
+                "E",
                 "#2471a3")) }
 
 
@@ -134,6 +135,22 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
 
                         }
                         Spacer(modifier = Modifier.weight(1f))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "task:", color = MaterialTheme.colorScheme.onBackground)
+                            Checkbox(
+                                checked = schedule.Type == "T",
+                                onCheckedChange = {
+                                    if (schedule.Type == "E") {
+                                        schedule = schedule.copy(Type = "T")
+                                    } else {
+                                        schedule = schedule.copy(Type = "E")
+                                    }
+                                }
+                            )
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
                         Box(modifier = Modifier
                             .clickable { colorPicker = true }
                             .padding(end = 20.dp)) {
@@ -173,11 +190,10 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                         label = { Text("Description") }
                     )
 
-                    val fCalendar = Calendar.getInstance()
-                    var fYear = fCalendar.get(Calendar.YEAR)
-                    var fMonth = fCalendar.get(Calendar.MONTH)
-                    var fDay = fCalendar.get(Calendar.DAY_OF_MONTH)
-                    fCalendar.time = Date()
+                    var fYear = calendar.get(Calendar.YEAR)
+                    var fMonth = calendar.get(Calendar.MONTH)
+                    var fDay = calendar.get(Calendar.DAY_OF_MONTH)
+                    calendar.time = Date()
                     val fDatePickerDialog = DatePickerDialog(
                         LocalContext.current,
                         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
@@ -188,11 +204,28 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                         }, fYear, fMonth, fDay
                     )
 
-                    Row(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
+                    val hour = calendar[Calendar.HOUR_OF_DAY]
+                    val minute = 0
+                    val fTimePickerDialog = TimePickerDialog(
+                        LocalContext.current,
+                        {_, mHour:Int, mMinute:Int ->
+                            schedule = schedule.copy(TimeStart = "$mHour:$mMinute")
+                        },hour,minute,true
+                    )
+
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)) {
                         Box(modifier = Modifier.clickable {
                             fDatePickerDialog.show()
                         }) {
                             Text(text = schedule.DateStart, color = MaterialTheme.colorScheme.onBackground)
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        Box(modifier = Modifier.clickable {
+                            fTimePickerDialog.show()
+                        }){
+                            Text(text = schedule.TimeStart, color = MaterialTheme.colorScheme.onBackground)
                         }
                     }
 
@@ -216,11 +249,26 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                             )
                         }, fYear, fMonth, fDay
                     )
-                    Row(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
+
+                    val tTimePickerDialog = TimePickerDialog(
+                        LocalContext.current,
+                        {_, mHour:Int, mMinute:Int ->
+                            schedule = schedule.copy(TimeEnd = "$mHour:$mMinute")
+                        },hour,minute,true
+                    )
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)) {
                         Box(modifier = Modifier.clickable {
                             tDatePickerDialog.show()
                         }) {
                             Text(text = schedule.DateEnd, color = MaterialTheme.colorScheme.onBackground)
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        Box(modifier = Modifier.clickable {
+                            tTimePickerDialog.show()
+                        }){
+                            Text(text = schedule.TimeEnd, color = MaterialTheme.colorScheme.onBackground)
                         }
                     }
                 }
@@ -249,10 +297,10 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                 SmallFloatingActionButton(
                     onClick = {
                         if (sched == null) {
-                            navController.navigate(Destinations.Notes)
+                            navController.navigate(Destinations.Schedule)
                             calendarRepository.addEvent(schedule)
                         } else {
-                            navController.navigate(Destinations.Notes)
+                            navController.navigate(Destinations.Schedule)
                             calendarRepository.updateEvent(schedule,sched)
                         }
                     },
@@ -265,39 +313,6 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                         contentDescription = null,
                     )
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun PickAColor(closeAdder: () -> Unit = {},returnString: (String) -> Unit){
-    val listOfColors = listOf("#5b2c6f","#884ea0","#2471a3","#17a589","#229954","#d4ac0d","#f39c12","#ba4a00","#cb4335","#839192")
-    fun closeAdderAndReturn(color:Int): String {
-        closeAdder()
-        return listOfColors[color]
-    }
-    LazyVerticalGrid(modifier = Modifier
-        .fillMaxWidth(),
-        columns = GridCells.Adaptive(80.dp),
-    ){
-        for (i in listOfColors) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .height(80.dp)
-                        .padding(10.dp)
-                        .background(
-                            Color(
-                                parseColor(
-                                    listOfColors[listOfColors.indexOf(i)]
-                                )
-                            )
-                        )
-                        .clickable {
-                            returnString(closeAdderAndReturn(listOfColors.indexOf(i)))
-                        }
-                )
             }
         }
     }
