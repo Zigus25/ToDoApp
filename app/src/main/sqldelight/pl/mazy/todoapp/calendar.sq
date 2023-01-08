@@ -7,14 +7,15 @@ CREATE TABLE IF NOT EXISTS schedule(
     DateStart TEXT NOT NULL,
     DateEnd TEXT NOT NULL,
     Type TEXT NOT NULL,
-    Color TEXT NOT NULL
+    Color TEXT NOT NULL,
+    SubTusk TEXT
 );
 
 selBetweenDate:
 SELECT * FROM schedule ORDER BY DateStart,TimeStart;
 
 addEvent:
-INSERT INTO schedule VALUES (?,?,?,?,?,?,?,?,?);
+INSERT INTO schedule VALUES (?,?,?,?,?,?,?,?,?,?);
 
 updateEvent:
 UPDATE schedule
@@ -27,7 +28,8 @@ UPDATE schedule
         DateStart = ?,
         DateEnd = ?,
         Type = ?,
-        Color = ?
+        Color = ?,
+        SubTusk = ?
     WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color = ?;
 
 deleteEvent:

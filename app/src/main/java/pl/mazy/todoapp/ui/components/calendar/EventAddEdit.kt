@@ -1,3 +1,5 @@
+@file:Suppress("OPT_IN_IS_NOT_ENABLED")
+
 package pl.mazy.todoapp.ui.components.calendar
 
 import android.app.DatePickerDialog
@@ -7,6 +9,7 @@ import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -66,7 +69,9 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
                 "E",
-                "#2471a3")) }
+                "#2471a3",
+                null
+            )) }
 
 
     Column(
@@ -142,10 +147,10 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                             Checkbox(
                                 checked = schedule.Type == "T",
                                 onCheckedChange = {
-                                    if (schedule.Type == "E") {
-                                        schedule = schedule.copy(Type = "T")
+                                    schedule = if (schedule.Type == "E") {
+                                        schedule.copy(Type = "T")
                                     } else {
-                                        schedule = schedule.copy(Type = "E")
+                                        schedule.copy(Type = "E")
                                     }
                                 }
                             )
@@ -270,6 +275,17 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
                         }){
                             Text(text = schedule.TimeEnd, color = MaterialTheme.colorScheme.onBackground)
                         }
+                    }
+                    if (schedule.Type == "T"){
+                        Column {
+                            //TODO Adding sub task to list
+                            if (schedule.SubTusk != null){
+                                LazyColumn{
+                                    //TODO showing sub tasks from generated list
+                                }
+                            }
+                        }
+
                     }
                 }
 

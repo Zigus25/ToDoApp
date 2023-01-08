@@ -1,5 +1,6 @@
 package pl.mazy.todoapp.ui.components.task
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -95,7 +96,7 @@ fun TaskEdit(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            val subList:List<SubList> = listOf(SubList("Apl",false,1),SubList("Apl",false,2))
+            val subList:List<SubList> = listOf(SubList("Apl",false),SubList("Apl",false))
             Box(modifier = Modifier.padding(10.dp)) {
                 SmallFloatingActionButton(
                     onClick = {

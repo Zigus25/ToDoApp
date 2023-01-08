@@ -22,10 +22,10 @@ class CalendarRepository (
     }
 
     fun addEvent(schedule: Schedule){
-        database.calendarQueries.addEvent(schedule.Name,schedule.Description,schedule.Categoty,schedule.TimeStart,schedule.TimeEnd,schedule.DateStart,schedule.DateEnd,schedule.Type,schedule.Color)
+        database.calendarQueries.addEvent(schedule.Name,schedule.Description,schedule.Categoty,schedule.TimeStart,schedule.TimeEnd,schedule.DateStart,schedule.DateEnd,schedule.Type,schedule.Color,schedule.SubTusk)
     }
 
     fun updateEvent(schedule: Schedule,scheduleOld: Schedule){
-        database.calendarQueries.updateEvent(schedule.Name,schedule.Description,schedule.Categoty,schedule.TimeStart,schedule.TimeEnd,schedule.DateStart,schedule.DateEnd,schedule.Type,schedule.Color,scheduleOld.Name,schedule.Categoty,scheduleOld.Description,scheduleOld.DateStart,scheduleOld.Color)
+        database.calendarQueries.updateEvent(schedule.Name,schedule.Description,schedule.Categoty,schedule.TimeStart,schedule.TimeEnd,schedule.DateStart,schedule.DateEnd,schedule.Type,schedule.Color,schedule.SubTusk,scheduleOld.Name,schedule.Categoty,scheduleOld.Description,scheduleOld.DateStart,scheduleOld.Color)
     }
 }

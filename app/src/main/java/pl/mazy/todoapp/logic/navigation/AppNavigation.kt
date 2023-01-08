@@ -9,5 +9,5 @@ sealed interface Destinations {
     class NoteDetails(val name:String, val des:String) : Destinations
     class TaskDetails(val task: Task): Destinations
     object CreateNote : Destinations
-    object EventAdd : Destinations
+    class EventAdd(val schedule: pl.mazy.todoapp.Schedule?) : Destinations
 }

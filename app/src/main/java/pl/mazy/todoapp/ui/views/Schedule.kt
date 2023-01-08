@@ -1,7 +1,5 @@
 package pl.mazy.todoapp.ui.views
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,7 +31,6 @@ import pl.mazy.todoapp.ui.components.calendar.schedule.SingleEvent
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Schedule(
     navController: NavController<Destinations>,
@@ -52,16 +49,16 @@ fun Schedule(
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.background)) {
         LazyColumn(modifier = Modifier.weight(1f)){
-            item { dateShow(dateD) }
+            item { DateShow(dateD) }
             if (events!=null) {
                 for (ev in events!!) {
                     if (ev.DateStart!=date){
                         date = ev.DateStart
                         dateD = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-                        item { dateShow(dateD) }
+                        item { DateShow(dateD) }
                     }
                     item {
-                        SingleEvent(schedule = ev)
+                        SingleEvent(navController,schedule = ev)
                     }
                 }
             }
@@ -73,7 +70,7 @@ fun Schedule(
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.weight(1f)) {
                 SmallFloatingActionButton(
-                    onClick = { navController.navigate(Destinations.EventAdd) },
+                    onClick = { navController.navigate(Destinations.EventAdd(null)) },
                     modifier = Modifier
                         .height(50.dp)
                         .width(50.dp)
@@ -101,7 +98,7 @@ fun Schedule(
     }
 }
 @Composable
-fun dateShow(dateD: LocalDate) {
+fun DateShow(dateD: LocalDate) {
     Text(text = dateD.dayOfWeek.toString()+", "+dateD.dayOfMonth.toString()+" "+dateD.month.toString(),
         fontSize = 20.sp,
         modifier = Modifier.padding(start = 10.dp, top = 20.dp, bottom = 10.dp),

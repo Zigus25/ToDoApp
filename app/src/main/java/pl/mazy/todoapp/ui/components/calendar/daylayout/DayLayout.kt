@@ -90,11 +90,10 @@ fun CalendarLayout(modifier: Modifier,content: CalendarScope.() -> Unit){
 
 interface CalendarScope{
     fun item(time1:LocalTime,time2:LocalTime,content: @Composable () -> Unit)
-    @RequiresApi(Build.VERSION_CODES.O)
     fun aaa(schedule:Schedule){
         val formatter = DateTimeFormatter.ofPattern("HH:mm")
         val time1 = LocalTime.parse(schedule.TimeStart, formatter)
         val time2 = LocalTime.parse(schedule.TimeEnd, formatter)
-        item(time1,time2) { SingleEvent(schedule) }
+        //item(time1,time2) { SingleEvent(,schedule) }
     }
 }
