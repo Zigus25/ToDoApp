@@ -1,6 +1,5 @@
 package pl.mazy.todoapp.ui.views
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
@@ -18,12 +16,10 @@ import pl.mazy.todoapp.Schedule
 import pl.mazy.todoapp.logic.data.CalendarRepository
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
-import pl.mazy.todoapp.ui.components.calendar.DateShow
+import pl.mazy.todoapp.ui.components.calendar.schedule.DateShow
 import pl.mazy.todoapp.ui.components.calendar.schedule.SingleEvent
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 @Composable
 fun Schedule(
@@ -32,7 +28,7 @@ fun Schedule(
     val calendarRepository: CalendarRepository by localDI().instance()
     var events: List<Schedule>? by remember { mutableStateOf(null) }
     val scope = rememberCoroutineScope()
-    var date:String = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")).toString()
+    var date:String = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString()
 
     fun loadEvents() = scope.launch {
         events = calendarRepository.selTwoWeek()
@@ -42,7 +38,7 @@ fun Schedule(
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.background)) {
         LazyColumn(modifier = Modifier.weight(1f)){
-            item { DateShow(LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")).toString()) }
+            item { DateShow(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString()) }
             if (events!=null) {
                 for (ev in events!!) {
                     if (ev.DateStart!=date){

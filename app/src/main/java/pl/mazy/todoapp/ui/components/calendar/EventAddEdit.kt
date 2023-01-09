@@ -5,7 +5,6 @@ package pl.mazy.todoapp.ui.components.calendar
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.graphics.Color.parseColor
-import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -67,9 +66,10 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                 options[0],
                 "${calendar[Calendar.HOUR_OF_DAY]}:00",
                 "${calendar[Calendar.HOUR_OF_DAY]+1}:00",
-                LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 "E",
+                false,
                 "#2471a3",
                 null
             )) }
@@ -203,7 +203,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                     val fDatePickerDialog = DatePickerDialog(
                         LocalContext.current,
                         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-                            schedule = schedule.copy(DateStart = "${if(mDayOfMonth < 10){"0${mDayOfMonth}"}else{mDayOfMonth}}.${if(mMonth+1 < 10){"0${mMonth+1}"}else{mMonth+1}}.$mYear")
+                            schedule = schedule.copy(DateStart = "$mYear-${if(mMonth+1 < 10){"0${mMonth+1}"}else{mMonth+1}}-${if(mDayOfMonth < 10){"0${mDayOfMonth}"}else{mDayOfMonth}}")
                             fYear = mYear
                             fMonth = mMonth
                             fDay = mDayOfMonth
@@ -239,19 +239,19 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                         LocalContext.current,
                         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
                             schedule = schedule.copy(
-                                DateEnd = "${
-                                    if (mDayOfMonth < 10) {
-                                        "0${mDayOfMonth}"
-                                    } else {
-                                        mDayOfMonth
-                                    }
-                                }.${
+                                DateEnd = "$mYear-${
                                     if (mMonth + 1 < 10) {
                                         "0${mMonth + 1}"
                                     } else {
                                         mMonth + 1
                                     }
-                                }.$mYear"
+                                }-${
+                                    if (mDayOfMonth < 10) {
+                                        "0${mDayOfMonth}"
+                                    } else {
+                                        mDayOfMonth
+                                    }
+                                }"
                             )
                         }, fYear, fMonth, fDay
                     )
@@ -303,7 +303,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
         BottomAppBar {
             if (sched != null) {
                 IconButton(onClick = {
-                    navController.navigate(Destinations.Notes)
+                    navController.navigate(Destinations.Schedule)
                     calendarRepository.deleteEvent(sched)
                 }) {
                     Icon(Icons.Filled.Delete, contentDescription = "Menu Icon")
