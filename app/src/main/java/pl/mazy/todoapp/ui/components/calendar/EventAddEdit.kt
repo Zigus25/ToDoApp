@@ -5,6 +5,7 @@ package pl.mazy.todoapp.ui.components.calendar
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.graphics.Color.parseColor
+import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,7 +46,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = null) {
+fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
 
     val toDoRepository: ToDoRepository by localDI().instance()
     val calendarRepository: CalendarRepository by localDI().instance()
@@ -60,7 +61,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule? = 
     var category:String = sched?.Categoty ?: options[0]
     var schedule by remember {
         mutableStateOf(
-            sched ?:Schedule(
+            sched?:Schedule(
                 "",
                 "",
                 options[0],

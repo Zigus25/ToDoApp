@@ -23,7 +23,6 @@ import pl.mazy.todoapp.ui.views.Schedule
 import pl.mazy.todoapp.ui.views.TaskList
 
 class MainActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -43,7 +42,7 @@ class MainActivity : ComponentActivity() {
                                 is Destinations.TaskDetails -> TaskEdit(controller,x.task)
                                 is Destinations.Notes -> NoteList(controller)
                                 is Destinations.Schedule -> Schedule(controller)
-                                is Destinations.EventAdd -> EventAddEdit(controller)
+                                is Destinations.EventAdd -> EventAddEdit(controller,x.schedule)
                                 is Destinations.CreateNote -> NoteAdding(controller,"","")
                             }
                         }
