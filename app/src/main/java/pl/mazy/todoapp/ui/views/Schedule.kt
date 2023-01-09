@@ -42,12 +42,12 @@ fun Schedule(
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.background)) {
         LazyColumn(modifier = Modifier.weight(1f)){
-            item { DateShow(date) }
+            item { DateShow(LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")).toString()) }
             if (events!=null) {
                 for (ev in events!!) {
                     if (ev.DateStart!=date){
                         date = ev.DateStart
-                        item { DateShow(date) }
+                        item { DateShow(ev.DateStart) }
                     }
                     item {
                         SingleEvent(navController,schedule = ev)
