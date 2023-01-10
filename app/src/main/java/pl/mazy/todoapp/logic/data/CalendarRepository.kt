@@ -17,7 +17,6 @@ class CalendarRepository (
         val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val today = LocalDate.now().format( format)
         val end = LocalDate.parse(today,format).plus(4, ChronoUnit.WEEKS).format(format)
-        Log.i("asd","$today,$end")
         return database.calendarQueries.selBetweenDate(today.toString(),end.toString()).executeAsList()
     }
 
@@ -30,6 +29,6 @@ class CalendarRepository (
     }
 
     fun updateEvent(event: Event, evOld: Event){
-        database.calendarQueries.updateEvent(event.Name,event.Description,event.Categoty,event.TimeStart,event.TimeEnd,event.DateStart,event.DateEnd,event.Type,event.Checked,event.Color,event.SubTusk,evOld.Name,event.Categoty,evOld.Description,evOld.DateStart,evOld.Color)
+        database.calendarQueries.updateEvent(event.Name,event.Description,event.Categoty,event.TimeStart,event.TimeEnd,event.DateStart,event.DateEnd,event.Type,event.Checked,event.Color,event.SubTusk,evOld.Name,evOld.Categoty,evOld.Description,evOld.DateStart,evOld.Color)
     }
 }
