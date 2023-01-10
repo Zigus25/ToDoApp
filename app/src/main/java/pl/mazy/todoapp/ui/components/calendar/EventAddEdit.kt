@@ -57,7 +57,6 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
     val calendar = Calendar.getInstance()
     val options = toDoRepository.getTusk()
     var expanded by remember { mutableStateOf(false) }
-    var category:String = ev?.Categoty ?: options[0]
     var event by remember {
         mutableStateOf(
             ev?:Event(
@@ -115,7 +114,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                             .clickable { expanded = true }
                             .padding(start = 20.dp)) {
                             Text(
-                                text = category,
+                                text = event.Categoty,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                             Icon(
@@ -131,7 +130,6 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                                     DropdownMenuItem(
                                         text = { Text(selectionOption) },
                                         onClick = {
-                                            category = selectionOption
                                             event = event.copy(Categoty = selectionOption)
                                             expanded = false
                                         }
@@ -298,7 +296,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
         BottomAppBar {
             if (ev != null) {
                 IconButton(onClick = {
-                    navController.navigate(Destinations.Schedule)
+                    navController.navigate(if (isTask){Destinations.TaskList}else{Destinations.Schedule})
                     calendarRepository.deleteEvent(ev)
                 }) {
                     Icon(Icons.Filled.Delete, contentDescription = "Menu Icon")
