@@ -14,7 +14,6 @@ import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
 import pl.mazy.todoapp.ui.components.calendar.EventAddEdit
 import pl.mazy.todoapp.ui.components.note.NoteAdding
-import pl.mazy.todoapp.ui.components.task.TaskEdit
 import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
 import pl.mazy.todoapp.ui.views.NoteList
 import pl.mazy.todoapp.ui.views.Schedule
@@ -37,10 +36,9 @@ class MainActivity : ComponentActivity() {
                             when (val x = controller.currentBackStackEntry.value) {
                                 is Destinations.TaskList -> TaskList(controller)
                                 is Destinations.NoteDetails -> NoteAdding(controller,x.name,x.des)
-                                is Destinations.TaskDetails -> TaskEdit(controller,x.task)
                                 is Destinations.Notes -> NoteList(controller)
                                 is Destinations.Schedule -> Schedule(controller)
-                                is Destinations.EventAdd -> EventAddEdit(controller,x.schedule)
+                                is Destinations.EventAdd -> EventAddEdit(controller,x.event,x.isTask)
                                 is Destinations.CreateNote -> NoteAdding(controller,"","")
                             }
                         }

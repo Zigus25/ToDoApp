@@ -17,28 +17,28 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import pl.mazy.todoapp.Schedule
+import pl.mazy.todoapp.Event
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
 
 @Composable
-fun SingleEvent(navController: NavController<Destinations>,schedule:Schedule){
+fun SingleEvent(navController: NavController<Destinations>, event:Event){
     Column(modifier = Modifier
         .height(75.dp)
         .fillMaxWidth()
         .padding(10.dp)
         .clip(RoundedCornerShape(5.dp))
         .background(
-            Color(parseColor(schedule.Color))
+            Color(parseColor(event.Color))
         )
         .clickable {
-            navController.navigate(Destinations.EventAdd(schedule))
+            navController.navigate(Destinations.EventAdd(event,false))
         }
     ) {
-        Text(text = schedule.Name, fontSize = 24.sp)
+        Text(text = event.Name, fontSize = 24.sp)
         Row {
             Spacer(modifier = Modifier.weight(1f))
-            Text(text = "${schedule.TimeStart} - ${schedule.TimeEnd}")
+            Text(text = "${event.TimeStart} - ${event.TimeEnd}")
         }
     }
 }

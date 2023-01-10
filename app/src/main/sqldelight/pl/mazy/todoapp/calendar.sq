@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS schedule(
+CREATE TABLE IF NOT EXISTS event(
     Name TEXT NOT NULL,
     Description TEXT NOT NULL,
     Categoty TEXT NOT NULL,
@@ -6,20 +6,51 @@ CREATE TABLE IF NOT EXISTS schedule(
     TimeEnd TEXT NOT NULL,
     DateStart TEXT NOT NULL,
     DateEnd TEXT NOT NULL,
-    Type TEXT NOT NULL,
+    Type INTEGER AS Boolean NOT NULL,
     Checked INTEGER AS Boolean NOT NULL,
     Color TEXT NOT NULL,
     SubTusk TEXT
 );
 
+
+CREATE TABLE category(
+    name TEXT UNIQUE NOT NULL
+);
+
+selectCategorys:
+SELECT DISTINCT name FROM category;
+
+insertCategory:
+INSERT INTO category(name) VALUES (?);
+
+deleteCategory{
+DELETE FROM category WHERE  name = ?;
+DELETE FROM event WHERE Categoty = ?;
+}
+
+
+
+
+selecFromtList:
+SELECT *
+FROM  event
+WHERE Categoty = ? AND Type = 1;
+
+updateState:
+UPDATE event
+SET Checked = ((Checked | 1) - (Checked & 1))
+WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color = ?;
+
+
+
 selBetweenDate:
-SELECT * FROM schedule WHERE DateStart BETWEEN ? AND ? ORDER BY DateStart,TimeStart;
+SELECT * FROM event WHERE DateStart BETWEEN ? AND ? ORDER BY DateStart,TimeStart;
 
 addEvent:
-INSERT INTO schedule VALUES (?,?,?,?,?,?,?,?,?,?,?);
+INSERT INTO event VALUES (?,?,?,?,?,?,?,?,?,?,?);
 
 updateEvent:
-UPDATE schedule
+UPDATE event
     SET
         Name = ?,
         Description = ?,
@@ -35,4 +66,4 @@ UPDATE schedule
     WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color = ?;
 
 deleteEvent:
-DELETE FROM schedule WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color = ?;
+DELETE FROM event WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color = ?;

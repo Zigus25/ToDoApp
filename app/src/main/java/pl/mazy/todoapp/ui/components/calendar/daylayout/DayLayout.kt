@@ -5,7 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import pl.mazy.todoapp.Schedule
+import pl.mazy.todoapp.Event
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
 import pl.mazy.todoapp.ui.components.calendar.schedule.SingleEvent
@@ -89,10 +89,10 @@ fun CalendarLayout(modifier: Modifier,content: CalendarScope.() -> Unit){
 
 interface CalendarScope{
     fun item(time1:LocalTime,time2:LocalTime,content: @Composable () -> Unit)
-    fun item(navController: NavController<Destinations>,schedule:Schedule){
+    fun item(navController: NavController<Destinations>, event:Event){
         val formatter = DateTimeFormatter.ofPattern("HH:mm")
-        val time1 = LocalTime.parse(schedule.TimeStart, formatter)
-        val time2 = LocalTime.parse(schedule.TimeEnd, formatter)
-        item(time1,time2) { SingleEvent(navController,schedule) }
+        val time1 = LocalTime.parse(event.TimeStart, formatter)
+        val time2 = LocalTime.parse(event.TimeEnd, formatter)
+        item(time1,time2) { SingleEvent(navController,event) }
     }
 }

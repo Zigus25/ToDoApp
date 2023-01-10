@@ -1,47 +1,30 @@
 package pl.mazy.todoapp.logic.data
 
 import pl.mazy.todoapp.Database
-import pl.mazy.todoapp.logic.dataClass.SubList
-import pl.mazy.todoapp.logic.dataClass.Task
+import pl.mazy.todoapp.Event
 
 class ToDoRepository(
     private var database: Database
 ) {
-    fun addCategory(taskListName: String)=
-        database.todosQueries.insertCategory(taskListName)
+    fun addCategory(taskListName: String) =
+        database.calendarQueries.insertCategory(taskListName)
 
-    fun getToDos(listName:String): List<Task> =
-        database.todosQueries.selectList(listName).executeAsList().map {
-           Task(it.id, it.name,it.checked, it.subTasks, it.listName)
-        }
-
-    fun addToDo(
-        name:String,
-        taskListName:String) =
-            database.todosQueries.insertTask(name,false,taskListName)
+    fun getToDos(listName: String): List<Event> =
+        database.calendarQueries.selecFromtList(listName).executeAsList()
 
     fun getTusk(): List<String> =
-        database.todosQueries.groups().executeAsList()
+        database.calendarQueries.selectCategorys().executeAsList()
 
-    fun updateTask(
-        newName:String, description:String,
-        date:String,
-        newListName:String, subTasks: List<SubList>,
-        oldName:String,
-        id:Long) =
-        database.todosQueries.updateTask(newName,description,date,newListName,subTasks.toString(),oldName,id)
+    fun updateState(event: Event) =
+        database.calendarQueries.updateState(
+            event.Name,
+            event.Categoty,
+            event.Description,
+            event.DateStart,
+            event.Color
+        )
 
-    fun updateState(name: String) =
-        database.todosQueries.updateState(name)
-
-    fun deleteGroup(name:String) {
-        database.todosQueries.deleteGroup(name)
-        database.todosQueries.deleteFromGroup(name)
+    fun deleteGroup(name: String) {
+        database.calendarQueries.deleteCategory(name, name)
     }
-
-
-    fun deleteTask(
-        name: String,
-        id:Long) =
-        database.todosQueries.deleteTask(name,id)
 }

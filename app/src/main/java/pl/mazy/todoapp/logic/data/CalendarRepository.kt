@@ -3,7 +3,7 @@ package pl.mazy.todoapp.logic.data
 import android.annotation.SuppressLint
 import android.util.Log
 import pl.mazy.todoapp.Database
-import pl.mazy.todoapp.Schedule
+import pl.mazy.todoapp.Event
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -13,23 +13,23 @@ class CalendarRepository (
     private var database: Database
 ) {
     @SuppressLint("WeekBasedYear")
-    fun selTwoWeek():List<Schedule>{
+    fun selEvents():List<Event>{
         val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val today = LocalDate.now().format( format)
-        val end = LocalDate.parse(today,format).plus(2, ChronoUnit.WEEKS).format(format)
+        val end = LocalDate.parse(today,format).plus(4, ChronoUnit.WEEKS).format(format)
         Log.i("asd","$today,$end")
         return database.calendarQueries.selBetweenDate(today.toString(),end.toString()).executeAsList()
     }
 
-    fun deleteEvent(schedule: Schedule){
-        database.calendarQueries.deleteEvent(schedule.Name,schedule.Categoty,schedule.Description,schedule.DateStart,schedule.Color)
+    fun deleteEvent(ev: Event){
+        database.calendarQueries.deleteEvent(ev.Name,ev.Categoty,ev.Description,ev.DateStart,ev.Color)
     }
 
-    fun addEvent(schedule: Schedule){
-        database.calendarQueries.addEvent(schedule.Name,schedule.Description,schedule.Categoty,schedule.TimeStart,schedule.TimeEnd,schedule.DateStart,schedule.DateEnd,schedule.Type,schedule.Checked,schedule.Color,schedule.SubTusk)
+    fun addEvent(ev: Event){
+        database.calendarQueries.addEvent(ev.Name,ev.Description,ev.Categoty,ev.TimeStart,ev.TimeEnd,ev.DateStart,ev.DateEnd,ev.Type,ev.Checked,ev.Color,ev.SubTusk)
     }
 
-    fun updateEvent(schedule: Schedule,scheduleOld: Schedule){
-        database.calendarQueries.updateEvent(schedule.Name,schedule.Description,schedule.Categoty,schedule.TimeStart,schedule.TimeEnd,schedule.DateStart,schedule.DateEnd,schedule.Type,schedule.Checked,schedule.Color,schedule.SubTusk,scheduleOld.Name,schedule.Categoty,scheduleOld.Description,scheduleOld.DateStart,scheduleOld.Color)
+    fun updateEvent(event: Event, evOld: Event){
+        database.calendarQueries.updateEvent(event.Name,event.Description,event.Categoty,event.TimeStart,event.TimeEnd,event.DateStart,event.DateEnd,event.Type,event.Checked,event.Color,event.SubTusk,evOld.Name,event.Categoty,evOld.Description,evOld.DateStart,evOld.Color)
     }
 }

@@ -34,7 +34,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.Schedule
+import pl.mazy.todoapp.Event
 import pl.mazy.todoapp.logic.data.CalendarRepository
 import pl.mazy.todoapp.logic.data.ToDoRepository
 import pl.mazy.todoapp.logic.navigation.Destinations
@@ -45,7 +45,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
+fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:Boolean) {
 
     val toDoRepository: ToDoRepository by localDI().instance()
     val calendarRepository: CalendarRepository by localDI().instance()
@@ -57,10 +57,10 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
     val calendar = Calendar.getInstance()
     val options = toDoRepository.getTusk()
     var expanded by remember { mutableStateOf(false) }
-    var category:String = sched?.Categoty ?: options[0]
-    var schedule by remember {
+    var category:String = ev?.Categoty ?: options[0]
+    var event by remember {
         mutableStateOf(
-            sched?:Schedule(
+            ev?:Event(
                 "",
                 "",
                 options[0],
@@ -68,7 +68,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                 "${calendar[Calendar.HOUR_OF_DAY]+1}:00",
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                "E",
+                isTask,
                 false,
                 "#2471a3",
                 null
@@ -91,12 +91,12 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                         modifier = Modifier
                             .padding(5.dp)
                             .fillMaxWidth(),
-                        value = schedule.Name,
+                        value = event.Name,
                         textStyle = TextStyle(
                             color = MaterialTheme.colorScheme.onBackground,
                         ),
                         onValueChange = {
-                            schedule = schedule.copy(Name = it)
+                            event = event.copy(Name = it)
                         },
                         keyboardActions = KeyboardActions(onDone = {
                             focusManager.moveFocus(
@@ -132,7 +132,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                                         text = { Text(selectionOption) },
                                         onClick = {
                                             category = selectionOption
-                                            schedule = schedule.copy(Categoty = selectionOption)
+                                            event = event.copy(Categoty = selectionOption)
                                             expanded = false
                                         }
                                     )
@@ -146,13 +146,8 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                         ) {
                             Text(text = "task:", color = MaterialTheme.colorScheme.onBackground)
                             Checkbox(
-                                checked = schedule.Type == "T",
-                                onCheckedChange = {
-                                    schedule = if (schedule.Type == "E") {
-                                        schedule.copy(Type = "T")
-                                    } else {
-                                        schedule.copy(Type = "E")
-                                    }
+                                checked = event.Type,
+                                onCheckedChange = {event = event.copy(Type = !event.Type)
                                 }
                             )
                         }
@@ -172,7 +167,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                                         .background(
                                             Color(
                                                 parseColor(
-                                                    schedule.Color
+                                                    event.Color
                                                 )
                                             )
                                         )
@@ -186,12 +181,12 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                             .height(200.dp)
                             .fillMaxWidth()
                             .padding(5.dp),
-                        value = schedule.Description,
+                        value = event.Description,
                         textStyle = TextStyle(
                             color = MaterialTheme.colorScheme.onBackground,
                         ),
                         onValueChange = {
-                            schedule = schedule.copy(Description = it)
+                            event = event.copy(Description = it)
                         },
                         label = { Text("Description") }
                     )
@@ -203,7 +198,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                     val fDatePickerDialog = DatePickerDialog(
                         LocalContext.current,
                         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-                            schedule = schedule.copy(DateStart = "$mYear-${if(mMonth+1 < 10){"0${mMonth+1}"}else{mMonth+1}}-${if(mDayOfMonth < 10){"0${mDayOfMonth}"}else{mDayOfMonth}}")
+                            event = event.copy(DateStart = "$mYear-${if(mMonth+1 < 10){"0${mMonth+1}"}else{mMonth+1}}-${if(mDayOfMonth < 10){"0${mDayOfMonth}"}else{mDayOfMonth}}")
                             fYear = mYear
                             fMonth = mMonth
                             fDay = mDayOfMonth
@@ -215,7 +210,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                     val fTimePickerDialog = TimePickerDialog(
                         LocalContext.current,
                         {_, mHour:Int, mMinute:Int ->
-                            schedule = schedule.copy(TimeStart = "$mHour:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
+                            event = event.copy(TimeStart = "$mHour:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
                         },hour,minute,true
                     )
 
@@ -225,20 +220,20 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                         Box(modifier = Modifier.clickable {
                             fDatePickerDialog.show()
                         }) {
-                            Text(text = schedule.DateStart, color = MaterialTheme.colorScheme.onBackground)
+                            Text(text = event.DateStart, color = MaterialTheme.colorScheme.onBackground)
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         Box(modifier = Modifier.clickable {
                             fTimePickerDialog.show()
                         }){
-                            Text(text = schedule.TimeStart, color = MaterialTheme.colorScheme.onBackground)
+                            Text(text = event.TimeStart, color = MaterialTheme.colorScheme.onBackground)
                         }
                     }
 
                     val tDatePickerDialog = DatePickerDialog(
                         LocalContext.current,
                         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-                            schedule = schedule.copy(
+                            event = event.copy(
                                 DateEnd = "$mYear-${
                                     if (mMonth + 1 < 10) {
                                         "0${mMonth + 1}"
@@ -259,7 +254,7 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                     val tTimePickerDialog = TimePickerDialog(
                         LocalContext.current,
                         {_, mHour:Int, mMinute:Int ->
-                            schedule = schedule.copy(TimeEnd = "$mHour:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
+                            event = event.copy(TimeEnd = "$mHour:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
                         },hour,minute,true
                     )
                     Row(modifier = Modifier
@@ -268,19 +263,19 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                         Box(modifier = Modifier.clickable {
                             tDatePickerDialog.show()
                         }) {
-                            Text(text = schedule.DateEnd, color = MaterialTheme.colorScheme.onBackground)
+                            Text(text = event.DateEnd, color = MaterialTheme.colorScheme.onBackground)
                         }
                         Spacer(modifier = Modifier.weight(1f))
                         Box(modifier = Modifier.clickable {
                             tTimePickerDialog.show()
                         }){
-                            Text(text = schedule.TimeEnd, color = MaterialTheme.colorScheme.onBackground)
+                            Text(text = event.TimeEnd, color = MaterialTheme.colorScheme.onBackground)
                         }
                     }
-                    if (schedule.Type == "T"){
+                    if (event.Type){
                         Column {
                             //TODO Adding sub task to list
-                            if (schedule.SubTusk != null){
+                            if (event.SubTusk != null){
                                 LazyColumn{
                                     //TODO showing sub tasks from generated list
                                 }
@@ -296,15 +291,15 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
                         .background(Color.Black.copy(alpha = 0.7F))
                         .blur(8.dp)
                         .clickable { colorPicker = false })
-                    PickAColor({ colorPicker = false }, { schedule = schedule.copy(Color = it) })
+                    PickAColor({ colorPicker = false }, { event = event.copy(Color = it) })
                 }
             }
         }
         BottomAppBar {
-            if (sched != null) {
+            if (ev != null) {
                 IconButton(onClick = {
                     navController.navigate(Destinations.Schedule)
-                    calendarRepository.deleteEvent(sched)
+                    calendarRepository.deleteEvent(ev)
                 }) {
                     Icon(Icons.Filled.Delete, contentDescription = "Menu Icon")
                 }
@@ -313,12 +308,12 @@ fun EventAddEdit(navController: NavController<Destinations>, sched: Schedule?) {
             Box(modifier = Modifier.padding(10.dp)) {
                 SmallFloatingActionButton(
                     onClick = {
-                        if (sched == null) {
-                            navController.navigate(Destinations.Schedule)
-                            calendarRepository.addEvent(schedule)
+                        if (ev == null) {
+                            navController.navigate(if (isTask){Destinations.TaskList}else{Destinations.Schedule})
+                            calendarRepository.addEvent(event)
                         } else {
-                            navController.navigate(Destinations.Schedule)
-                            calendarRepository.updateEvent(schedule,sched)
+                            navController.navigate(if (isTask){Destinations.TaskList}else{Destinations.Schedule})
+                            calendarRepository.updateEvent(event,ev)
                         }
                     },
                     modifier = Modifier

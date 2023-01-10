@@ -15,45 +15,42 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import pl.mazy.todoapp.Event
 import pl.mazy.todoapp.logic.navigation.Destinations
-import pl.mazy.todoapp.logic.dataClass.Task
 import pl.mazy.todoapp.logic.navigation.NavController
-import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SingleTask(
     navController: NavController<Destinations>,
-    task: Task,
+    ev: Event,
     check:() -> Unit
 ){
-    ToDoAPpTheme {
-        Card(
-            border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary),
-            modifier = Modifier.padding(10.dp).clickable { navController.navigate(Destinations.TaskDetails(task)) }
-        ) {
-            Row (
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background),
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Text(text = task.name,
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    maxLines = 1,
-                    modifier = Modifier.weight(1f).padding(start = 10.dp),
-                    overflow = TextOverflow.Ellipsis,
-                    style = if(task.checked){
-                        TextStyle(textDecoration = TextDecoration.LineThrough)
-                    }else{
-                        TextStyle(textDecoration = TextDecoration.None)
-                    }
-                    )
-                Checkbox(checked = task.checked, onCheckedChange = {
-                    check()
-                })
-            }
+    Card(
+        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary),
+        modifier = Modifier.padding(10.dp).clickable { navController.navigate(Destinations.EventAdd(ev,ev.Type)) }
+    ) {
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background),
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Text(text = ev.Name,
+                fontSize = 18.sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 1,
+                modifier = Modifier.weight(1f).padding(start = 10.dp),
+                overflow = TextOverflow.Ellipsis,
+                style = if(ev.Checked){
+                    TextStyle(textDecoration = TextDecoration.LineThrough)
+                }else{
+                    TextStyle(textDecoration = TextDecoration.None)
+                }
+                )
+            Checkbox(checked = ev.Checked, onCheckedChange = {
+                check()
+            })
         }
     }
 }

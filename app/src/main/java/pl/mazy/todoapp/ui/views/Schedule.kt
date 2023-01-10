@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.Schedule
+import pl.mazy.todoapp.Event
 import pl.mazy.todoapp.logic.data.CalendarRepository
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
@@ -26,12 +26,12 @@ fun Schedule(
     navController: NavController<Destinations>,
 ){
     val calendarRepository: CalendarRepository by localDI().instance()
-    var events: List<Schedule>? by remember { mutableStateOf(null) }
+    var events: List<Event>? by remember { mutableStateOf(null) }
     val scope = rememberCoroutineScope()
     var date:String = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString()
 
     fun loadEvents() = scope.launch {
-        events = calendarRepository.selTwoWeek()
+        events = calendarRepository.selEvents()
     }
     loadEvents()
     Column(modifier = Modifier
@@ -46,7 +46,7 @@ fun Schedule(
                         item { DateShow(ev.DateStart) }
                     }
                     item {
-                        SingleEvent(navController,schedule = ev)
+                        SingleEvent(navController,event = ev)
                     }
                 }
             }
@@ -58,7 +58,7 @@ fun Schedule(
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.weight(1f)) {
                 SmallFloatingActionButton(
-                    onClick = { navController.navigate(Destinations.EventAdd(null)) },
+                    onClick = { navController.navigate(Destinations.EventAdd(null,false)) },
                     modifier = Modifier
                         .height(50.dp)
                         .width(50.dp)

@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
+import pl.mazy.todoapp.Event
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.data.ToDoRepository
-import pl.mazy.todoapp.logic.dataClass.Task
 import pl.mazy.todoapp.logic.navigation.NavController
 import pl.mazy.todoapp.ui.components.task.*
 
@@ -31,15 +31,13 @@ fun TaskList(
     var selAdd = false
     val toDoRepository: ToDoRepository by localDI().instance()
     var titles = toDoRepository.getTusk()
-    var addingTask by remember { mutableStateOf(false) }
     var addingGroup by remember { mutableStateOf(false) }
     var change by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    var todos: List<Task>? by remember { mutableStateOf(null) }
+    var todos: List<Event>? by remember { mutableStateOf(null) }
 
     if (titles.isEmpty()){
         toDoRepository.addCategory("Main")
-        toDoRepository.addToDo("Hello","Main")
     }
 
     var category by remember { mutableStateOf(titles[0]) }
@@ -52,11 +50,11 @@ fun TaskList(
         todos = toDoRepository.getToDos(category)
     }
 
-    LaunchedEffect (addingTask,category,change) {
+    LaunchedEffect (category,change) {
         refreshTusk()
         loadTodos()
     }
-
+    loadTodos()
     Column(modifier = Modifier.fillMaxSize()){
         val i = titles.indexOf(category)
         ScrollableTabRow(selectedTabIndex = i,edgePadding = 0.dp) {
@@ -80,22 +78,16 @@ fun TaskList(
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background)
             ){
-                items(todos?: listOf()) { task->
-                    SingleTask(navController,task,
-                        check = {
-                            toDoRepository.updateState(task.name)
-                            change = !change
-                        }
-                    )
+                if (todos!=null) {
+                    items(todos ?: listOf()) { ev ->
+                        SingleTask(navController, ev,
+                            check = {
+                                toDoRepository.updateState(ev)
+                                change = !change
+                            }
+                        )
+                    }
                 }
-            }
-            if (addingTask){
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.7F))
-                    .blur(8.dp)
-                    .clickable { addingTask = false })
-                TaskAdding({addingTask = false},category)
             }
             if (addingGroup){
                 Box(modifier = Modifier
@@ -131,7 +123,7 @@ fun TaskList(
             }
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.weight(1f)){
-                SmallFloatingActionButton(onClick = { addingTask = true },
+                SmallFloatingActionButton(onClick = { navController.navigate(Destinations.EventAdd(null,true)) },
                     modifier = Modifier
                         .height(50.dp)
                         .width(50.dp)) {
