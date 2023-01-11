@@ -7,7 +7,7 @@ This is project that combine three apps
 * Schedule
 ## Technologies
 * Kotlin
-* Matherial theme 3
+* Material theme 3
 * Android 6.0
 * Gradle
 * SQLight
