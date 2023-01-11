@@ -1,7 +1,7 @@
 # ToDoApp
 by: Maciej Zygmunt
 ## General info
-This is project that combine three apps
+This is project that combines three apps
 * ToDo list
 * Notebook
 * Schedule
@@ -12,4 +12,4 @@ This is project that combine three apps
 * Gradle
 * SQLight
 ## Documentation
-
+TBD
