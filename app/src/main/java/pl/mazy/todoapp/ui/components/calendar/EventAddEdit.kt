@@ -9,7 +9,6 @@ import android.widget.DatePicker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -70,6 +69,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                 isTask,
                 false,
                 "#2471a3",
+                false,
                 null
             )) }
 
@@ -273,13 +273,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                     if (event.Type){
                         Column {
                             //TODO Adding sub task to list
-                            if (event.SubTusk != null){
-                                LazyColumn{
-                                    //TODO showing sub tasks from generated list
-                                }
-                            }
+                            //TODO showing sub tasks from generated list
                         }
-
                     }
                 }
 

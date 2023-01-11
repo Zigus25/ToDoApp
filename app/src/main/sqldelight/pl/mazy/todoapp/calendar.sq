@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS event(
     Type INTEGER AS Boolean NOT NULL,
     Checked INTEGER AS Boolean NOT NULL,
     Color TEXT NOT NULL,
-    SubTusk TEXT
+    SubTusk INTEGER AS Boolean NOT NULL,
+    MainTaskID INTEGER
 );
 
 
@@ -47,7 +48,7 @@ selBetweenDate:
 SELECT * FROM event WHERE DateStart BETWEEN ? AND ? ORDER BY DateStart,TimeStart;
 
 addEvent:
-INSERT INTO event VALUES (?,?,?,?,?,?,?,?,?,?,?);
+INSERT INTO event VALUES (?,?,?,?,?,?,?,?,?,?,?,?);
 
 updateEvent:
 UPDATE event

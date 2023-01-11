@@ -1,7 +1,6 @@
 package pl.mazy.todoapp.logic.data
 
 import android.annotation.SuppressLint
-import android.util.Log
 import pl.mazy.todoapp.Database
 import pl.mazy.todoapp.Event
 import java.time.LocalDate
@@ -25,7 +24,7 @@ class CalendarRepository (
     }
 
     fun addEvent(ev: Event){
-        database.calendarQueries.addEvent(ev.Name,ev.Description,ev.Categoty,ev.TimeStart,ev.TimeEnd,ev.DateStart,ev.DateEnd,ev.Type,ev.Checked,ev.Color,ev.SubTusk)
+        database.calendarQueries.addEvent(ev.Name,ev.Description,ev.Categoty,ev.TimeStart,ev.TimeEnd,ev.DateStart,ev.DateEnd,ev.Type,ev.Checked,ev.Color,ev.SubTusk,ev.MainTaskID)
     }
 
     fun updateEvent(event: Event, evOld: Event){
