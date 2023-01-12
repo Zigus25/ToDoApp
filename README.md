@@ -8,8 +8,8 @@ This is project that combines three apps
 ## Technologies
 * Kotlin
 * Material theme 3
-* Android 6.0
+* Android 8.0
 * Gradle
-* SQLight
+* SQLDeLight
 ## Documentation
 TBD
