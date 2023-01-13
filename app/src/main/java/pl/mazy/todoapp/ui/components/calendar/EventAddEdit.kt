@@ -50,7 +50,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
     val calendarRepository: CalendarRepository by localDI().instance()
 
     val focusManager = LocalFocusManager.current
-
+    val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     var colorPicker by remember { mutableStateOf(false) }
 
     val calendar = Calendar.getInstance()
@@ -64,8 +64,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                 options[0],
                 "${calendar[Calendar.HOUR_OF_DAY]}:00",
                 "${calendar[Calendar.HOUR_OF_DAY]+1}:00",
-                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                LocalDate.now().format(format),
+                LocalDate.now().format(format),
                 isTask,
                 false,
                 "#2471a3",
@@ -200,6 +200,9 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                             fYear = mYear
                             fMonth = mMonth
                             fDay = mDayOfMonth
+                            if(LocalDate.parse(event.DateEnd,format)<LocalDate.parse(event.DateStart,format)){
+                                event = event.copy(DateEnd = event.DateStart)
+                            }
                         }, fYear, fMonth, fDay
                     )
 
@@ -249,16 +252,23 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         }, fYear, fMonth, fDay
                     )
 
+
                     val tTimePickerDialog = TimePickerDialog(
                         LocalContext.current,
                         {_, mHour:Int, mMinute:Int ->
                             event = event.copy(TimeEnd = "$mHour:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
                         },hour,minute,true
                     )
+
+                    val minDate = LocalDate.parse(event.DateStart,format)
+                    calendar.set(minDate.year,minDate.monthValue-1,minDate.dayOfMonth)
+                    tDatePickerDialog.datePicker.updateDate(minDate.year,minDate.monthValue-1,minDate.dayOfMonth)
+
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)) {
                         Box(modifier = Modifier.clickable {
+                            tDatePickerDialog.datePicker.minDate = calendar.timeInMillis
                             tDatePickerDialog.show()
                         }) {
                             Text(text = event.DateEnd, color = MaterialTheme.colorScheme.onBackground)
