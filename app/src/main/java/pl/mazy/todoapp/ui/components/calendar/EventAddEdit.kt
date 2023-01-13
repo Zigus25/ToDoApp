@@ -39,6 +39,7 @@ import pl.mazy.todoapp.logic.data.ToDoRepository
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -49,8 +50,11 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
     val toDoRepository: ToDoRepository by localDI().instance()
     val calendarRepository: CalendarRepository by localDI().instance()
 
+    val defaultDate = "1970-01-01"
+
     val focusManager = LocalFocusManager.current
-    val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val formatDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val formatTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
     var colorPicker by remember { mutableStateOf(false) }
 
     val calendar = Calendar.getInstance()
@@ -62,10 +66,10 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                 "",
                 "",
                 options[0],
-                "${calendar[Calendar.HOUR_OF_DAY]}:00",
-                "${calendar[Calendar.HOUR_OF_DAY]+1}:00",
-                LocalDate.now().format(format),
-                LocalDate.now().format(format),
+                "$defaultDate ${if(calendar[Calendar.HOUR_OF_DAY]<10){"0${calendar[Calendar.HOUR_OF_DAY]}"}else{calendar[Calendar.HOUR_OF_DAY]}}:00",
+                "$defaultDate ${if (calendar[Calendar.HOUR_OF_DAY]+1 < 10) {"0${calendar[Calendar.HOUR_OF_DAY]+1}"}else{calendar[Calendar.HOUR_OF_DAY]+1}}:00",
+                LocalDate.now().format(formatDate),
+                LocalDate.now().format(formatDate),
                 isTask,
                 false,
                 "#2471a3",
@@ -189,30 +193,26 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         label = { Text("Description") }
                     )
 
-                    var fYear = calendar.get(Calendar.YEAR)
-                    var fMonth = calendar.get(Calendar.MONTH)
-                    var fDay = calendar.get(Calendar.DAY_OF_MONTH)
+                    val fYear = calendar.get(Calendar.YEAR)
+                    val fMonth = calendar.get(Calendar.MONTH)
+                    val fDay = calendar.get(Calendar.DAY_OF_MONTH)
                     calendar.time = Date()
                     val fDatePickerDialog = DatePickerDialog(
                         LocalContext.current,
                         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
                             event = event.copy(DateStart = "$mYear-${if(mMonth+1 < 10){"0${mMonth+1}"}else{mMonth+1}}-${if(mDayOfMonth < 10){"0${mDayOfMonth}"}else{mDayOfMonth}}")
-                            fYear = mYear
-                            fMonth = mMonth
-                            fDay = mDayOfMonth
-                            if(LocalDate.parse(event.DateEnd,format)<LocalDate.parse(event.DateStart,format)){
+                            if(LocalDate.parse(event.DateEnd,formatDate)<LocalDate.parse(event.DateStart,formatDate)){
                                 event = event.copy(DateEnd = event.DateStart)
                             }
                         }, fYear, fMonth, fDay
                     )
 
-                    val hour = calendar[Calendar.HOUR_OF_DAY]
-                    val minute = 0
+                    val timeF = LocalDateTime.parse(event.TimeStart,formatTime)
                     val fTimePickerDialog = TimePickerDialog(
                         LocalContext.current,
                         {_, mHour:Int, mMinute:Int ->
-                            event = event.copy(TimeStart = "$mHour:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
-                        },hour,minute,true
+                            event = event.copy(TimeStart = "$defaultDate ${if (mHour<10){"0$mHour"}else{mHour}}:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
+                        },timeF.hour,timeF.minute,true
                     )
 
                     Row(modifier = Modifier
@@ -227,7 +227,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         Box(modifier = Modifier.clickable {
                             fTimePickerDialog.show()
                         }){
-                            Text(text = event.TimeStart, color = MaterialTheme.colorScheme.onBackground)
+                            Text(text = event.TimeStart.takeLast(5), color = MaterialTheme.colorScheme.onBackground)
                         }
                     }
 
@@ -252,15 +252,15 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         }, fYear, fMonth, fDay
                     )
 
-
+                    val timeT = LocalDateTime.parse(event.TimeEnd,formatTime)
                     val tTimePickerDialog = TimePickerDialog(
                         LocalContext.current,
                         {_, mHour:Int, mMinute:Int ->
-                            event = event.copy(TimeEnd = "$mHour:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
-                        },hour,minute,true
+                            event = event.copy(TimeEnd = "$defaultDate $mHour:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
+                        },timeT.hour,timeT.minute,true
                     )
 
-                    val minDate = LocalDate.parse(event.DateStart,format)
+                    val minDate = LocalDate.parse(event.DateStart,formatDate)
                     calendar.set(minDate.year,minDate.monthValue-1,minDate.dayOfMonth)
                     tDatePickerDialog.datePicker.updateDate(minDate.year,minDate.monthValue-1,minDate.dayOfMonth)
 
@@ -277,7 +277,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         Box(modifier = Modifier.clickable {
                             tTimePickerDialog.show()
                         }){
-                            Text(text = event.TimeEnd, color = MaterialTheme.colorScheme.onBackground)
+                            Text(text = event.TimeEnd.takeLast(5), color = MaterialTheme.colorScheme.onBackground)
                         }
                     }
                     if (event.Type){
@@ -308,6 +308,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
+            if (LocalDate.parse(event.DateEnd,formatDate)!=LocalDate.parse(event.DateStart,formatDate)||LocalDate.parse(event.DateEnd,formatDate)==LocalDate.parse(event.DateStart,formatDate)&&LocalDateTime.parse(event.TimeEnd,formatTime)>LocalDateTime.parse(event.TimeStart,formatTime))
             Box(modifier = Modifier.padding(10.dp)) {
                 SmallFloatingActionButton(
                     onClick = {
