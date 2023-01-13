@@ -91,6 +91,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
                 ) {
+
+                    //Name input
                     OutlinedTextField(
                         modifier = Modifier
                             .padding(5.dp)
@@ -110,6 +112,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         label = { Text("Name") }
                     )
+
+                    //Category chooser, Task or Event, color chooser
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -179,6 +183,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                             }
                         }
                     }
+
+                    //Description input
                     OutlinedTextField(
                         modifier = Modifier
                             .height(200.dp)
@@ -195,7 +201,6 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                     )
 
                     val dateF = LocalDate.parse(event.DateStart,formatDate)
-                    calendar.time = Date()
                     val fDatePickerDialog = DatePickerDialog(
                         LocalContext.current,
                         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
@@ -214,6 +219,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         },timeF.hour,timeF.minute,true
                     )
 
+                    //From date time choosers
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)) {
@@ -234,21 +240,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                     val tDatePickerDialog = DatePickerDialog(
                         LocalContext.current,
                         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-                            event = event.copy(
-                                DateEnd = "$mYear-${
-                                    if (mMonth + 1 < 10) {
-                                        "0${mMonth + 1}"
-                                    } else {
-                                        mMonth + 1
-                                    }
-                                }-${
-                                    if (mDayOfMonth < 10) {
-                                        "0${mDayOfMonth}"
-                                    } else {
-                                        mDayOfMonth
-                                    }
-                                }"
-                            )
+                            event = event.copy(DateEnd = "$mYear-${if (mMonth + 1 < 10) { "0${mMonth + 1}" } else { mMonth + 1 }}-${if (mDayOfMonth < 10) { "0${mDayOfMonth}" } else { mDayOfMonth }}")
                         }, dateT.year, dateT.monthValue-1, dateT.dayOfMonth
                     )
 
@@ -263,6 +255,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                     val minDate = LocalDate.parse(event.DateStart,formatDate)
                     calendar.set(minDate.year,minDate.monthValue-1,minDate.dayOfMonth)
 
+                    //Up to date time choosers
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)) {
@@ -279,6 +272,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                             Text(text = event.TimeEnd.takeLast(5), color = MaterialTheme.colorScheme.onBackground)
                         }
                     }
+
+                    //SubTusk Input/Edit
                     if (event.Type){
                         Column {
                             //TODO Adding sub task to list
@@ -287,6 +282,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                     }
                 }
 
+                //Color Chooser shower
                 if (colorPicker) {
                     Box(modifier = Modifier
                         .fillMaxSize()
