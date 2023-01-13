@@ -262,7 +262,6 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
 
                     val minDate = LocalDate.parse(event.DateStart,formatDate)
                     calendar.set(minDate.year,minDate.monthValue-1,minDate.dayOfMonth)
-                    tDatePickerDialog.datePicker.updateDate(minDate.year,minDate.monthValue-1,minDate.dayOfMonth)
 
                     Row(modifier = Modifier
                         .fillMaxWidth()
