@@ -194,9 +194,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         label = { Text("Description") }
                     )
 
-                    val fYear = calendar.get(Calendar.YEAR)
-                    val fMonth = calendar.get(Calendar.MONTH)
-                    val fDay = calendar.get(Calendar.DAY_OF_MONTH)
+                    val dateF = LocalDate.parse(event.DateStart,formatDate)
                     calendar.time = Date()
                     val fDatePickerDialog = DatePickerDialog(
                         LocalContext.current,
@@ -205,7 +203,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                             if(LocalDate.parse(event.DateEnd,formatDate)<LocalDate.parse(event.DateStart,formatDate)){
                                 event = event.copy(DateEnd = event.DateStart)
                             }
-                        }, fYear, fMonth, fDay
+                        }, dateF.year, dateF.monthValue-1, dateF.dayOfMonth
                     )
 
                     val timeF = LocalDateTime.parse(event.TimeStart,formatTime)
@@ -232,6 +230,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         }
                     }
 
+                    val dateT = LocalDate.parse(event.DateEnd,formatDate)
                     val tDatePickerDialog = DatePickerDialog(
                         LocalContext.current,
                         { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
@@ -250,7 +249,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                                     }
                                 }"
                             )
-                        }, fYear, fMonth, fDay
+                        }, dateT.year, dateT.monthValue-1, dateT.dayOfMonth
                     )
 
                     val timeT = LocalDateTime.parse(event.TimeEnd,formatTime)
