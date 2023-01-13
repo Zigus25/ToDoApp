@@ -6,6 +6,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.graphics.Color.parseColor
 import android.widget.DatePicker
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -256,7 +257,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                     val tTimePickerDialog = TimePickerDialog(
                         LocalContext.current,
                         {_, mHour:Int, mMinute:Int ->
-                            event = event.copy(TimeEnd = "$defaultDate $mHour:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
+                            event = event.copy(TimeEnd = "$defaultDate ${if (mHour<10){"0$mHour"}else{mHour}}:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
                         },timeT.hour,timeT.minute,true
                     )
 
@@ -308,27 +309,42 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
-            if (LocalDate.parse(event.DateEnd,formatDate)!=LocalDate.parse(event.DateStart,formatDate)||LocalDate.parse(event.DateEnd,formatDate)==LocalDate.parse(event.DateStart,formatDate)&&LocalDateTime.parse(event.TimeEnd,formatTime)>LocalDateTime.parse(event.TimeStart,formatTime))
-            Box(modifier = Modifier.padding(10.dp)) {
-                SmallFloatingActionButton(
-                    onClick = {
-                        if (ev == null) {
-                            navController.navigate(if (isTask){Destinations.TaskList}else{Destinations.Schedule})
-                            calendarRepository.addEvent(event)
-                        } else {
-                            navController.navigate(if (isTask){Destinations.TaskList}else{Destinations.Schedule})
-                            calendarRepository.updateEvent(event,ev)
-                        }
-                    },
-                    modifier = Modifier
-                        .height(50.dp)
-                        .width(50.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.SaveAs,
-                        contentDescription = null,
-                    )
+            if (LocalDate.parse(event.DateEnd,formatDate)!=LocalDate.parse(event.DateStart,formatDate)||LocalDate.parse(event.DateEnd,formatDate)==LocalDate.parse(event.DateStart,formatDate)&&LocalDateTime.parse(event.TimeEnd,formatTime)>LocalDateTime.parse(event.TimeStart,formatTime)) {
+                Box(modifier = Modifier.padding(10.dp)) {
+                    SmallFloatingActionButton(
+                        onClick = {
+                            if (ev == null) {
+                                navController.navigate(
+                                    if (isTask) {
+                                        Destinations.TaskList
+                                    } else {
+                                        Destinations.Schedule
+                                    }
+                                )
+                                calendarRepository.addEvent(event)
+                            } else {
+                                navController.navigate(
+                                    if (isTask) {
+                                        Destinations.TaskList
+                                    } else {
+                                        Destinations.Schedule
+                                    }
+                                )
+                                calendarRepository.updateEvent(event, ev)
+                            }
+                        },
+                        modifier = Modifier
+                            .height(50.dp)
+                            .width(50.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.SaveAs,
+                            contentDescription = null,
+                        )
+                    }
                 }
+            }else{
+                Toast.makeText(LocalContext.current, "Not valid DATE or TIME", Toast.LENGTH_LONG).show()
             }
         }
     }
