@@ -1,15 +1,14 @@
 CREATE TABLE IF NOT EXISTS event(
     Name TEXT NOT NULL,
-    Description TEXT NOT NULL,
+    Description TEXT NOT NULL ,
     Categoty TEXT NOT NULL,
-    TimeStart TEXT NOT NULL,
-    TimeEnd TEXT NOT NULL,
-    DateStart TEXT NOT NULL,
-    DateEnd TEXT NOT NULL,
+    TimeStart TEXT,
+    TimeEnd TEXT,
+    DateStart TEXT,
+    DateEnd TEXT,
     Type INTEGER AS Boolean NOT NULL,
     Checked INTEGER AS Boolean NOT NULL,
     Color TEXT NOT NULL,
-    SubTusk INTEGER AS Boolean NOT NULL,
     MainTaskID INTEGER
 );
 
@@ -48,7 +47,7 @@ selBetweenDate:
 SELECT * FROM event WHERE DateStart BETWEEN ? AND ? ORDER BY DateStart,TimeStart;
 
 addEvent:
-INSERT INTO event VALUES (?,?,?,?,?,?,?,?,?,?,?,?);
+INSERT INTO event VALUES (?,?,?,?,?,?,?,?,?,?,?);
 
 updateEvent:
 UPDATE event
@@ -63,7 +62,7 @@ UPDATE event
         Type = ?,
         Checked = ?,
         Color = ?,
-        SubTusk = ?
+        MainTaskID = ?
     WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color = ?;
 
 deleteEvent:

@@ -42,8 +42,8 @@ fun Schedule(
             if (events!=null) {
                 for (ev in events!!) {
                     if (ev.DateStart!=date){
-                        date = ev.DateStart
-                        item { DateShow(ev.DateStart) }
+                        date = ev.DateStart.toString()
+                        item { ev.DateStart?.let { DateShow(it) } }
                     }
                     item {
                         SingleEvent(navController,event = ev)

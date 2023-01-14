@@ -51,30 +51,34 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
     val toDoRepository: ToDoRepository by localDI().instance()
     val calendarRepository: CalendarRepository by localDI().instance()
 
-    val defaultDate = "1970-01-01"
-
+    val calendar = Calendar.getInstance()
+    val options = toDoRepository.getTusk()
+    var expanded by remember { mutableStateOf(false) }
+    var wantDate by remember { mutableStateOf(false) }
+    var wantTime by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val formatDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val formatTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
     var colorPicker by remember { mutableStateOf(false) }
 
-    val calendar = Calendar.getInstance()
-    val options = toDoRepository.getTusk()
-    var expanded by remember { mutableStateOf(false) }
+    val defaultDate = "1970-01-01"
+    val defaultTimeFE = "$defaultDate ${if(calendar[Calendar.HOUR_OF_DAY]<10){"0${calendar[Calendar.HOUR_OF_DAY]}"}else{calendar[Calendar.HOUR_OF_DAY]}}:00"
+    val defaultTimeTE = "$defaultDate ${if(calendar[Calendar.HOUR_OF_DAY]<10){"0${calendar[Calendar.HOUR_OF_DAY]+1}"}else{calendar[Calendar.HOUR_OF_DAY]+1}}:00"
+    val defaultDateE = LocalDate.now().format(formatDate)
+
     var event by remember {
         mutableStateOf(
             ev?:Event(
                 "",
                 "",
                 options[0],
-                "$defaultDate ${if(calendar[Calendar.HOUR_OF_DAY]<10){"0${calendar[Calendar.HOUR_OF_DAY]}"}else{calendar[Calendar.HOUR_OF_DAY]}}:00",
-                "$defaultDate ${if (calendar[Calendar.HOUR_OF_DAY]+1 < 10) {"0${calendar[Calendar.HOUR_OF_DAY]+1}"}else{calendar[Calendar.HOUR_OF_DAY]+1}}:00",
-                LocalDate.now().format(formatDate),
-                LocalDate.now().format(formatDate),
+                null,
+                null,
+                null,
+                null,
                 isTask,
                 false,
                 "#2471a3",
-                false,
                 null
             )) }
 
@@ -200,76 +204,191 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         label = { Text("Description") }
                     )
 
-                    val dateF = LocalDate.parse(event.DateStart,formatDate)
-                    val fDatePickerDialog = DatePickerDialog(
-                        LocalContext.current,
-                        { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-                            event = event.copy(DateStart = "$mYear-${if(mMonth+1 < 10){"0${mMonth+1}"}else{mMonth+1}}-${if(mDayOfMonth < 10){"0${mDayOfMonth}"}else{mDayOfMonth}}")
-                            if(LocalDate.parse(event.DateEnd,formatDate)<LocalDate.parse(event.DateStart,formatDate)){
-                                event = event.copy(DateEnd = event.DateStart)
-                            }
-                        }, dateF.year, dateF.monthValue-1, dateF.dayOfMonth
-                    )
-
-                    val timeF = LocalDateTime.parse(event.TimeStart,formatTime)
-                    val fTimePickerDialog = TimePickerDialog(
-                        LocalContext.current,
-                        {_, mHour:Int, mMinute:Int ->
-                            event = event.copy(TimeStart = "$defaultDate ${if (mHour<10){"0$mHour"}else{mHour}}:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
-                        },timeF.hour,timeF.minute,true
-                    )
-
-                    //From date time choosers
+                    //Checkboxes for date want
                     Row(modifier = Modifier
                         .fillMaxWidth()
-                        .padding(10.dp)) {
-                        Box(modifier = Modifier.clickable {
-                            fDatePickerDialog.show()
-                        }) {
-                            Text(text = event.DateStart, color = MaterialTheme.colorScheme.onBackground)
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                        Box(modifier = Modifier.clickable {
-                            fTimePickerDialog.show()
-                        }){
-                            Text(text = event.TimeStart.takeLast(5), color = MaterialTheme.colorScheme.onBackground)
+                        .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "Date:",color = MaterialTheme.colorScheme.onBackground)
+                        Checkbox(checked = wantDate, onCheckedChange = {
+                            wantDate = !wantDate
+                            event = if(event.DateStart == null){
+                                event.copy(DateStart = defaultDateE, DateEnd = defaultDateE)
+                            }else{
+                                event.copy(DateStart = null, DateEnd = null,TimeStart = null, TimeEnd = null)
+                            }
+                            if(wantTime && wantDate){
+                                event = event.copy(TimeStart = defaultTimeFE, TimeEnd = defaultTimeTE)
+                            }
+                        })
+                        if (wantDate){
+                            Spacer(modifier = Modifier.weight(1f))
+                            Text(text = "Time:",color = MaterialTheme.colorScheme.onBackground)
+                            Checkbox(checked = wantTime, onCheckedChange = {
+                                wantTime = !wantTime
+                                event = if(event.TimeStart == null){
+                                    event.copy(TimeStart = defaultTimeFE, TimeEnd = defaultTimeTE)
+                                }else{
+                                    event.copy(TimeStart = null, TimeEnd = null)
+                                }
+                            })
                         }
                     }
 
-                    val dateT = LocalDate.parse(event.DateEnd,formatDate)
-                    val tDatePickerDialog = DatePickerDialog(
-                        LocalContext.current,
-                        { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
-                            event = event.copy(DateEnd = "$mYear-${if (mMonth + 1 < 10) { "0${mMonth + 1}" } else { mMonth + 1 }}-${if (mDayOfMonth < 10) { "0${mDayOfMonth}" } else { mDayOfMonth }}")
-                        }, dateT.year, dateT.monthValue-1, dateT.dayOfMonth
-                    )
+                    //Date Choosers
+                    if (wantDate) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp)
+                        ) {
+                            //Date choosers
+                            Column {
+                                val dateF = LocalDate.parse(event.DateStart, formatDate)
+                                val fDatePickerDialog = DatePickerDialog(
+                                    LocalContext.current,
+                                    { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+                                        event = event.copy(
+                                            DateStart = "$mYear-${
+                                                if (mMonth + 1 < 10) {
+                                                    "0${mMonth + 1}"
+                                                } else {
+                                                    mMonth + 1
+                                                }
+                                            }-${
+                                                if (mDayOfMonth < 10) {
+                                                    "0${mDayOfMonth}"
+                                                } else {
+                                                    mDayOfMonth
+                                                }
+                                            }"
+                                        )
+                                        if (LocalDate.parse(
+                                                event.DateEnd,
+                                                formatDate
+                                            ) < LocalDate.parse(event.DateStart, formatDate)
+                                        ) {
+                                            event = event.copy(DateEnd = event.DateStart)
+                                        }
+                                    }, dateF.year, dateF.monthValue - 1, dateF.dayOfMonth
+                                )
+                                Box(modifier = Modifier.padding(5.dp).clickable {
+                                    fDatePickerDialog.show()
+                                }) {
+                                    event.DateStart?.let {
+                                        Text(
+                                            text = it,
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
+                                    }
+                                }
+                                val dateT = LocalDate.parse(event.DateEnd, formatDate)
+                                val tDatePickerDialog = DatePickerDialog(
+                                    LocalContext.current,
+                                    { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
+                                        event = event.copy(
+                                            DateEnd = "$mYear-${
+                                                if (mMonth + 1 < 10) {
+                                                    "0${mMonth + 1}"
+                                                } else {
+                                                    mMonth + 1
+                                                }
+                                            }-${
+                                                if (mDayOfMonth < 10) {
+                                                    "0${mDayOfMonth}"
+                                                } else {
+                                                    mDayOfMonth
+                                                }
+                                            }"
+                                        )
+                                    }, dateT.year, dateT.monthValue - 1, dateT.dayOfMonth
+                                )
+                                Box(modifier = Modifier.padding(5.dp).clickable {
+                                    tDatePickerDialog.datePicker.minDate = calendar.timeInMillis
+                                    tDatePickerDialog.show()
+                                }) {
+                                    event.DateEnd?.let {
+                                        Text(
+                                            text = it,
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
+                                    }
+                                }
+                            }
+                            Spacer(modifier = Modifier.weight(1f))
+                            //Time  choosers
+                            if (wantTime)
+                            Column {
+                                val timeF = LocalDateTime.parse(event.TimeStart, formatTime)
+                                val fTimePickerDialog = TimePickerDialog(
+                                    LocalContext.current,
+                                    { _, mHour: Int, mMinute: Int ->
+                                        event = event.copy(
+                                            TimeStart = "$defaultDate ${
+                                                if (mHour < 10) {
+                                                    "0$mHour"
+                                                } else {
+                                                    mHour
+                                                }
+                                            }:${
+                                                if (mMinute < 10) {
+                                                    "0$mMinute"
+                                                } else {
+                                                    mMinute
+                                                }
+                                            }"
+                                        )
+                                    }, timeF.hour, timeF.minute, true
+                                )
+                                Box(modifier = Modifier.padding(5.dp).clickable {
+                                    fTimePickerDialog.show()
+                                }) {
+                                    event.TimeStart?.let {
+                                        Text(
+                                            text = it.takeLast(5),
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
+                                    }
+                                }
+                                val timeT = LocalDateTime.parse(event.TimeEnd, formatTime)
+                                val tTimePickerDialog = TimePickerDialog(
+                                    LocalContext.current,
+                                    { _, mHour: Int, mMinute: Int ->
+                                        event = event.copy(
+                                            TimeEnd = "$defaultDate ${
+                                                if (mHour < 10) {
+                                                    "0$mHour"
+                                                } else {
+                                                    mHour
+                                                }
+                                            }:${
+                                                if (mMinute < 10) {
+                                                    "0$mMinute"
+                                                } else {
+                                                    mMinute
+                                                }
+                                            }"
+                                        )
+                                    }, timeT.hour, timeT.minute, true
+                                )
 
-                    val timeT = LocalDateTime.parse(event.TimeEnd,formatTime)
-                    val tTimePickerDialog = TimePickerDialog(
-                        LocalContext.current,
-                        {_, mHour:Int, mMinute:Int ->
-                            event = event.copy(TimeEnd = "$defaultDate ${if (mHour<10){"0$mHour"}else{mHour}}:${if (mMinute<10){"0$mMinute"}else{mMinute}}")
-                        },timeT.hour,timeT.minute,true
-                    )
-
-                    val minDate = LocalDate.parse(event.DateStart,formatDate)
-                    calendar.set(minDate.year,minDate.monthValue-1,minDate.dayOfMonth)
-
-                    //Up to date time choosers
-                    Row(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)) {
-                        Box(modifier = Modifier.clickable {
-                            tDatePickerDialog.datePicker.minDate = calendar.timeInMillis
-                            tDatePickerDialog.show()
-                        }) {
-                            Text(text = event.DateEnd, color = MaterialTheme.colorScheme.onBackground)
-                        }
-                        Spacer(modifier = Modifier.weight(1f))
-                        Box(modifier = Modifier.clickable {
-                            tTimePickerDialog.show()
-                        }){
-                            Text(text = event.TimeEnd.takeLast(5), color = MaterialTheme.colorScheme.onBackground)
+                                val minDate = LocalDate.parse(event.DateStart, formatDate)
+                                calendar.set(
+                                    minDate.year,
+                                    minDate.monthValue - 1,
+                                    minDate.dayOfMonth
+                                )
+                                Box(modifier = Modifier.padding(5.dp).clickable {
+                                    tTimePickerDialog.show()
+                                }) {
+                                    event.TimeEnd?.let {
+                                        Text(
+                                            text = it.takeLast(5),
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -293,6 +412,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                 }
             }
         }
+
+
         BottomAppBar {
             if (ev != null) {
                 IconButton(onClick = {
@@ -303,7 +424,12 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
-            if (LocalDate.parse(event.DateEnd,formatDate)!=LocalDate.parse(event.DateStart,formatDate)||LocalDate.parse(event.DateEnd,formatDate)==LocalDate.parse(event.DateStart,formatDate)&&LocalDateTime.parse(event.TimeEnd,formatTime)>LocalDateTime.parse(event.TimeStart,formatTime)) {
+            var canSave = true
+            if (event.DateStart != null&&event.TimeStart != null){
+                canSave = LocalDate.parse(event.DateEnd,formatDate)!=LocalDate.parse(event.DateStart,formatDate)||LocalDate.parse(event.DateEnd,formatDate)==LocalDate.parse(event.DateStart,formatDate)&&LocalDateTime.parse(event.TimeEnd,formatTime)>LocalDateTime.parse(event.TimeStart,formatTime)
+            }
+
+            if (canSave) {
                 Box(modifier = Modifier.padding(10.dp)) {
                     SmallFloatingActionButton(
                         onClick = {

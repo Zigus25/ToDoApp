@@ -24,10 +24,10 @@ class CalendarRepository (
     }
 
     fun addEvent(ev: Event){
-        database.calendarQueries.addEvent(ev.Name,ev.Description,ev.Categoty,ev.TimeStart,ev.TimeEnd,ev.DateStart,ev.DateEnd,ev.Type,ev.Checked,ev.Color,ev.SubTusk,ev.MainTaskID)
+        database.calendarQueries.addEvent(ev.Name,ev.Description,ev.Categoty,ev.TimeStart,ev.TimeEnd,ev.DateStart,ev.DateEnd,ev.Type,ev.Checked,ev.Color,ev.MainTaskID)
     }
 
     fun updateEvent(event: Event, evOld: Event){
-        database.calendarQueries.updateEvent(event.Name,event.Description,event.Categoty,event.TimeStart,event.TimeEnd,event.DateStart,event.DateEnd,event.Type,event.Checked,event.Color,event.SubTusk,evOld.Name,evOld.Categoty,evOld.Description,evOld.DateStart,evOld.Color)
+        database.calendarQueries.updateEvent(event.Name,event.Description,event.Categoty,event.TimeStart,event.TimeEnd,event.DateStart,event.DateEnd,event.Type,event.Checked,event.Color,event.MainTaskID,evOld.Name,evOld.Categoty,evOld.Description,evOld.DateStart,evOld.Color)
     }
 }
