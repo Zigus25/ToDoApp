@@ -41,9 +41,9 @@ fun Schedule(
             item { DateShow(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString()) }
             if (events!=null) {
                 for (ev in events!!) {
-                    if (ev.DateStart!=date){
+                    if (ev.DateStart!=date&&ev.DateStart != null){
                         date = ev.DateStart.toString()
-                        item { ev.DateStart?.let { DateShow(it) } }
+                        item { DateShow(ev.DateStart) }
                     }
                     item {
                         SingleEvent(navController,event = ev)

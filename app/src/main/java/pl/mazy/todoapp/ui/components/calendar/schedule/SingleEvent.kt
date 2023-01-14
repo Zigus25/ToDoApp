@@ -1,5 +1,6 @@
 package pl.mazy.todoapp.ui.components.calendar.schedule
 
+import android.annotation.SuppressLint
 import android.graphics.Color.parseColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +22,7 @@ import pl.mazy.todoapp.Event
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun SingleEvent(navController: NavController<Destinations>, event:Event){
     Column(modifier = Modifier
@@ -38,6 +40,7 @@ fun SingleEvent(navController: NavController<Destinations>, event:Event){
         Text(text = event.Name, fontSize = 24.sp)
         Row {
             Spacer(modifier = Modifier.weight(1f))
+            if (event.TimeStart!=null)
             Text(text = "${event.TimeStart} - ${event.TimeEnd}")
         }
     }

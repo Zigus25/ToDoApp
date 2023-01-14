@@ -44,7 +44,7 @@ WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color 
 
 
 selBetweenDate:
-SELECT * FROM event WHERE DateStart BETWEEN ? AND ? ORDER BY DateStart,TimeStart;
+SELECT * FROM event WHERE DateEnd IS NULL OR DateStart BETWEEN ? AND ? ORDER BY DateStart,TimeStart;
 
 addEvent:
 INSERT INTO event VALUES (?,?,?,?,?,?,?,?,?,?,?);

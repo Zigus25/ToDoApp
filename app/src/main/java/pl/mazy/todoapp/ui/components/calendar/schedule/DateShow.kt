@@ -19,7 +19,7 @@ fun DateShow(dateD: String) {
 
     val calendar: Calendar = Calendar.getInstance()
     SimpleDateFormat("yyyy-MM-dd").parse(dateD)?.let { calendar.time = it }
-    Text(text = "${days[calendar.get(Calendar.DAY_OF_WEEK)]}, ${calendar.get(Calendar.DAY_OF_MONTH)} ${months[calendar.get(Calendar.MONTH)]}",
+    Text(text = "${days[calendar.get(Calendar.DAY_OF_WEEK)-1]}, ${calendar.get(Calendar.DAY_OF_MONTH)} ${months[calendar.get(Calendar.MONTH)]}",
         fontSize = 20.sp,
         modifier = Modifier.padding(start = 10.dp, top = 20.dp, bottom = 10.dp),
         color = MaterialTheme.colorScheme.onBackground)
