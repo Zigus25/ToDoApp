@@ -317,75 +317,76 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                             }
                             Spacer(modifier = Modifier.weight(1f))
                             //Time  choosers
-                            if (wantTime)
-                            Column {
-                                val timeF = LocalDateTime.parse(event.TimeStart, formatTime)
-                                val fTimePickerDialog = TimePickerDialog(
-                                    LocalContext.current,
-                                    { _, mHour: Int, mMinute: Int ->
-                                        event = event.copy(
-                                            TimeStart = "$defaultDate ${
-                                                if (mHour < 10) {
-                                                    "0$mHour"
-                                                } else {
-                                                    mHour
-                                                }
-                                            }:${
-                                                if (mMinute < 10) {
-                                                    "0$mMinute"
-                                                } else {
-                                                    mMinute
-                                                }
-                                            }"
-                                        )
-                                    }, timeF.hour, timeF.minute, true
-                                )
-                                Box(modifier = Modifier.padding(5.dp).clickable {
-                                    fTimePickerDialog.show()
-                                }) {
-                                    event.TimeStart?.let {
-                                        Text(
-                                            text = it.takeLast(5),
-                                            color = MaterialTheme.colorScheme.onBackground
-                                        )
+                            if (wantTime) {
+                                Column {
+                                    val timeF = LocalDateTime.parse(event.TimeStart, formatTime)
+                                    val fTimePickerDialog = TimePickerDialog(
+                                        LocalContext.current,
+                                        { _, mHour: Int, mMinute: Int ->
+                                            event = event.copy(
+                                                TimeStart = "$defaultDate ${
+                                                    if (mHour < 10) {
+                                                        "0$mHour"
+                                                    } else {
+                                                        mHour
+                                                    }
+                                                }:${
+                                                    if (mMinute < 10) {
+                                                        "0$mMinute"
+                                                    } else {
+                                                        mMinute
+                                                    }
+                                                }"
+                                            )
+                                        }, timeF.hour, timeF.minute, true
+                                    )
+                                    Box(modifier = Modifier.padding(5.dp).clickable {
+                                        fTimePickerDialog.show()
+                                    }) {
+                                        event.TimeStart?.let {
+                                            Text(
+                                                text = it.takeLast(5),
+                                                color = MaterialTheme.colorScheme.onBackground
+                                            )
+                                        }
                                     }
-                                }
-                                val timeT = LocalDateTime.parse(event.TimeEnd, formatTime)
-                                val tTimePickerDialog = TimePickerDialog(
-                                    LocalContext.current,
-                                    { _, mHour: Int, mMinute: Int ->
-                                        event = event.copy(
-                                            TimeEnd = "$defaultDate ${
-                                                if (mHour < 10) {
-                                                    "0$mHour"
-                                                } else {
-                                                    mHour
-                                                }
-                                            }:${
-                                                if (mMinute < 10) {
-                                                    "0$mMinute"
-                                                } else {
-                                                    mMinute
-                                                }
-                                            }"
-                                        )
-                                    }, timeT.hour, timeT.minute, true
-                                )
+                                    val timeT = LocalDateTime.parse(event.TimeEnd, formatTime)
+                                    val tTimePickerDialog = TimePickerDialog(
+                                        LocalContext.current,
+                                        { _, mHour: Int, mMinute: Int ->
+                                            event = event.copy(
+                                                TimeEnd = "$defaultDate ${
+                                                    if (mHour < 10) {
+                                                        "0$mHour"
+                                                    } else {
+                                                        mHour
+                                                    }
+                                                }:${
+                                                    if (mMinute < 10) {
+                                                        "0$mMinute"
+                                                    } else {
+                                                        mMinute
+                                                    }
+                                                }"
+                                            )
+                                        }, timeT.hour, timeT.minute, true
+                                    )
 
-                                val minDate = LocalDate.parse(event.DateStart, formatDate)
-                                calendar.set(
-                                    minDate.year,
-                                    minDate.monthValue - 1,
-                                    minDate.dayOfMonth
-                                )
-                                Box(modifier = Modifier.padding(5.dp).clickable {
-                                    tTimePickerDialog.show()
-                                }) {
-                                    event.TimeEnd?.let {
-                                        Text(
-                                            text = it.takeLast(5),
-                                            color = MaterialTheme.colorScheme.onBackground
-                                        )
+                                    val minDate = LocalDate.parse(event.DateStart, formatDate)
+                                    calendar.set(
+                                        minDate.year,
+                                        minDate.monthValue - 1,
+                                        minDate.dayOfMonth
+                                    )
+                                    Box(modifier = Modifier.padding(5.dp).clickable {
+                                        tTimePickerDialog.show()
+                                    }) {
+                                        event.TimeEnd?.let {
+                                            Text(
+                                                text = it.takeLast(5),
+                                                color = MaterialTheme.colorScheme.onBackground
+                                            )
+                                        }
                                     }
                                 }
                             }

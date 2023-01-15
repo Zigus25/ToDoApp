@@ -19,6 +19,13 @@ class CalendarRepository (
         return database.calendarQueries.selBetweenDate(today.toString(),end.toString()).executeAsList()
     }
 
+    fun selMaxDate(): String? {
+        val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val today = LocalDate.now().format( format)
+        val end = LocalDate.parse(today,format).plus(4, ChronoUnit.WEEKS).format(format)
+        return database.calendarQueries.selMaxDateEnd(today.toString(),end.toString()).executeAsOne().MAX
+    }
+
     fun deleteEvent(ev: Event){
         database.calendarQueries.deleteEvent(ev.Name,ev.Categoty,ev.Description,ev.DateStart,ev.Color)
     }

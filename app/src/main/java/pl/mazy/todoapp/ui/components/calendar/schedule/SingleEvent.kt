@@ -40,8 +40,8 @@ fun SingleEvent(navController: NavController<Destinations>, event:Event){
         Text(text = event.Name, fontSize = 24.sp)
         Row {
             Spacer(modifier = Modifier.weight(1f))
-            if (event.TimeStart!=null)
-            Text(text = "${event.TimeStart} - ${event.TimeEnd}")
+            if (event.TimeStart!=null&&event.TimeEnd!=null)
+            Text(text = "${event.TimeStart.takeLast(5)} - ${event.TimeEnd.takeLast(5)}")
         }
     }
 }

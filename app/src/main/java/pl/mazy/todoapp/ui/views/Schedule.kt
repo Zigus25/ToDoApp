@@ -24,31 +24,52 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun Schedule(
     navController: NavController<Destinations>,
-){
+) {
     val calendarRepository: CalendarRepository by localDI().instance()
     var events: List<Event>? by remember { mutableStateOf(null) }
     val scope = rememberCoroutineScope()
-    var date:String = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString()
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    var date: String = LocalDate.now().format(formatter).toString()
 
     fun loadEvents() = scope.launch {
         events = calendarRepository.selEvents()
     }
     loadEvents()
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)) {
-        LazyColumn(modifier = Modifier.weight(1f)){
-            item { DateShow(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString()) }
-            if (events!=null) {
-                for (ev in events!!) {
-                    if (ev.DateStart!=date&&ev.DateStart != null){
-                        date = ev.DateStart.toString()
-                        item { DateShow(ev.DateStart) }
-                    }
-                    item {
-                        SingleEvent(navController,event = ev)
-                    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        LazyColumn(modifier = Modifier.weight(1f)) {
+            if (events != null) {
+                val maxDate = if (calendarRepository.selMaxDate()!=null){
+                    LocalDate.parse(calendarRepository.selMaxDate(),formatter)
+                }else{
+                    LocalDate.parse(date,formatter)
                 }
+                while (maxDate == LocalDate.parse(date, formatter)) {
+                    item {
+                        DateShow(dateD = date)
+                    }
+                    events!!.forEach { ev ->
+                        if (ev.DateEnd != null) {
+                            if (LocalDate.parse(ev.DateEnd, formatter) >= LocalDate.parse(date, formatter)) {
+                                item {
+                                    SingleEvent(navController = navController, event = ev)
+                                }
+                            }
+                        } else {
+                            item {
+                                SingleEvent(navController = navController, event = ev)
+                            }
+                        }
+                    }
+
+                    date = LocalDate.parse(date, formatter).plusDays(1).toString()
+                }
+
+            }else{
+                item { DateShow(LocalDate.now().format(formatter).toString()) }
             }
         }
         BottomAppBar {
@@ -58,7 +79,7 @@ fun Schedule(
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.weight(1f)) {
                 SmallFloatingActionButton(
-                    onClick = { navController.navigate(Destinations.EventAdd(null,false)) },
+                    onClick = { navController.navigate(Destinations.EventAdd(null, false)) },
                     modifier = Modifier
                         .height(50.dp)
                         .width(50.dp)
