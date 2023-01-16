@@ -210,6 +210,10 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         .padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically) {
                         Text(text = "Date:",color = MaterialTheme.colorScheme.onBackground)
+                        if (!event.Type){
+                            wantDate = true
+                            event = event.copy(DateStart = defaultDateE, DateEnd = defaultDateE)
+                        }
                         Checkbox(checked = wantDate, onCheckedChange = {
                             wantDate = !wantDate
                             event = if(event.DateStart == null){
@@ -220,7 +224,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                             if(wantTime && wantDate){
                                 event = event.copy(TimeStart = defaultTimeFE, TimeEnd = defaultTimeTE)
                             }
-                        })
+                        }, enabled = event.Type)
                         if (wantDate){
                             Spacer(modifier = Modifier.weight(1f))
                             Text(text = "Time:",color = MaterialTheme.colorScheme.onBackground)
