@@ -44,10 +44,10 @@ WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color 
 
 
 selBetweenDate:
-SELECT * FROM event WHERE DateEnd IS NULL OR DateStart OR DateEnd BETWEEN ? AND ? ORDER BY DateStart,TimeStart;
+SELECT * FROM event WHERE DateStart >= ? OR DateEnd >= ? ORDER BY DateStart,TimeStart;
 
 selMaxDateEnd:
-SELECT MAX(d.DateEnd) FROM (SELECT * FROM event WHERE DateEnd IS NULL OR DateStart  OR DateEnd BETWEEN ? AND ? ORDER BY DateStart,TimeStart) d;
+SELECT MAX(d.DateEnd) FROM (SELECT * FROM event WHERE DateStart >= ? OR DateEnd >= ? ORDER BY DateStart,TimeStart) d;
 
 addEvent:
 INSERT INTO event VALUES (?,?,?,?,?,?,?,?,?,?,?);

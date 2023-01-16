@@ -5,25 +5,20 @@ import pl.mazy.todoapp.Database
 import pl.mazy.todoapp.Event
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 
 class CalendarRepository (
     private var database: Database
 ) {
+    private val format: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    private val today: String = LocalDate.now().format( format)
     @SuppressLint("WeekBasedYear")
     fun selEvents():List<Event>{
-        val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val today = LocalDate.now().format( format)
-        val end = LocalDate.parse(today,format).plus(4, ChronoUnit.WEEKS).format(format)
-        return database.calendarQueries.selBetweenDate(today.toString(),end.toString()).executeAsList()
+        return database.calendarQueries.selBetweenDate(today,today).executeAsList()
     }
 
     fun selMaxDate(): String? {
-        val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val today = LocalDate.now().format( format)
-        val end = LocalDate.parse(today,format).plus(4, ChronoUnit.WEEKS).format(format)
-        return database.calendarQueries.selMaxDateEnd(today.toString(),end.toString()).executeAsOne().MAX
+        return database.calendarQueries.selMaxDateEnd(today,today).executeAsOne().MAX
     }
 
     fun deleteEvent(ev: Event){

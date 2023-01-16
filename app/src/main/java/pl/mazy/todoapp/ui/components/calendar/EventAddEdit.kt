@@ -82,6 +82,9 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
 
     var wantDate by remember { mutableStateOf(event.DateStart!=null) }
     var wantTime by remember { mutableStateOf(event.TimeStart!=null) }
+    if (!event.Type){
+        wantDate = true
+    }
 
     Column(
         modifier = Modifier
@@ -210,10 +213,6 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         .padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically) {
                         Text(text = "Date:",color = MaterialTheme.colorScheme.onBackground)
-                        if (!event.Type){
-                            wantDate = true
-                            event = event.copy(DateStart = defaultDateE, DateEnd = defaultDateE)
-                        }
                         Checkbox(checked = wantDate, onCheckedChange = {
                             wantDate = !wantDate
                             event = if(event.DateStart == null){
@@ -241,6 +240,9 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
 
                     //Date Choosers
                     if (wantDate) {
+                        if (event.DateStart==null){
+                            event = event.copy(DateStart = defaultDateE, DateEnd = defaultDateE)
+                        }
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
