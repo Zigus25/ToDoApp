@@ -52,15 +52,11 @@ fun Schedule(
         LazyColumn(modifier = Modifier.weight(1f)) {
             if (events != null) {
                 items(listDates(date,maxDate)){
-                    DateShow(dateD = it.toString())
-                    events!!.forEach { ev ->
-                        if (ev.DateEnd != null) {
-                            if (LocalDate.parse(ev.DateEnd, formatter) >= it && LocalDate.parse(ev.DateStart, formatter) <= it) {
-                                SingleEvent(navController = navController, event = ev, it)
-                            }
-                        } else {
-                            SingleEvent(navController = navController, event = ev)
-                        }
+                    val e = events!!.filter { ev-> ev.DateEnd != null&&LocalDate.parse(ev.DateEnd, formatter) >= it && LocalDate.parse(ev.DateStart, formatter) <= it }
+                    if (e.isNotEmpty()||it == date)
+                        DateShow(dateD = it.toString())
+                    e.forEach { ev ->
+                        SingleEvent(navController = navController, event = ev, it)
                     }
                 }
             } else {
