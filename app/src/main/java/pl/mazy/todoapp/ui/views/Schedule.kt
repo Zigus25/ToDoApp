@@ -41,21 +41,22 @@ fun Schedule(
             .background(MaterialTheme.colorScheme.background)
     ) {
         LazyColumn(modifier = Modifier.weight(1f)) {
+            val maxDate = if (calendarRepository.selMaxDate()!=null){
+                LocalDate.parse(calendarRepository.selMaxDate(),formatter)
+            }else{
+                LocalDate.parse(date,formatter)
+            }
             if (events != null) {
-                val maxDate = if (calendarRepository.selMaxDate()!=null){
-                    LocalDate.parse(calendarRepository.selMaxDate(),formatter)
-                }else{
-                    LocalDate.parse(date,formatter)
-                }
-                while (maxDate == LocalDate.parse(date, formatter)) {
+                while (maxDate >= LocalDate.parse(date, formatter)) {
+                    val dateNow = date
                     item {
-                        DateShow(dateD = date)
+                        DateShow(dateD = dateNow)
                     }
                     events!!.forEach { ev ->
                         if (ev.DateEnd != null) {
                             if (LocalDate.parse(ev.DateEnd, formatter) >= LocalDate.parse(date, formatter)) {
                                 item {
-                                    SingleEvent(navController = navController, event = ev)
+                                    SingleEvent(navController = navController, event = ev,dateNow)
                                 }
                             }
                         } else {

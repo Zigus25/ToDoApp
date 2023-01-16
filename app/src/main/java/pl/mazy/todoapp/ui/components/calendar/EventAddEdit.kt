@@ -54,8 +54,6 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
     val calendar = Calendar.getInstance()
     val options = toDoRepository.getTusk()
     var expanded by remember { mutableStateOf(false) }
-    var wantDate by remember { mutableStateOf(false) }
-    var wantTime by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val formatDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val formatTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
@@ -82,6 +80,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                 null
             )) }
 
+    var wantDate by remember { mutableStateOf(event.DateStart!=null) }
+    var wantTime by remember { mutableStateOf(event.TimeStart!=null) }
 
     Column(
         modifier = Modifier

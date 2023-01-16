@@ -21,10 +21,13 @@ import androidx.compose.ui.unit.sp
 import pl.mazy.todoapp.Event
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun SingleEvent(navController: NavController<Destinations>, event:Event){
+fun SingleEvent(navController: NavController<Destinations>, event:Event, DateNow: String? = null){
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     Column(modifier = Modifier
         .height(75.dp)
         .fillMaxWidth()
@@ -40,8 +43,17 @@ fun SingleEvent(navController: NavController<Destinations>, event:Event){
         Text(text = event.Name, fontSize = 24.sp)
         Row {
             Spacer(modifier = Modifier.weight(1f))
-            if (event.TimeStart!=null&&event.TimeEnd!=null)
-            Text(text = "${event.TimeStart.takeLast(5)} - ${event.TimeEnd.takeLast(5)}")
+            if (event.TimeStart!=null&&event.TimeEnd!=null) {
+                if (LocalDate.parse(event.DateStart,formatter)==LocalDate.parse(event.DateEnd,formatter)) {
+                    Text(text = "${event.TimeStart.takeLast(5)} - ${event.TimeEnd.takeLast(5)}")
+                }else{
+                    if (LocalDate.parse(event.DateStart,formatter)==LocalDate.parse(DateNow,formatter)){
+                        Text(text = event.TimeStart.takeLast(5))
+                    }else if (LocalDate.parse(event.DateEnd,formatter)==LocalDate.parse(DateNow,formatter)){
+                        Text(text = event.TimeEnd.takeLast(5))
+                    }
+                }
+            }
         }
     }
 }
