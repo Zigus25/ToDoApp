@@ -54,7 +54,7 @@ fun Schedule(
                     }
                     events!!.forEach { ev ->
                         if (ev.DateEnd != null) {
-                            if (LocalDate.parse(ev.DateEnd, formatter) >= LocalDate.parse(date, formatter)) {
+                            if (LocalDate.parse(ev.DateEnd, formatter) >= LocalDate.parse(dateNow, formatter)) {
                                 item {
                                     SingleEvent(navController = navController, event = ev,dateNow)
                                 }
