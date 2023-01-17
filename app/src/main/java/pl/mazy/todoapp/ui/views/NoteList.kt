@@ -35,9 +35,6 @@ fun NoteList(
 
     fun loadTodos() = scope.launch {
         notes = notesRepository.getNotes()
-        if (notes?.isEmpty() == true){
-            notesRepository.addNote("Hello","This is sample description")
-        }
     }
 
     LaunchedEffect (adding) {

@@ -369,7 +369,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                     }
 
                     //SubTusk Input
-                    if (event.Type){
+                    if (event.Type&&event.MainTaskID==null){
                         Column {
                             Row {
                                 OutlinedTextField(value = subTaskName, onValueChange = {subTaskName = it})

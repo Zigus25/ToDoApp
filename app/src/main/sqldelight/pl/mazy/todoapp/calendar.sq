@@ -35,7 +35,7 @@ DELETE FROM event WHERE Category = ?;
 selecFromtList:
 SELECT *
 FROM  event
-WHERE Category = ? AND Type = 1;
+WHERE Category = ? AND Type = 1 AND MainTaskID IS NULL;
 
 updateState:
 UPDATE event

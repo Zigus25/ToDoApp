@@ -80,12 +80,7 @@ fun TaskList(
             ){
                 if (todos!=null) {
                     items(todos ?: listOf()) { ev ->
-                        SingleTask(navController, ev,
-                            check = {
-                                toDoRepository.updateState(ev)
-                                change = !change
-                            }
-                        )
+                        Task(navController, ev)
                     }
                 }
             }
