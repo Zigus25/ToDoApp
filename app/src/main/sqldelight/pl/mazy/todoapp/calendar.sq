@@ -70,3 +70,6 @@ UPDATE event
 
 deleteEvent:
 DELETE FROM event WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color = ?;
+--
+-- selMyID:
+-- SELECT rowid FROM event WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color = ?;

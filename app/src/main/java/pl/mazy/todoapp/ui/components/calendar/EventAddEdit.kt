@@ -422,7 +422,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                                         Destinations.Schedule
                                     }
                                 )
-                                calendarRepository.addEvent(event)
+                                calendarRepository.addEvent(event,subList.toList())
                             } else {
                                 navController.navigate(
                                     if (isTask) {
@@ -431,7 +431,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                                         Destinations.Schedule
                                     }
                                 )
-                                calendarRepository.updateEvent(event, ev)
+                                calendarRepository.updateEvent(event, ev,subList.toList())
                             }
                         },
                         modifier = Modifier
