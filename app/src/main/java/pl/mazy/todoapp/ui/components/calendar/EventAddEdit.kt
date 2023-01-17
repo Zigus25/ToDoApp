@@ -5,11 +5,14 @@ package pl.mazy.todoapp.ui.components.calendar
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.graphics.Color.parseColor
+import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -44,12 +47,16 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:Boolean) {
 
     val toDoRepository: ToDoRepository by localDI().instance()
     val calendarRepository: CalendarRepository by localDI().instance()
+
+    val subList = remember { mutableListOf<String>() }
 
     val calendar = Calendar.getInstance()
     val options = toDoRepository.getTusk()
@@ -58,6 +65,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
     val formatDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val formatTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
     var colorPicker by remember { mutableStateOf(false) }
+    var subTaskName by remember { mutableStateOf("") }
 
     val defaultDate = "1970-01-01"
     val defaultTimeFE = "$defaultDate ${if(calendar[Calendar.HOUR_OF_DAY]<10){"0${calendar[Calendar.HOUR_OF_DAY]}"}else{calendar[Calendar.HOUR_OF_DAY]}}:00"
@@ -255,20 +263,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                                     LocalContext.current,
                                     { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
                                         event = event.copy(
-                                            DateStart = "$mYear-${
-                                                if (mMonth + 1 < 10) {
-                                                    "0${mMonth + 1}"
-                                                } else {
-                                                    mMonth + 1
-                                                }
-                                            }-${
-                                                if (mDayOfMonth < 10) {
-                                                    "0${mDayOfMonth}"
-                                                } else {
-                                                    mDayOfMonth
-                                                }
-                                            }"
-                                        )
+                                            DateStart = "$mYear-${if (mMonth + 1 < 10) { "0${mMonth + 1}" } else { mMonth + 1 }}-${if (mDayOfMonth < 10) { "0${mDayOfMonth}" } else { mDayOfMonth }}")
                                         if (LocalDate.parse(
                                                 event.DateEnd,
                                                 formatDate
@@ -278,9 +273,11 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                                         }
                                     }, dateF.year, dateF.monthValue - 1, dateF.dayOfMonth
                                 )
-                                Box(modifier = Modifier.padding(5.dp).clickable {
-                                    fDatePickerDialog.show()
-                                }) {
+                                Box(modifier = Modifier
+                                    .padding(5.dp)
+                                    .clickable {
+                                        fDatePickerDialog.show()
+                                    }) {
                                     event.DateStart?.let {
                                         Text(
                                             text = it,
@@ -293,26 +290,14 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                                     LocalContext.current,
                                     { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
                                         event = event.copy(
-                                            DateEnd = "$mYear-${
-                                                if (mMonth + 1 < 10) {
-                                                    "0${mMonth + 1}"
-                                                } else {
-                                                    mMonth + 1
-                                                }
-                                            }-${
-                                                if (mDayOfMonth < 10) {
-                                                    "0${mDayOfMonth}"
-                                                } else {
-                                                    mDayOfMonth
-                                                }
-                                            }"
-                                        )
-                                    }, dateT.year, dateT.monthValue - 1, dateT.dayOfMonth
+                                            DateEnd = "$mYear-${if (mMonth + 1 < 10) { "0${mMonth + 1}" } else { mMonth + 1 }}-${if (mDayOfMonth < 10) { "0${mDayOfMonth}" } else { mDayOfMonth }}") }, dateT.year, dateT.monthValue - 1, dateT.dayOfMonth
                                 )
-                                Box(modifier = Modifier.padding(5.dp).clickable {
-                                    tDatePickerDialog.datePicker.minDate = calendar.timeInMillis
-                                    tDatePickerDialog.show()
-                                }) {
+                                Box(modifier = Modifier
+                                    .padding(5.dp)
+                                    .clickable {
+                                        tDatePickerDialog.datePicker.minDate = calendar.timeInMillis
+                                        tDatePickerDialog.show()
+                                    }) {
                                     event.DateEnd?.let {
                                         Text(
                                             text = it,
@@ -330,25 +315,13 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                                         LocalContext.current,
                                         { _, mHour: Int, mMinute: Int ->
                                             event = event.copy(
-                                                TimeStart = "$defaultDate ${
-                                                    if (mHour < 10) {
-                                                        "0$mHour"
-                                                    } else {
-                                                        mHour
-                                                    }
-                                                }:${
-                                                    if (mMinute < 10) {
-                                                        "0$mMinute"
-                                                    } else {
-                                                        mMinute
-                                                    }
-                                                }"
-                                            )
-                                        }, timeF.hour, timeF.minute, true
+                                                TimeStart = "$defaultDate ${if (mHour < 10) { "0$mHour" } else { mHour }}:${if (mMinute < 10) { "0$mMinute" } else { mMinute }}") }, timeF.hour, timeF.minute, true
                                     )
-                                    Box(modifier = Modifier.padding(5.dp).clickable {
-                                        fTimePickerDialog.show()
-                                    }) {
+                                    Box(modifier = Modifier
+                                        .padding(5.dp)
+                                        .clickable {
+                                            fTimePickerDialog.show()
+                                        }) {
                                         event.TimeStart?.let {
                                             Text(
                                                 text = it.takeLast(5),
@@ -361,21 +334,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                                         LocalContext.current,
                                         { _, mHour: Int, mMinute: Int ->
                                             event = event.copy(
-                                                TimeEnd = "$defaultDate ${
-                                                    if (mHour < 10) {
-                                                        "0$mHour"
-                                                    } else {
-                                                        mHour
-                                                    }
-                                                }:${
-                                                    if (mMinute < 10) {
-                                                        "0$mMinute"
-                                                    } else {
-                                                        mMinute
-                                                    }
-                                                }"
-                                            )
-                                        }, timeT.hour, timeT.minute, true
+                                                TimeEnd = "$defaultDate ${if (mHour < 10) { "0$mHour" } else { mHour }}:${if (mMinute < 10) { "0$mMinute" } else { mMinute }}") }, timeT.hour, timeT.minute, true
                                     )
 
                                     val minDate = LocalDate.parse(event.DateStart, formatDate)
@@ -384,9 +343,11 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                                         minDate.monthValue - 1,
                                         minDate.dayOfMonth
                                     )
-                                    Box(modifier = Modifier.padding(5.dp).clickable {
-                                        tTimePickerDialog.show()
-                                    }) {
+                                    Box(modifier = Modifier
+                                        .padding(5.dp)
+                                        .clickable {
+                                            tTimePickerDialog.show()
+                                        }) {
                                         event.TimeEnd?.let {
                                             Text(
                                                 text = it.takeLast(5),
@@ -399,11 +360,24 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                         }
                     }
 
-                    //SubTusk Input/Edit
+                    //SubTusk Input
                     if (event.Type){
                         Column {
-                            //TODO Adding sub task to list
-                            //TODO showing sub tasks from generated list
+                            Row {
+                                OutlinedTextField(value = subTaskName, onValueChange = {subTaskName = it})
+                                Button(onClick = {
+                                    subList.add(subTaskName)
+                                    Log.i("",subList.toString())
+                                    subTaskName = ""
+                                }) {
+                                    Text(text = "Add")
+                                }
+                            }
+                            LazyColumn{
+                                items(subList){
+                                    Text(text = it, color = MaterialTheme.colorScheme.onBackground)
+                                }
+                            }
                         }
                     }
                 }
