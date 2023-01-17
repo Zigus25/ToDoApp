@@ -56,7 +56,15 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
     val toDoRepository: ToDoRepository by localDI().instance()
     val calendarRepository: CalendarRepository by localDI().instance()
 
+    var canAddSL by remember { mutableStateOf(true) }
+
     val subList = remember { mutableListOf<String>() }
+    if (ev!=null&&canAddSL){
+        calendarRepository.selectSubList(ev.id).forEach{
+            subList.add(it)
+        }
+        canAddSL = false
+    }
 
     val calendar = Calendar.getInstance()
     val options = toDoRepository.getTusk()
@@ -75,6 +83,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
     var event by remember {
         mutableStateOf(
             ev?:Event(
+                0,
                 "",
                 "",
                 options[0],
@@ -87,7 +96,6 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                 "#2471a3",
                 null
             )) }
-
     var wantDate by remember { mutableStateOf(event.DateStart!=null) }
     var wantTime by remember { mutableStateOf(event.TimeStart!=null) }
     if (!event.Type){
@@ -138,7 +146,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                             .clickable { expanded = true }
                             .padding(start = 20.dp)) {
                             Text(
-                                text = event.Categoty,
+                                text = event.Category,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                             Icon(
@@ -154,7 +162,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                                     DropdownMenuItem(
                                         text = { Text(selectionOption) },
                                         onClick = {
-                                            event = event.copy(Categoty = selectionOption)
+                                            event = event.copy(Category = selectionOption)
                                             expanded = false
                                         }
                                     )

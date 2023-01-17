@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS event(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     Name TEXT NOT NULL,
     Description TEXT NOT NULL ,
-    Categoty TEXT NOT NULL,
+    Category TEXT NOT NULL,
     TimeStart TEXT,
     TimeEnd TEXT,
     DateStart TEXT,
@@ -25,7 +26,7 @@ INSERT INTO category(name) VALUES (?);
 
 deleteCategory{
 DELETE FROM category WHERE  name = ?;
-DELETE FROM event WHERE Categoty = ?;
+DELETE FROM event WHERE Category = ?;
 }
 
 
@@ -34,12 +35,12 @@ DELETE FROM event WHERE Categoty = ?;
 selecFromtList:
 SELECT *
 FROM  event
-WHERE Categoty = ? AND Type = 1;
+WHERE Category = ? AND Type = 1;
 
 updateState:
 UPDATE event
 SET Checked = ((Checked | 1) - (Checked & 1))
-WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color = ?;
+WHERE id = ?;
 
 
 
@@ -50,14 +51,14 @@ selMaxDateEnd:
 SELECT MAX(d.DateEnd) FROM (SELECT * FROM event WHERE DateStart >= ? OR DateEnd >= ? ORDER BY DateStart,TimeStart) d;
 
 addEvent:
-INSERT INTO event VALUES (?,?,?,?,?,?,?,?,?,?,?);
+INSERT INTO event (Name,Description,Category,TimeStart,TimeEnd,DateStart,DateEnd,Type,Checked,Color,MainTaskID) VALUES (?,?,?,?,?,?,?,?,?,?,?);
 
 updateEvent:
 UPDATE event
     SET
         Name = ?,
         Description = ?,
-        Categoty = ?,
+        Category = ?,
         TimeStart = ?,
         TimeEnd = ?,
         DateStart = ?,
@@ -66,10 +67,18 @@ UPDATE event
         Checked = ?,
         Color = ?,
         MainTaskID = ?
-    WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color = ?;
+    WHERE Name = ? AND Category = ? AND Description = ? AND DateStart = ? AND Color = ?;
 
-deleteEvent:
-DELETE FROM event WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color = ?;
---
--- selMyID:
--- SELECT rowid FROM event WHERE Name = ? AND Categoty = ? AND Description = ? AND DateStart = ? AND Color = ?;
+deleteEvent{
+DELETE FROM event WHERE id = ?;
+DELETE FROM event WHERE MainTaskID = ?;
+}
+
+selMyID:
+SELECT id FROM event WHERE Name = ? AND Category = ? AND Description = ? AND DateStart = ? AND Color = ?;
+
+selEventByID:
+SELECT * FROM event WHERE MainTaskID = ?;
+
+selNameByID:
+SELECT Name FROM event WHERE MainTaskID = ?;

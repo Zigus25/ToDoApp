@@ -16,13 +16,7 @@ class ToDoRepository(
         database.calendarQueries.selectCategorys().executeAsList()
 
     fun updateState(event: Event) =
-        database.calendarQueries.updateState(
-            event.Name,
-            event.Categoty,
-            event.Description,
-            event.DateStart,
-            event.Color
-        )
+        database.calendarQueries.updateState(event.id)
 
     fun deleteGroup(name: String) {
         database.calendarQueries.deleteCategory(name, name)
