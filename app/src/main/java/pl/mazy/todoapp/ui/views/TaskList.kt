@@ -13,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
@@ -56,12 +55,16 @@ fun TaskList(
     loadTodos()
     Column(modifier = Modifier.fillMaxSize()){
         val i = titles.indexOf(category)
-        ScrollableTabRow(selectedTabIndex = i,edgePadding = 0.dp) {
-            titles.forEachIndexed{index,title ->
+        ScrollableTabRow(
+            selectedTabIndex = i, edgePadding = 30.dp
+        ) {
+            titles.forEachIndexed { index, title ->
                 Tab(
+                    modifier = Modifier.weight(1f),
                     selected = i == index,
                     onClick = { category = title },
-                    text = { Text(text = title,maxLines = 1) })
+                    unselectedContentColor = MaterialTheme.colorScheme.onBackground,
+                    text = { Text(text = title, maxLines = 1) })
             }
             Tab(
                 selected = selAdd,
@@ -69,7 +72,8 @@ fun TaskList(
                     selAdd = true
                     addingGroup = true
                 },
-                text = { Text(text = "Add new",maxLines = 1) })
+                unselectedContentColor = MaterialTheme.colorScheme.onBackground,
+                text = { Text(text = "Add new", maxLines = 1) })
         }
         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.BottomCenter){
             LazyColumn (
@@ -86,7 +90,7 @@ fun TaskList(
             if (addingGroup){
                 Box(modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.7F))
+                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8F))
                     .blur(8.dp)
                     .clickable { addingGroup = false })
                 GroupAdd {addingGroup = false}

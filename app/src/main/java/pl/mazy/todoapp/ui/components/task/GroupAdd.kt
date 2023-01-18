@@ -2,7 +2,6 @@
 
 package pl.mazy.todoapp.ui.components.task
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -26,39 +25,35 @@ fun GroupAdd(closeAdder: () -> Unit = {}){
     val toDoRepository: ToDoRepository by localDI().instance()
     var text by remember { mutableStateOf("") }
 
-    Card(
-        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary),
-        modifier = Modifier.padding(10.dp).fillMaxWidth()
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
 
-        ) {
-            Row{
-                OutlinedTextField(
-                    modifier = Modifier
-                        .padding(5.dp)
-                        .fillMaxWidth(),
-                    value = text,
-                    textStyle= TextStyle(
-                        color = MaterialTheme.colorScheme.onBackground,
-                    ),
-                    onValueChange = { text = it },
-                    keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(
-                        FocusDirection.Down) }),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    label = { Text("New Group") },
-                )
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(modifier = Modifier.weight(1f))
-                Button(onClick = {
-                    toDoRepository.addCategory(text)
-                    closeAdder()},
-                    modifier = Modifier.padding(end = 10.dp)) {
-                    Text(text = "Save")
-                }
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+    ) {
+        Row{
+            OutlinedTextField(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .fillMaxWidth(),
+                value = text,
+                textStyle= TextStyle(
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
+                onValueChange = { text = it },
+                keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(
+                    FocusDirection.Down) }),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                label = { Text("New Group") },
+            )
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Spacer(modifier = Modifier.weight(1f))
+            Button(onClick = {
+                toDoRepository.addCategory(text)
+                closeAdder()},
+                modifier = Modifier.padding(end = 10.dp)) {
+                Text(text = "Save")
             }
         }
     }

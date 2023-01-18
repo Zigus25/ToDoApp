@@ -1,3 +1,5 @@
+@file:Suppress("OPT_IN_IS_NOT_ENABLED")
+
 package pl.mazy.todoapp
 
 import android.os.Bundle
@@ -71,7 +73,7 @@ class MainActivity : ComponentActivity() {
                     ModalNavigationDrawer(
                         drawerState = drawerState,
                         drawerContent = {
-                            Spacer(Modifier.height(12.dp))
+                            Spacer(Modifier.weight(1f))
                             NavigationDrawerItem(
                                 icon = {Icon(
                                     Icons.Filled.Checklist,
@@ -114,6 +116,7 @@ class MainActivity : ComponentActivity() {
                                 },
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                             )
+                            Spacer(modifier = Modifier.padding(25.dp))
                         },
                         content = {
                             Column {

@@ -75,7 +75,7 @@ DELETE FROM event WHERE MainTaskID = ?;
 }
 
 selMyID:
-SELECT id FROM event WHERE Name = ? AND Category = ? AND Description = ? AND DateStart = ? AND Color = ?;
+SELECT max(id) FROM event;
 
 selEventByID:
 SELECT * FROM event WHERE MainTaskID = ?;
