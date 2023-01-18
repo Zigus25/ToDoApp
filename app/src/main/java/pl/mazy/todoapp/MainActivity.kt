@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.SupervisedUserCircle
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,11 +22,13 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import org.kodein.di.compose.withDI
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
@@ -48,13 +49,22 @@ class MainActivity : ComponentActivity() {
                     var program by remember {
                         mutableStateOf("Task List")
                     }
+
+
+
                     val controller: NavController<Destinations> by remember {
                         mutableStateOf(NavController(Destinations.TaskList))
                     }
                     BackHandler(!controller.isLast()) {
                         controller.pop()
                     }
-                    var drawerState = rememberDrawerState(DrawerValue.Closed)
+                    val scope = rememberCoroutineScope()
+                    val drawerState = rememberDrawerState(DrawerValue.Closed)
+                    BackHandler( enabled = drawerState.isOpen) {
+                        scope.launch {
+                            drawerState.close()
+                        }
+                    }
                     ModalNavigationDrawer(
                         drawerState = drawerState,
                         drawerContent = {
@@ -64,7 +74,7 @@ class MainActivity : ComponentActivity() {
                                 selected = program == "Task List",
                                 onClick = {
                                     program = "Task List"
-                                    drawerState = DrawerState(DrawerValue.Closed)
+                                    scope.launch { drawerState.close() }
                                     controller.navigate(Destinations.TaskList)
                                 },
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -74,7 +84,7 @@ class MainActivity : ComponentActivity() {
                                 selected = program == "Notes",
                                 onClick = {
                                     program = "Notes"
-                                    drawerState = DrawerState(DrawerValue.Closed)
+                                    scope.launch { drawerState.close() }
                                     controller.navigate(Destinations.Notes)
                                 },
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -84,7 +94,7 @@ class MainActivity : ComponentActivity() {
                                 selected = program == "Calendar",
                                 onClick = {
                                     program = "Calendar"
-                                    drawerState = DrawerState(DrawerValue.Closed)
+                                    scope.launch { drawerState.close() }
                                     controller.navigate(Destinations.Schedule)
                                 },
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
@@ -96,7 +106,7 @@ class MainActivity : ComponentActivity() {
                                     .fillMaxWidth()
                                     .background(MaterialTheme.colorScheme.background), verticalAlignment = Alignment.CenterVertically) {
                                     IconButton(onClick = {
-                                        drawerState = DrawerState(DrawerValue.Open)
+                                        scope.launch { drawerState.open() }
                                     }) {
                                         Icon(Icons.Filled.Menu, contentDescription = "Menu Icon", tint = MaterialTheme.colorScheme.onBackground)
                                     }
