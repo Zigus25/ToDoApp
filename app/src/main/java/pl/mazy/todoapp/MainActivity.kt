@@ -138,10 +138,19 @@ class MainActivity : ComponentActivity() {
                                 }
                                 Box(modifier = Modifier.weight(1f)) {
                                     when (val x = controller.currentBackStackEntry.value) {
-                                        is Destinations.TaskList -> TaskList(controller)
+                                        is Destinations.TaskList ->{
+                                            TaskList(controller)
+                                            program = "Tasks"
+                                        }
                                         is Destinations.NoteDetails -> NoteAdding(controller,x.name,x.des)
-                                        is Destinations.Notes -> NoteList(controller)
-                                        is Destinations.Schedule -> Schedule(controller)
+                                        is Destinations.Notes ->{
+                                            NoteList(controller)
+                                            program = "Notes"
+                                        }
+                                        is Destinations.Schedule -> {
+                                            Schedule(controller)
+                                            program = "Calendar"
+                                        }
                                         is Destinations.EventAdd -> EventAddEdit(controller,x.event,x.isTask)
                                         is Destinations.CreateNote -> NoteAdding(controller,"","")
                                     }
