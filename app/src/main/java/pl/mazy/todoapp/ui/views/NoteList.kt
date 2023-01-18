@@ -61,12 +61,9 @@ fun NoteList(
                 NoteAdding(navController)
             }
         }
-        BottomAppBar {
-            IconButton(onClick = { /* doSomething() */ }) {
-                Icon(Icons.Filled.Menu, contentDescription = "Menu Icon")
-            }
+        Row(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)) {
             Spacer(modifier = Modifier.weight(1f))
-            Box(modifier = Modifier.weight(1f)) {
+            Box(modifier = Modifier.padding(15.dp)) {
                 SmallFloatingActionButton(
                     onClick = { navController.navigate(Destinations.CreateNote) },
                     modifier = Modifier
@@ -78,19 +75,6 @@ fun NoteList(
                         contentDescription = null,
                     )
                 }
-            }
-
-            IconButton(onClick = { navController.navigate(Destinations.TaskList) }) {
-                Icon(
-                    Icons.Filled.Checklist,
-                    contentDescription = "Calendar Icon",
-                )
-            }
-            IconButton(onClick = { navController.navigate(Destinations.Schedule) }) {
-                Icon(
-                    Icons.Filled.CalendarMonth,
-                    contentDescription = "Calendar Icon",
-                )
             }
         }
     }

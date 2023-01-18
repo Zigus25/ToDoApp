@@ -7,6 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.SupervisedUserCircle
 import androidx.compose.material3.DrawerValue
@@ -70,16 +73,24 @@ class MainActivity : ComponentActivity() {
                         drawerContent = {
                             Spacer(Modifier.height(12.dp))
                             NavigationDrawerItem(
-                                label = { Text("Task List") },
-                                selected = program == "Task List",
+                                icon = {Icon(
+                                    Icons.Filled.Checklist,
+                                    contentDescription = "Calendar Icon",
+                                )},
+                                label = { Text("Tasks") },
+                                selected = program == "Tasks",
                                 onClick = {
-                                    program = "Task List"
+                                    program = "Tasks"
                                     scope.launch { drawerState.close() }
                                     controller.navigate(Destinations.TaskList)
                                 },
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                             )
                             NavigationDrawerItem(
+                                icon = {Icon(
+                                    Icons.Filled.Edit,
+                                    contentDescription = "Calendar Icon",
+                                )},
                                 label = { Text("Notes") },
                                 selected = program == "Notes",
                                 onClick = {
@@ -90,6 +101,10 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                             )
                             NavigationDrawerItem(
+                                icon = {Icon(
+                                    Icons.Filled.CalendarMonth,
+                                    contentDescription = "Calendar Icon",
+                                )},
                                 label = { Text("Calendar") },
                                 selected = program == "Calendar",
                                 onClick = {
