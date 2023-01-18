@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.sp
 import org.kodein.di.compose.withDI
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
@@ -65,8 +66,8 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                             Spacer(modifier = Modifier.weight(1f))
-                            Row {
-                                Text(text = program,modifier = Modifier.clickable { expandedP = true }, color = MaterialTheme.colorScheme.onBackground)
+                            Row(verticalAlignment = Alignment.CenterVertically,modifier = Modifier.clickable { expandedP = true }) {
+                                Text(text = program, fontSize = 24.sp, color = MaterialTheme.colorScheme.onBackground)
                                 Icon(
                                     imageVector = Icons.Default.ExpandMore,
                                     contentDescription = null,
