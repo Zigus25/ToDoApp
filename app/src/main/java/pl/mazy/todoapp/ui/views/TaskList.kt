@@ -91,20 +91,33 @@ fun TaskList(
                     .clickable { addingGroup = false })
                 GroupAdd {addingGroup = false}
             }
-            if (!addingGroup)
-            Row {
-                Spacer(modifier = Modifier.weight(1f))
-                Box(modifier = Modifier.padding(15.dp)) {
-                    SmallFloatingActionButton(
-                        onClick = { navController.navigate(Destinations.EventAdd(null, true)) },
-                        modifier = Modifier
-                            .height(50.dp)
-                            .width(50.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = null,
-                        )
+            if (!addingGroup) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if(titles.size>1) {
+                        IconButton(onClick = {
+                            toDoRepository.deleteGroup(category)
+                            titles = toDoRepository.getTusk()
+                            category = titles[0]
+                        }) {
+                            Icon(
+                                Icons.Filled.Delete,
+                                contentDescription = "Delete Icon",
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.weight(1f))
+                    Box(modifier = Modifier.padding(15.dp)) {
+                        SmallFloatingActionButton(
+                            onClick = { navController.navigate(Destinations.EventAdd(null, true)) },
+                            modifier = Modifier
+                                .height(50.dp)
+                                .width(50.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = null,
+                            )
+                        }
                     }
                 }
             }
