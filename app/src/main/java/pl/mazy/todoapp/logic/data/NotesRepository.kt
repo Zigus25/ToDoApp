@@ -7,20 +7,18 @@ class NotesRepository (
     private var database: Database
 ) {
     fun getNotes(): List<Notes> =
-        database.taskQueries.selectNotes().executeAsList().map {
-            it
-        }
+        database.noteQueries.selectNotes().executeAsList()
 
-    fun addNote(name:String,description:String) =
-        database.taskQueries.insert(name,description,false)
+    fun addNote(note:Notes) =
+        database.noteQueries.insert(note.name,note.description,note.archivied)
 
-    fun updateArchive(name: String) =
-        database.taskQueries.updateArchive(name)
+    fun updateArchive(id: Long) =
+        database.noteQueries.updateArchive(id)
 
-    fun deleteNote(name: String,description: String) =
-        database.taskQueries.deleteNote(name, description)
+    fun deleteNote(id:Long) =
+        database.noteQueries.deleteNote(id)
 
-    fun updateNote(name: String,description: String, oldName:String) =
-        database.taskQueries.updateNote(name,description,oldName)
+    fun updateNote(note:Notes) =
+        database.noteQueries.updateNote(note.name,note.description,note.id)
 
 }

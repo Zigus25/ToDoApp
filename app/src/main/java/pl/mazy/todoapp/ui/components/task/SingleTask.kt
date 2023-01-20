@@ -33,6 +33,7 @@ fun Task(
         border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary),
         modifier = Modifier
             .padding(10.dp)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         SingleTask(navController = navController, event = ev) {
             toDoRepository.updateState(ev)

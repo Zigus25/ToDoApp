@@ -1,4 +1,5 @@
 CREATE TABLE IF NOT EXISTS notes (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     description TEXT NOT NULL,
     archivied INTEGER AS Boolean NOT NULL
@@ -10,19 +11,19 @@ INSERT INTO notes(name,description,archivied)
 VALUES (?,?,?);
 
 selectNotes:
-SELECT name,description,archivied
+SELECT *
 FROM  notes;
 
 updateArchive:
 UPDATE notes
 SET archivied = ((archivied | 1) - (archivied & 1))
-WHERE name = ?;
+WHERE id = ?;
 
 updateNote:
 UPDATE notes
 SET name = ?, description = ?
-WHERE name = ?
+WHERE id = ?
 ;
 
 deleteNote:
-DELETE FROM notes WHERE name = ? AND description = ?;
+DELETE FROM notes WHERE id = ?;

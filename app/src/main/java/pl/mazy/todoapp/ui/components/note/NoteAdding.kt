@@ -16,6 +16,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
+import pl.mazy.todoapp.Event
+import pl.mazy.todoapp.Notes
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.data.NotesRepository
 import pl.mazy.todoapp.logic.navigation.NavController
@@ -23,13 +25,19 @@ import pl.mazy.todoapp.logic.navigation.NavController
 @Composable
 fun NoteAdding(
     navController: NavController<Destinations>,
-    nameM:String = "",
-    des:String = ""
+    noteP: Notes?
 ){
     val focusManager = LocalFocusManager.current
     val noteRepository: NotesRepository by localDI().instance()
-    var text by remember { mutableStateOf(des) }
-    var name by remember { mutableStateOf(nameM) }
+    var note by remember {
+        mutableStateOf(
+            noteP?: Notes(
+                0,
+                "",
+                "",
+                false,
+            )
+        ) }
 
 
 
@@ -42,11 +50,11 @@ fun NoteAdding(
             modifier = Modifier
                 .padding(5.dp)
                 .fillMaxWidth(),
-            value = name,
+            value = note.name,
             textStyle= TextStyle(
                 color = MaterialTheme.colorScheme.onBackground,
             ),
-            onValueChange = { name = it },
+            onValueChange = { note = note.copy(name = it) },
             keyboardActions = KeyboardActions(onDone = { focusManager.moveFocus(
                 FocusDirection.Down) }),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -58,19 +66,19 @@ fun NoteAdding(
                 .weight(1f)
                 .fillMaxWidth()
                 .padding(5.dp),
-            value = text,
+            value = note.description,
             textStyle= TextStyle(
                 color = MaterialTheme.colorScheme.onBackground,
             ),
-            onValueChange = { text = it },
+            onValueChange = { note = note.copy(description = it) },
             label = { Text("Description") }
         )
 
         BottomAppBar {
-            if (nameM.isNotEmpty()){
+            if (noteP != null){
                 IconButton(onClick = {
                     navController.navigate(Destinations.Notes)
-                    noteRepository.deleteNote(nameM,des)
+                    noteRepository.deleteNote(noteP.id)
                 }) {
                     Icon(Icons.Filled.Delete, contentDescription = "Menu Icon")
                 }
@@ -79,12 +87,12 @@ fun NoteAdding(
             Box(modifier = Modifier.padding(10.dp)) {
                 SmallFloatingActionButton(
                     onClick = {
-                        if(nameM.isEmpty()){
+                        if(noteP != null){
                             navController.navigate(Destinations.Notes)
-                            noteRepository.addNote(name,text)
+                            noteRepository.addNote(note)
                         }else{
                             navController.navigate(Destinations.Notes)
-                            noteRepository.updateNote(name,text,nameM)
+                            noteRepository.updateNote(note)
                         }
                     },
                     modifier = Modifier

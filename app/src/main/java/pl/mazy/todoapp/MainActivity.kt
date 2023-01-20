@@ -144,7 +144,7 @@ class MainActivity : ComponentActivity() {
                                             TaskList(controller)
                                             program = "Tasks"
                                         }
-                                        is Destinations.NoteDetails -> NoteAdding(controller,x.name,x.des)
+                                        is Destinations.NoteDetails -> NoteAdding(controller,x.noteP)
                                         is Destinations.Notes ->{
                                             NoteList(controller)
                                             program = "Notes"
@@ -154,7 +154,6 @@ class MainActivity : ComponentActivity() {
                                             program = "Calendar"
                                         }
                                         is Destinations.EventAdd -> EventAddEdit(controller,x.event,x.isTask)
-                                        is Destinations.CreateNote -> NoteAdding(controller,"","")
                                     }
                                 }
                             }

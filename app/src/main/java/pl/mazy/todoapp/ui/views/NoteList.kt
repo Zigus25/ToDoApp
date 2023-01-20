@@ -4,7 +4,6 @@ package pl.mazy.todoapp.ui.views
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -15,10 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.logic.navigation.Destinations
@@ -33,21 +29,12 @@ fun NoteList(
     navController: NavController<Destinations>,
 ){
     val notesRepository: NotesRepository by localDI().instance()
-    var adding by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    var notes: List<Notes>? by remember { mutableStateOf(null) }
+    val notes: List<Notes>? by remember { mutableStateOf(notesRepository.getNotes()) }
 
-    fun loadTodos() = scope.launch {
-        notes = notesRepository.getNotes()
-    }
-
-    LaunchedEffect (adding) {
-        loadTodos()
-    }
     Scaffold(
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { navController.navigate(Destinations.CreateNote) },
+                    onClick = { navController.navigate(Destinations.NoteDetails(null)) },
                     modifier = Modifier
                         .height(50.dp)
                         .width(50.dp)
@@ -77,14 +64,6 @@ fun NoteList(
                     items(notes ?: listOf()) { note ->
                         SingleNote(note, navController)
                     }
-                }
-                if (adding) {
-                    Box(modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.7F))
-                        .blur(8.dp)
-                        .clickable { adding = false })
-                    NoteAdding(navController)
                 }
             }
         }
