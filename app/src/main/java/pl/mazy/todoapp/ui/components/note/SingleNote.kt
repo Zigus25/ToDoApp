@@ -47,7 +47,7 @@ fun SingleNote(
             Text(text = note.description,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(start = 7.dp, end = 7.dp, bottom = 8.dp).fillMaxWidth(),
-                maxLines = 5,
+                maxLines = 20,
                 overflow = TextOverflow.Ellipsis)
         }
     }

@@ -1,3 +1,5 @@
+@file:Suppress("OPT_IN_IS_NOT_ENABLED")
+
 package pl.mazy.todoapp.ui.views
 
 import androidx.compose.foundation.background
@@ -22,6 +24,7 @@ import pl.mazy.todoapp.ui.components.calendar.schedule.SingleEvent
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Schedule(
     navController: NavController<Destinations>,
@@ -43,39 +46,55 @@ fun Schedule(
         events = calendarRepository.selEvents()
     }
     loadEvents()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-
-        LazyColumn(modifier = Modifier.weight(1f)) {
-            if (events != null) {
-                items(listDates(date,maxDate)){
-                    val e = events!!.filter { ev-> ev.DateEnd != null&&LocalDate.parse(ev.DateEnd, formatter) >= it && LocalDate.parse(ev.DateStart, formatter) <= it }
-                    if (e.isNotEmpty()||it == date)
-                        DateShow(dateD = it.toString())
-                    e.forEach { ev ->
-                        SingleEvent(navController = navController, event = ev, it)
-                    }
-                }
-            } else {
-                item { DateShow(LocalDate.now().format(formatter).toString()) }
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { navController.navigate(Destinations.EventAdd(null, false)) },
+                modifier = Modifier
+                    .height(50.dp)
+                    .width(50.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                )
             }
-        }
-        Row(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)) {
-            Spacer(modifier = Modifier.weight(1f))
-            Box(modifier = Modifier.padding(15.dp)) {
-                SmallFloatingActionButton(
-                    onClick = { navController.navigate(Destinations.EventAdd(null, false)) },
-                    modifier = Modifier
-                        .height(50.dp)
-                        .width(50.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                    )
+        },
+        floatingActionButtonPosition = FabPosition.End
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                if (events != null) {
+                    items(listDates(date, maxDate)) {
+                        val e = events!!.filter { ev ->
+                            ev.DateEnd != null && LocalDate.parse(
+                                ev.DateEnd,
+                                formatter
+                            ) >= it && LocalDate.parse(ev.DateStart, formatter) <= it
+                        }
+                        if (e.isNotEmpty() || it == date)
+                            DateShow(dateD = it.toString())
+                        e.forEach { ev ->
+                            SingleEvent(navController = navController, event = ev, it)
+                        }
+                    }
+                } else {
+                    item { DateShow(LocalDate.now().format(formatter).toString()) }
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+                Box(modifier = Modifier.padding(15.dp)) {
+
                 }
             }
         }

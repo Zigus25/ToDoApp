@@ -1,11 +1,14 @@
+@file:Suppress("OPT_IN_IS_NOT_ENABLED")
+
 package pl.mazy.todoapp.ui.views
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -24,6 +27,7 @@ import pl.mazy.todoapp.logic.data.NotesRepository
 import pl.mazy.todoapp.logic.navigation.NavController
 import pl.mazy.todoapp.ui.components.note.*
 
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun NoteList(
     navController: NavController<Destinations>,
@@ -40,31 +44,9 @@ fun NoteList(
     LaunchedEffect (adding) {
         loadTodos()
     }
-    Column(modifier = Modifier.fillMaxSize()) {
-        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.BottomCenter) {
-            LazyVerticalGrid(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background),
-                columns = GridCells.Adaptive(150.dp)
-            ) {
-                items(notes ?: listOf()) { note ->
-                    SingleNote(note,navController)
-                }
-            }
-            if (adding) {
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.7F))
-                    .blur(8.dp)
-                    .clickable { adding = false })
-                NoteAdding(navController)
-            }
-        }
-        Row(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)) {
-            Spacer(modifier = Modifier.weight(1f))
-            Box(modifier = Modifier.padding(15.dp)) {
-                SmallFloatingActionButton(
+    Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(
                     onClick = { navController.navigate(Destinations.CreateNote) },
                     modifier = Modifier
                         .height(50.dp)
@@ -74,6 +56,35 @@ fun NoteList(
                         imageVector = Icons.Default.Add,
                         contentDescription = null,
                     )
+                }
+            },
+        floatingActionButtonPosition = FabPosition.End
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.BottomCenter) {
+                LazyVerticalStaggeredGrid(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background),
+                    columns = StaggeredGridCells.Adaptive(150.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(notes ?: listOf()) { note ->
+                        SingleNote(note, navController)
+                    }
+                }
+                if (adding) {
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.7F))
+                        .blur(8.dp)
+                        .clickable { adding = false })
+                    NoteAdding(navController)
                 }
             }
         }

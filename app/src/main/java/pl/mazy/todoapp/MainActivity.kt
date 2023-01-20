@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
                     ModalNavigationDrawer(
                         drawerState = drawerState,
                         drawerContent = {
-                            Spacer(Modifier.weight(1f))
+                            Spacer(Modifier.padding(25.dp))
                             NavigationDrawerItem(
                                 icon = {Icon(
                                     Icons.Filled.Checklist,
@@ -116,7 +116,6 @@ class MainActivity : ComponentActivity() {
                                 },
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                             )
-                            Spacer(modifier = Modifier.padding(25.dp))
                         },
                         content = {
                             Column {
