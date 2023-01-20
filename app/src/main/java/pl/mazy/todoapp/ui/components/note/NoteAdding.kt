@@ -34,8 +34,7 @@ fun NoteAdding(
             noteP?: Notes(
                 0,
                 "",
-                "",
-                false,
+                ""
             )
         ) }
 
@@ -87,7 +86,7 @@ fun NoteAdding(
             Box(modifier = Modifier.padding(10.dp)) {
                 SmallFloatingActionButton(
                     onClick = {
-                        if(noteP != null){
+                        if(noteP == null){
                             navController.navigate(Destinations.Notes)
                             noteRepository.addNote(note)
                         }else{

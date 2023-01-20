@@ -10,10 +10,7 @@ class NotesRepository (
         database.noteQueries.selectNotes().executeAsList()
 
     fun addNote(note:Notes) =
-        database.noteQueries.insert(note.name,note.description,note.archivied)
-
-    fun updateArchive(id: Long) =
-        database.noteQueries.updateArchive(id)
+        database.noteQueries.insert(note.name,note.description)
 
     fun deleteNote(id:Long) =
         database.noteQueries.deleteNote(id)
