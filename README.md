@@ -9,7 +9,7 @@ This is project that combines three apps
 * Kotlin
 * Material theme 3
 * Android 8.0
-* Gradle
+* Jetpack Compose
 * SQLDeLight
 ## Documentation
 TBD
