@@ -1,15 +1,16 @@
-@file:Suppress("OPT_IN_IS_NOT_ENABLED")
-
 package pl.mazy.todoapp.ui.components.task
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.RadioButtonChecked
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,8 +40,7 @@ fun Task(
             toDoRepository.updateState(ev)
         }
         Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 20.dp)) {
+            .fillMaxWidth()) {
             toDoRepository.selSubListByID(ev.id).forEach{
                 SingleTask(navController = navController, event = it) {
                     toDoRepository.updateState(it)
@@ -62,9 +62,17 @@ fun SingleTask(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .clickable { navController.navigate(Destinations.EventAdd(ev, ev.Type)) },
+            .clickable { navController.navigate(Destinations.EventAdd(ev, ev.Type)) }
+            .padding(start = if (ev.MainTaskID != null){30.dp}else{5.dp}),
         verticalAlignment = Alignment.CenterVertically
     ){
+        if (ev.MainTaskID != null){
+            Icon(
+                Icons.Filled.RadioButtonChecked,
+                tint = if (!ev.Checked){MaterialTheme.colorScheme.onBackground}else{ Color.Red},
+                contentDescription = "",
+            )
+        }
         Text(text = ev.Name,
             fontSize = 18.sp,
             color = MaterialTheme.colorScheme.onBackground,

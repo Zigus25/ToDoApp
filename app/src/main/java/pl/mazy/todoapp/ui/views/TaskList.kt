@@ -1,6 +1,7 @@
 package pl.mazy.todoapp.ui.views
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,7 +27,7 @@ import pl.mazy.todoapp.ui.components.task.*
 @Composable
 fun TaskList(
     navController: NavController<Destinations>,
-){
+) {
     var selAdd = false
     val toDoRepository: ToDoRepository by localDI().instance()
     var titles = toDoRepository.getTusk()
@@ -34,7 +35,7 @@ fun TaskList(
     val scope = rememberCoroutineScope()
     var todos: List<Event>? by remember { mutableStateOf(null) }
 
-    if (titles.isEmpty()){
+    if (titles.isEmpty()) {
         toDoRepository.addCategory("Main")
     }
 
@@ -48,56 +49,62 @@ fun TaskList(
         todos = toDoRepository.getToDos(category)
     }
 
-    LaunchedEffect (category) {
+    LaunchedEffect(category) {
         refreshTusk()
         loadTodos()
     }
     loadTodos()
-    Column(modifier = Modifier.fillMaxSize()){
+    Column(modifier = Modifier.fillMaxSize()) {
         val i = titles.indexOf(category)
         ScrollableTabRow(
-            selectedTabIndex = i, edgePadding = 30.dp
+            selectedTabIndex = i, edgePadding = 15.dp, modifier = Modifier.fillMaxWidth(), divider = {}
         ) {
             titles.forEachIndexed { index, title ->
-                Tab(
-                    modifier = Modifier.weight(1f),
+                Tab(modifier = Modifier.weight(1f),
                     selected = i == index,
                     onClick = { category = title },
                     unselectedContentColor = MaterialTheme.colorScheme.onBackground,
                     text = { Text(text = title, maxLines = 1) })
             }
-            Tab(
-                selected = selAdd,
+            Tab(selected = selAdd,
                 onClick = {
                     selAdd = true
                     addingGroup = true
                 },
                 unselectedContentColor = MaterialTheme.colorScheme.onBackground,
-                text = { Text(text = "Add new", maxLines = 1) })
+                text = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "Add new ", maxLines = 1)
+                        Icon(
+                            Icons.Filled.Add,
+                            contentDescription = "Add Icon",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                }})
         }
-        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.BottomCenter){
-            LazyColumn (
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.BottomCenter) {
+            LazyColumn(
                 Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background)
-            ){
-                if (todos!=null) {
+            ) {
+                if (todos != null) {
                     items(todos ?: listOf()) { ev ->
                         Task(navController, ev)
                     }
                 }
             }
-            if (addingGroup){
+            if (addingGroup) {
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8F))
                     .blur(8.dp)
                     .clickable { addingGroup = false })
-                GroupAdd {addingGroup = false}
+                GroupAdd { addingGroup = false }
             }
             if (!addingGroup) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    if(titles.size>1) {
+                    if (titles.size > 1) {
                         IconButton(onClick = {
                             toDoRepository.deleteGroup(category)
                             titles = toDoRepository.getTusk()
