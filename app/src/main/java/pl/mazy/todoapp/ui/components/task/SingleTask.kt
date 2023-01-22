@@ -1,5 +1,6 @@
 package pl.mazy.todoapp.ui.components.task
 
+import android.graphics.Color.parseColor
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,23 +28,30 @@ import pl.mazy.todoapp.logic.navigation.NavController
 @Composable
 fun Task(
     navController: NavController<Destinations>,
-    ev: Event
+    ev: Event,
+    check:() -> Unit
 ){
     val toDoRepository: ToDoRepository by localDI().instance()
+    var subList = toDoRepository.selSubListByID(ev.id)
+
     Card(
-        border = BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary),
+        border = BorderStroke(1.dp, Color(parseColor(ev.Color))),
         modifier = Modifier
             .padding(10.dp)
             .background(MaterialTheme.colorScheme.background)
     ) {
         SingleTask(navController = navController, event = ev) {
-            toDoRepository.updateState(ev)
+            toDoRepository.updateState(ev.copy(Checked = !ev.Checked))
+            check()
+            subList = toDoRepository.selSubListByID(ev.id)
         }
         Column(modifier = Modifier
             .fillMaxWidth()) {
-            toDoRepository.selSubListByID(ev.id).forEach{
+            subList.forEach{
                 SingleTask(navController = navController, event = it) {
-                    toDoRepository.updateState(it)
+                    toDoRepository.updateState(it.copy(Checked = !it.Checked))
+                    subList = toDoRepository.selSubListByID(ev.id)
+                    check()
                 }
             }
         }
@@ -63,7 +71,13 @@ fun SingleTask(
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
             .clickable { navController.navigate(Destinations.EventAdd(ev, ev.Type)) }
-            .padding(start = if (ev.MainTaskID != null){30.dp}else{5.dp}),
+            .padding(
+                start = if (ev.MainTaskID != null) {
+                    30.dp
+                } else {
+                    5.dp
+                }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ){
         if (ev.MainTaskID != null){

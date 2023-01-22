@@ -32,6 +32,7 @@ fun TaskList(
     val toDoRepository: ToDoRepository by localDI().instance()
     var titles = toDoRepository.getTusk()
     var addingGroup by remember { mutableStateOf(false) }
+    var change by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     var todos: List<Event>? by remember { mutableStateOf(null) }
 
@@ -49,7 +50,7 @@ fun TaskList(
         todos = toDoRepository.getToDos(category)
     }
 
-    LaunchedEffect(category) {
+    LaunchedEffect(category,change) {
         refreshTusk()
         loadTodos()
     }
@@ -90,7 +91,9 @@ fun TaskList(
             ) {
                 if (todos != null) {
                     items(todos ?: listOf()) { ev ->
-                        Task(navController, ev)
+                        Task(navController, ev){
+                            change = !change
+                        }
                     }
                 }
             }

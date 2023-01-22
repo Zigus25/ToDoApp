@@ -15,8 +15,20 @@ class ToDoRepository(
     fun getTusk(): List<String> =
         database.calendarQueries.selectCategorys().executeAsList()
 
-    fun updateState(event: Event) =
+    fun updateState(event: Event) {
         database.calendarQueries.updateState(event.id)
+        if (event.MainTaskID==null) {
+            if (event.Checked) {
+                selSubListByID(event.id).forEach {
+                    database.calendarQueries.updateStateTrue(it.id)
+                }
+            }
+        }else{
+            if (database.calendarQueries.countSubTaskFalse(event.MainTaskID).executeAsOne().toInt() >0){
+                database.calendarQueries.updateStateFalse(event.MainTaskID)
+            }
+        }
+    }
 
     fun selSubListByID(id:Long) =
         database.calendarQueries.selEventByID(id).executeAsList()

@@ -18,6 +18,7 @@ CREATE TABLE category(
     name TEXT UNIQUE NOT NULL
 );
 
+--Categorys:
 selectCategorys:
 SELECT DISTINCT name FROM category;
 
@@ -31,7 +32,7 @@ DELETE FROM event WHERE Category = ?;
 
 
 
-
+--Tasks:
 selecFromtList:
 SELECT *
 FROM  event
@@ -42,8 +43,21 @@ UPDATE event
 SET Checked = ((Checked | 1) - (Checked & 1))
 WHERE id = ?;
 
+updateStateFalse:
+UPDATE event
+SET Checked = 0
+WHERE id = ?;
+
+updateStateTrue:
+UPDATE event
+SET Checked = 1
+WHERE id = ?;
+
+countSubTaskFalse:
+SELECT COUNT(*) AS c FROM event WHERE MainTaskID = ? AND Checked = 0;
 
 
+--Events:
 selBetweenDate:
 SELECT * FROM event WHERE DateStart >= ? OR DateEnd >= ? ORDER BY DateStart,TimeStart;
 

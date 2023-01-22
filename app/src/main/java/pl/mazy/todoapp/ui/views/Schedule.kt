@@ -1,5 +1,3 @@
-@file:Suppress("OPT_IN_IS_NOT_ENABLED")
-
 package pl.mazy.todoapp.ui.views
 
 import androidx.compose.foundation.background
@@ -85,6 +83,9 @@ fun Schedule(
                     }
                 } else {
                     item { DateShow(LocalDate.now().format(formatter).toString()) }
+                }
+                item {
+                    Spacer(modifier = Modifier.padding(30.dp))
                 }
             }
             Row(
