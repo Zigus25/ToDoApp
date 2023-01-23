@@ -1,3 +1,5 @@
+@file:Suppress("OPT_IN_IS_NOT_ENABLED")
+
 package pl.mazy.todoapp.ui.components.task
 
 import android.graphics.Color.parseColor
@@ -17,6 +19,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.Event
@@ -31,26 +34,28 @@ fun Task(
     ev: Event,
     check:() -> Unit
 ){
+    var event by remember { mutableStateOf(ev) }
     val toDoRepository: ToDoRepository by localDI().instance()
     var subList = toDoRepository.selSubListByID(ev.id)
-
+    LaunchedEffect(event) {
+        subList = toDoRepository.selSubListByID(ev.id)
+    }
     Card(
         border = BorderStroke(1.dp, Color(parseColor(ev.Color))),
         modifier = Modifier
             .padding(10.dp)
             .background(MaterialTheme.colorScheme.background)
     ) {
-        SingleTask(navController = navController, event = ev) {
-            toDoRepository.updateState(ev.copy(Checked = !ev.Checked))
+        SingleTask(navController = navController, event = event) {
+            event = event.copy(Checked = !ev.Checked)
+            toDoRepository.updateState(event)
             check()
-            subList = toDoRepository.selSubListByID(ev.id)
         }
         Column(modifier = Modifier
             .fillMaxWidth()) {
             subList.forEach{
                 SingleTask(navController = navController, event = it) {
                     toDoRepository.updateState(it.copy(Checked = !it.Checked))
-                    subList = toDoRepository.selSubListByID(ev.id)
                     check()
                 }
             }
@@ -102,8 +107,8 @@ fun SingleTask(
             }
         )
         Checkbox(checked = ev.Checked, onCheckedChange = {
-            check()
             ev = ev.copy(Checked = !ev.Checked)
+            check()
         })
     }
 }

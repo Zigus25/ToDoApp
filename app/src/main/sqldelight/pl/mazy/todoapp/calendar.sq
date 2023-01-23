@@ -38,20 +38,20 @@ SELECT *
 FROM  event
 WHERE Category = ? AND Type = 1 AND MainTaskID IS NULL;
 
-updateState:
+changeState:
 UPDATE event
 SET Checked = ((Checked | 1) - (Checked & 1))
 WHERE id = ?;
 
-updateStateFalse:
+changeStateFalse:
 UPDATE event
 SET Checked = 0
 WHERE id = ?;
 
-updateStateTrue:
+changeStateTrueWhere:
 UPDATE event
 SET Checked = 1
-WHERE id = ?;
+WHERE MainTaskID = ?;
 
 countSubTaskFalse:
 SELECT COUNT(*) AS c FROM event WHERE MainTaskID = ? AND Checked = 0;

@@ -1,11 +1,9 @@
 package pl.mazy.todoapp.ui.views
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -15,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
@@ -32,29 +31,23 @@ fun TaskList(
     val toDoRepository: ToDoRepository by localDI().instance()
     var titles = toDoRepository.getTusk()
     var addingGroup by remember { mutableStateOf(false) }
+    var category by remember { mutableStateOf(titles[0]) }
     var change by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    var todos: List<Event>? by remember { mutableStateOf(null) }
+    var todos: Flow<List<Event>>?  by remember { mutableStateOf(toDoRepository.getToDos(category)) }
 
     if (titles.isEmpty()) {
         toDoRepository.addCategory("Main")
-    }
-
-    var category by remember { mutableStateOf(titles[0]) }
-
-    fun refreshTusk() = scope.launch {
-        titles = toDoRepository.getTusk()
-    }
-
-    fun loadTodos() = scope.launch {
         todos = toDoRepository.getToDos(category)
     }
 
-    LaunchedEffect(category,change) {
-        refreshTusk()
-        loadTodos()
+    fun refreshTitle() = scope.launch {
+        titles = toDoRepository.getTusk()
     }
-    loadTodos()
+
+    LaunchedEffect(category,change) {
+        refreshTitle()
+    }
     Column(modifier = Modifier.fillMaxSize()) {
         val i = titles.indexOf(category)
         ScrollableTabRow(
@@ -90,7 +83,7 @@ fun TaskList(
                     .background(MaterialTheme.colorScheme.background)
             ) {
                 if (todos != null) {
-                    items(todos ?: listOf()) { ev ->
+                    items(todos) { ev ->
                         Task(navController, ev){
                             change = !change
                         }

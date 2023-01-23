@@ -16,7 +16,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.Event
 import pl.mazy.todoapp.Notes
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.data.NotesRepository
