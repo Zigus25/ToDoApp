@@ -1,5 +1,3 @@
-@file:Suppress("OPT_IN_IS_NOT_ENABLED")
-
 package pl.mazy.todoapp.ui.components.task
 
 import android.graphics.Color.parseColor
@@ -19,11 +17,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.launch
-import org.kodein.di.compose.localDI
-import org.kodein.di.instance
-import pl.mazy.todoapp.Event
-import pl.mazy.todoapp.logic.data.ToDoRepository
+import pl.mazy.todoapp.logic.data.Event
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
 
@@ -31,32 +25,23 @@ import pl.mazy.todoapp.logic.navigation.NavController
 @Composable
 fun Task(
     navController: NavController<Destinations>,
-    ev: Event,
-    check:() -> Unit
+    event: Event,
+    check:(event: Event) -> Unit
 ){
-    var event by remember { mutableStateOf(ev) }
-    val toDoRepository: ToDoRepository by localDI().instance()
-    var subList = toDoRepository.selSubListByID(ev.id)
-    LaunchedEffect(event) {
-        subList = toDoRepository.selSubListByID(ev.id)
-    }
     Card(
-        border = BorderStroke(1.dp, Color(parseColor(ev.Color))),
+        border = BorderStroke(1.dp, Color(parseColor(event.Color))),
         modifier = Modifier
             .padding(10.dp)
             .background(MaterialTheme.colorScheme.background)
     ) {
         SingleTask(navController = navController, event = event) {
-            event = event.copy(Checked = !ev.Checked)
-            toDoRepository.updateState(event)
-            check()
+            check(event.copy(Checked = !event.Checked))
         }
         Column(modifier = Modifier
             .fillMaxWidth()) {
-            subList.forEach{
+            event.SubList.forEach{
                 SingleTask(navController = navController, event = it) {
-                    toDoRepository.updateState(it.copy(Checked = !it.Checked))
-                    check()
+                    check(it.copy(Checked = !it.Checked))
                 }
             }
         }
@@ -70,14 +55,13 @@ fun SingleTask(
     event: Event,
     check:() -> Unit
 ){
-    var ev by remember { mutableStateOf(event) }
     Row (
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
-            .clickable { navController.navigate(Destinations.EventAdd(ev, ev.Type)) }
+            .clickable { navController.navigate(Destinations.EventAdd(event, event.Type)) }
             .padding(
-                start = if (ev.MainTaskID != null) {
+                start = if (event.MainTaskID != null) {
                     30.dp
                 } else {
                     5.dp
@@ -85,14 +69,14 @@ fun SingleTask(
             ),
         verticalAlignment = Alignment.CenterVertically
     ){
-        if (ev.MainTaskID != null){
+        if (event.MainTaskID != null){
             Icon(
                 Icons.Filled.RadioButtonChecked,
-                tint = if (!ev.Checked){MaterialTheme.colorScheme.onBackground}else{ Color.Red},
+                tint = if (!event.Checked){MaterialTheme.colorScheme.onBackground}else{ Color.Red},
                 contentDescription = "",
             )
         }
-        Text(text = ev.Name,
+        Text(text = event.Name,
             fontSize = 18.sp,
             color = MaterialTheme.colorScheme.onBackground,
             maxLines = 1,
@@ -100,14 +84,13 @@ fun SingleTask(
                 .weight(1f)
                 .padding(start = 10.dp),
             overflow = TextOverflow.Ellipsis,
-            style = if(ev.Checked){
-                TextStyle(textDecoration = TextDecoration.LineThrough)
+            style = TextStyle(textDecoration = if(event.Checked){
+                TextDecoration.LineThrough
             }else{
-                TextStyle(textDecoration = TextDecoration.None)
-            }
+                TextDecoration.None
+            })
         )
-        Checkbox(checked = ev.Checked, onCheckedChange = {
-            ev = ev.copy(Checked = !ev.Checked)
+        Checkbox(checked = event.Checked, onCheckedChange = {
             check()
         })
     }

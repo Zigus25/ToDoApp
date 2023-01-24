@@ -3,7 +3,6 @@ package pl.mazy.todoapp.logic.data
 import android.annotation.SuppressLint
 import android.util.Log
 import pl.mazy.todoapp.Database
-import pl.mazy.todoapp.Event
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -15,7 +14,9 @@ class CalendarRepository (
     private val today: String = LocalDate.now().format( format)
     @SuppressLint("WeekBasedYear")
     fun selEvents():List<Event>{
-        return database.calendarQueries.selBetweenDate(today,today).executeAsList()
+        return database.calendarQueries.selBetweenDate(today,today).executeAsList().map {
+                e -> Event(e.id,e.Name,e.Description,e.Category,e.TimeStart,e.TimeEnd,e.DateStart,e.DateEnd,e.Type,e.Checked,e.Color,e.MainTaskID, listOf())
+        }
     }
 
     fun selMaxDate(): String? {

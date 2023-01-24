@@ -36,9 +36,10 @@ DELETE FROM event WHERE Category = ?;
 selecFromtList:
 SELECT *
 FROM  event
-WHERE Category = ? AND Type = 1 AND MainTaskID IS NULL;
+WHERE Category = ? AND Type = 1
+ORDER BY id;
 
-changeState:
+toglleState:
 UPDATE event
 SET Checked = ((Checked | 1) - (Checked & 1))
 WHERE id = ?;

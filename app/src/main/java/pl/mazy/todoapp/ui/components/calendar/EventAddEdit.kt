@@ -1,5 +1,3 @@
-@file:Suppress("OPT_IN_IS_NOT_ENABLED")
-
 package pl.mazy.todoapp.ui.components.calendar
 
 import android.app.DatePickerDialog
@@ -37,8 +35,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.Event
 import pl.mazy.todoapp.logic.data.CalendarRepository
+import pl.mazy.todoapp.logic.data.Event
 import pl.mazy.todoapp.logic.data.ToDoRepository
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
@@ -51,7 +49,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:Boolean) {
+fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:Boolean) {
 
     val toDoRepository: ToDoRepository by localDI().instance()
     val calendarRepository: CalendarRepository by localDI().instance()
@@ -94,7 +92,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                 isTask,
                 false,
                 "#2471a3",
-                null
+                null,
+                listOf()
             )) }
     var wantDate by remember { mutableStateOf(event.DateStart!=null) }
     var wantTime by remember { mutableStateOf(event.TimeStart!=null) }
@@ -369,7 +368,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?,isTask:B
                     }
 
                     //SubTusk Input
-                    if (event.Type&&event.MainTaskID==null){
+                    if (event.Type){
                         Column {
                             Row {
                                 OutlinedTextField(value = subTaskName, onValueChange = {subTaskName = it})

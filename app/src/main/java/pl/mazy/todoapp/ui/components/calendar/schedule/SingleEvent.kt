@@ -18,7 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import pl.mazy.todoapp.Event
+import pl.mazy.todoapp.logic.data.Event
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
 import java.time.LocalDate
@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatter
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun SingleEvent(navController: NavController<Destinations>, event:Event, DateNow: LocalDate? = null){
+fun SingleEvent(navController: NavController<Destinations>, event: Event, DateNow: LocalDate? = null){
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     Column(modifier = Modifier
         .height(75.dp)
