@@ -12,45 +12,58 @@ class ToDoRepository(
     fun addCategory(taskListName: String) =
         database.calendarQueries.insertCategory(taskListName)
 
-    private fun consolidate(sub:List<Event>, main:List<Event>): List<Event> = if (sub.isEmpty()){ main }else {
-        val subM = mutableListOf<Event>()
-        val mainM = main.toMutableList()
-        sub.reversed().forEach{
-            val a = main.indexOfFirst { m -> m.id == it.MainTaskID }
-            if (a == -1){
-                val su = sub.find { su-> su.id == it.MainTaskID }
-                if (su != null) {
-                    subM.add(su.copy(SubList = su.SubList + it))
-
-                }
-            }else{
-                val s = mainM.removeAt(a)
-                mainM.add(a,s.copy(SubList = s.SubList+it))
+    private fun consolidate(events:List<Event>): List<Event> {
+        val list = events.toMutableList()
+        for (i in (list.size -1) downTo 0) {
+            val e = list[i]
+            if (e.MainTaskID != null) {
+                val j = list.indexOfFirst { it.id == e.MainTaskID }
+                list[j] = list[j].copy(SubList = list[j].SubList + e)
             }
         }
-        consolidate(subM,mainM)
+        return list.filter { it.MainTaskID == null }
     }
 
     fun getToDos(listName: String): Flow<List<Event>> =
         database.calendarQueries.selecFromtList(listName).asFlow().mapToList().map {
-            val mainList = mutableListOf<Event>()
-            val subList = mutableListOf<Event>()
-            it.forEach { e ->
-                val ev = Event(e.id,e.Name,e.Description,e.Category,e.TimeStart,e.TimeEnd,e.DateStart,e.DateEnd,e.Type,e.Checked,e.Color,e.MainTaskID, listOf())
-                if (e.MainTaskID==null){mainList.add(ev)}else{subList.add(ev)} }
-            return@map consolidate(subList,mainList)
-        }
+            it.map { e ->
+                Event(
+                    e.id,
+                    e.Name,
+                    e.Description,
+                    e.Category,
+                    e.TimeStart,
+                    e.TimeEnd,
+                    e.DateStart,
+                    e.DateEnd,
+                    e.Type,
+                    e.Checked,
+                    e.Color,
+                    e.MainTaskID,
+                    listOf()
+                )
+            }
+        }.map(::consolidate)
 
     fun getTusk(): List<String> =
         database.calendarQueries.selectCategorys().executeAsList()
 
     fun changeCheck(event: Event) {
-        database.calendarQueries.toglleState(event.id)
-        if (event.MainTaskID==null&&event.Checked) {
-            database.calendarQueries.changeStateTrueWhere(event.id)
-        }else if (event.MainTaskID!=null&&database.calendarQueries.countSubTaskFalse(event.MainTaskID).executeAsOne().toInt() >0){
+        database.calendarQueries.toggleState(event.id)
+        if (event.SubList.isNotEmpty()){
+            toggleCheckSub(event)
+        }
+        if (event.MainTaskID!=null&&database.calendarQueries.countSubTaskFalse(event.MainTaskID).executeAsOne().toInt() >0){
             database.calendarQueries.changeStateFalse(event.MainTaskID)
-
+        }
+    }
+    
+    private fun toggleCheckSub(ev:Event){
+        database.calendarQueries.changeStateTrueWhere(ev.id)
+        if (ev.SubList.isNotEmpty()){
+            ev.SubList.forEach{
+                toggleCheckSub(it)
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package pl.mazy.todoapp.ui.components.task
 
 import android.graphics.Color.parseColor
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,69 +30,81 @@ fun Task(
     check:(event: Event) -> Unit
 ){
     Card(
-        border = BorderStroke(1.dp, Color(parseColor(event.Color))),
+        border = if (event.MainTaskID==null) {
+            BorderStroke(1.dp, Color(parseColor(event.Color)))
+        }else{
+            BorderStroke(0.dp,MaterialTheme.colorScheme.background)
+        },
         modifier = Modifier
-            .padding(10.dp)
+            .padding(if (event.MainTaskID==null) {10.dp}else{0.dp})
             .background(MaterialTheme.colorScheme.background)
     ) {
-        SingleTask(navController = navController, event = event) {
-            check(event.copy(Checked = !event.Checked))
-        }
-        Column(modifier = Modifier
-            .fillMaxWidth()) {
-            event.SubList.forEach{
-                SingleTask(navController = navController, event = it) {
-                    check(it.copy(Checked = !it.Checked))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background)
+                    .clickable { navController.navigate(Destinations.EventAdd(event, event.Type)) }
+                    .padding(
+                        start = if (event.MainTaskID != null) {
+                            30.dp
+                        } else {
+                            5.dp
+                        }
+                    ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (event.MainTaskID != null) {
+                    Icon(
+                        Icons.Filled.RadioButtonChecked,
+                        tint = if (!event.Checked) {
+                            MaterialTheme.colorScheme.onBackground
+                        } else {
+                            Color.Red
+                        },
+                        contentDescription = "",
+                    )
+                }
+                Text(
+                    text = event.Name,
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 10.dp),
+                    overflow = TextOverflow.Ellipsis,
+                    style = TextStyle(
+                        textDecoration = if (event.Checked) {
+                            TextDecoration.LineThrough
+                        } else {
+                            TextDecoration.None
+                        }
+                    )
+                )
+                Checkbox(checked = event.Checked, onCheckedChange = {
+                    check(event)
+                })
+            }
+            if (event.SubList.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp)
+                        .background(MaterialTheme.colorScheme.background)
+                ) {
+                    event.SubList.forEach { subEvent ->
+                        Task(navController = navController, event = subEvent, check = {
+                            check(it)
+                            Log.i("asd", subEvent.id.toString())
+                        })
+                    }
                 }
             }
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SingleTask(
-    navController: NavController<Destinations>,
-    event: Event,
-    check:() -> Unit
-){
-    Row (
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .clickable { navController.navigate(Destinations.EventAdd(event, event.Type)) }
-            .padding(
-                start = if (event.MainTaskID != null) {
-                    30.dp
-                } else {
-                    5.dp
-                }
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ){
-        if (event.MainTaskID != null){
-            Icon(
-                Icons.Filled.RadioButtonChecked,
-                tint = if (!event.Checked){MaterialTheme.colorScheme.onBackground}else{ Color.Red},
-                contentDescription = "",
-            )
-        }
-        Text(text = event.Name,
-            fontSize = 18.sp,
-            color = MaterialTheme.colorScheme.onBackground,
-            maxLines = 1,
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 10.dp),
-            overflow = TextOverflow.Ellipsis,
-            style = TextStyle(textDecoration = if(event.Checked){
-                TextDecoration.LineThrough
-            }else{
-                TextDecoration.None
-            })
-        )
-        Checkbox(checked = event.Checked, onCheckedChange = {
-            check()
-        })
     }
 }
