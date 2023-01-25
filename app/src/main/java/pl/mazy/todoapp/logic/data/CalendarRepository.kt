@@ -1,7 +1,6 @@
 package pl.mazy.todoapp.logic.data
 
 import android.annotation.SuppressLint
-import android.util.Log
 import pl.mazy.todoapp.Database
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -25,6 +24,11 @@ class CalendarRepository (
 
     fun deleteEvent(ev: Event){
         database.calendarQueries.deleteEvent(ev.id,ev.id)
+        if (ev.SubList.isNotEmpty()){
+            ev.SubList.forEach {
+                deleteEvent(it)
+            }
+        }
     }
 
     fun addEvent(ev: Event,subList:List<String>){
@@ -40,11 +44,20 @@ class CalendarRepository (
         database.calendarQueries.updateEvent(event.Name,event.Description,event.Category,event.TimeStart,event.TimeEnd,event.DateStart,event.DateEnd,event.Type,event.Checked,event.Color,event.MainTaskID,evOld.Name,evOld.Category,evOld.Description,evOld.DateStart,evOld.Color)
         val size:Int = selectSubList(event.id).size
         for (index in size until subList.size){
-            Log.i("",index.toString())
             database.calendarQueries.addEvent(subList[index],"",event.Category,null,null,null,null, Type = true, Checked = false, event.Color,event.id)
         }
+        database.calendarQueries.changeStateFalse(event.id)
+        toggleCheck(event)
     }
-
+    private fun toggleCheck(ev:Event){
+        if (ev.MainTaskID!=null) {
+            database.calendarQueries.changeStateFalse(ev.MainTaskID)
+            val c = database.calendarQueries.selById(ev.MainTaskID).executeAsOne()
+            if (c.MainTaskID!=null){
+                toggleCheck(Event(c.id,c.Name,c.Description,c.Category,c.TimeStart,c.TimeEnd,c.DateStart,c.DateEnd,c.Type,c.Checked,c.Color,c.MainTaskID, listOf()))
+            }
+        }
+    }
     fun selectSubList(id:Long):List<String>{
         return database.calendarQueries.selNameByID(id).executeAsList()
     }

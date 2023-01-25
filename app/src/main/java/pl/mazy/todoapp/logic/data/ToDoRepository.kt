@@ -57,7 +57,7 @@ class ToDoRepository(
     }
 
     private fun toggleCheckBack(ev:Event){
-        if (ev.MainTaskID!=null&&database.calendarQueries.countSubTaskFalse(ev.MainTaskID).executeAsOne().toInt() >0) {
+        if (ev.MainTaskID!=null) {
             database.calendarQueries.changeStateFalse(ev.MainTaskID)
             val c = database.calendarQueries.selById(ev.MainTaskID).executeAsOne()
             if (c.MainTaskID!=null){
