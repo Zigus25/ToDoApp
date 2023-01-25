@@ -54,6 +54,9 @@ UPDATE event
 SET Checked = 1
 WHERE MainTaskID = ?;
 
+selById:
+SELECT * FROM event WHERE id = ?;
+
 countSubTaskFalse:
 SELECT COUNT(*) AS c FROM event WHERE MainTaskID = ? AND Checked = 0;
 

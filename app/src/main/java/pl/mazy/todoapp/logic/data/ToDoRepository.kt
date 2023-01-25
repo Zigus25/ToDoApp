@@ -53,8 +53,16 @@ class ToDoRepository(
         if (event.SubList.isNotEmpty()){
             toggleCheckSub(event)
         }
-        if (event.MainTaskID!=null&&database.calendarQueries.countSubTaskFalse(event.MainTaskID).executeAsOne().toInt() >0){
-            database.calendarQueries.changeStateFalse(event.MainTaskID)
+        toggleCheckBack(event)
+    }
+
+    private fun toggleCheckBack(ev:Event){
+        if (ev.MainTaskID!=null&&database.calendarQueries.countSubTaskFalse(ev.MainTaskID).executeAsOne().toInt() >0) {
+            database.calendarQueries.changeStateFalse(ev.MainTaskID)
+            val c = database.calendarQueries.selById(ev.MainTaskID).executeAsOne()
+            if (c.MainTaskID!=null){
+                toggleCheckBack(Event(c.id,c.Name,c.Description,c.Category,c.TimeStart,c.TimeEnd,c.DateStart,c.DateEnd,c.Type,c.Checked,c.Color,c.MainTaskID, listOf()))
+            }
         }
     }
     
