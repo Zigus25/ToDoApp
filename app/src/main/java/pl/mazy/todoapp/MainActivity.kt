@@ -1,5 +1,3 @@
-@file:Suppress("OPT_IN_IS_NOT_ENABLED")
-
 package pl.mazy.todoapp
 
 import android.os.Bundle
@@ -42,6 +40,8 @@ import pl.mazy.todoapp.ui.components.note.NoteAdding
 import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
 import pl.mazy.todoapp.ui.views.NoteList
 import pl.mazy.todoapp.ui.views.Schedule
+import pl.mazy.todoapp.ui.views.SignIn
+import pl.mazy.todoapp.ui.views.SignUp
 import pl.mazy.todoapp.ui.views.TaskList
 
 class MainActivity : ComponentActivity() {
@@ -54,8 +54,6 @@ class MainActivity : ComponentActivity() {
                     var program by remember {
                         mutableStateOf("Task List")
                     }
-
-
 
                     val controller: NavController<Destinations> by remember {
                         mutableStateOf(NavController(Destinations.TaskList))
@@ -130,7 +128,7 @@ class MainActivity : ComponentActivity() {
                                     Spacer(modifier = Modifier.weight(1f))
                                     Text(text = program, fontSize = 24.sp, color = MaterialTheme.colorScheme.onBackground)
                                     Spacer(modifier = Modifier.weight(1f))
-                                    IconButton(onClick = {  }) {
+                                    IconButton(onClick = { controller.navigate(Destinations.SignIn) }) {
                                         Icon(
                                             Icons.Filled.SupervisedUserCircle,
                                             contentDescription = "Profile icon",
@@ -154,6 +152,14 @@ class MainActivity : ComponentActivity() {
                                             program = "Calendar"
                                         }
                                         is Destinations.EventAdd -> EventAddEdit(controller,x.event,x.isTask)
+                                        is Destinations.SignIn -> {
+                                            SignIn(controller)
+                                            program = ""
+                                        }
+                                        is Destinations.SignUp -> {
+                                            SignUp(controller)
+                                            program = ""
+                                        }
                                     }
                                 }
                             }
