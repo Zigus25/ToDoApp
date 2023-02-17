@@ -32,19 +32,19 @@ class CalendarRepository (
     }
 
     fun addEvent(ev: Event,subList:List<String>){
-        database.calendarQueries.addEvent(ev.Name,ev.Description,ev.Category,ev.TimeStart,ev.TimeEnd,ev.DateStart,ev.DateEnd,ev.Type,ev.Checked,ev.Color,ev.MainTaskID)
+        database.calendarQueries.addEvent("",ev.Name,ev.Description,ev.Category,ev.TimeStart,ev.TimeEnd,ev.DateStart,ev.DateEnd,ev.Type,ev.Checked,ev.Color,ev.MainTaskID)
         val id = database.calendarQueries.selMyID().executeAsOne().max
         subList.forEach{
-            database.calendarQueries.addEvent(it,"",ev.Category,null,null,null,null, Type = true, Checked = false, ev.Color,id)
+            database.calendarQueries.addEvent(it,"","",ev.Category,null,null,null,null, Type = true, Checked = false, ev.Color,id)
 
         }
     }
 
-    fun updateEvent(event: Event, evOld: Event,subList: List<String>){
-        database.calendarQueries.updateEvent(event.Name,event.Description,event.Category,event.TimeStart,event.TimeEnd,event.DateStart,event.DateEnd,event.Type,event.Checked,event.Color,event.MainTaskID,evOld.Name,evOld.Category,evOld.Description,evOld.DateStart,evOld.Color)
+    fun updateEvent(event: Event, subList: List<String>){
+        database.calendarQueries.updateEvent(event.Name,event.Description,event.Category,event.TimeStart,event.TimeEnd,event.DateStart,event.DateEnd,event.Type,event.Checked,event.Color,event.MainTaskID,event.id)
         val size:Int = selectSubList(event.id).size
         for (index in size until subList.size){
-            database.calendarQueries.addEvent(subList[index],"",event.Category,null,null,null,null, Type = true, Checked = false, event.Color,event.id)
+            database.calendarQueries.addEvent(subList[index],"","",event.Category,null,null,null,null, true, false, event.Color,event.id)
         }
         database.calendarQueries.changeStateFalse(event.id)
         toggleCheck(event)

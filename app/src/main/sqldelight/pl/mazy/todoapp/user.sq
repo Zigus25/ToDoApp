@@ -1,0 +1,11 @@
+CREATE TABLE user (
+    login TEXT NOT NULL,
+    eMail TEXT NOT NULL,
+    passwd TEXT NOT NULL
+);
+
+insertUser:
+INSERT INTO user (login,eMail,passwd) VALUES (?,?,?);
+
+checkUser:
+SELECT count(login) FROM user WHERE login = ? AND passwd = ?;

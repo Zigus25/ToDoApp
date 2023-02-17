@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS event(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    owner TEXT  NOT NULL,
     Name TEXT NOT NULL,
     Description TEXT NOT NULL ,
     Category TEXT NOT NULL,
@@ -15,7 +16,9 @@ CREATE TABLE IF NOT EXISTS event(
 
 
 CREATE TABLE category(
-    name TEXT UNIQUE NOT NULL
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    owner TEXT NOT NULL
 );
 
 --Categorys:
@@ -23,7 +26,7 @@ selectCategorys:
 SELECT DISTINCT name FROM category;
 
 insertCategory:
-INSERT INTO category(name) VALUES (?);
+INSERT INTO category(name,owner) VALUES (?,?);
 
 deleteCategory{
 DELETE FROM category WHERE  name = ?;
@@ -69,7 +72,7 @@ selMaxDateEnd:
 SELECT MAX(d.DateEnd) FROM (SELECT * FROM event WHERE DateStart >= ? OR DateEnd >= ? ORDER BY DateStart,TimeStart) d;
 
 addEvent:
-INSERT INTO event (Name,Description,Category,TimeStart,TimeEnd,DateStart,DateEnd,Type,Checked,Color,MainTaskID) VALUES (?,?,?,?,?,?,?,?,?,?,?);
+INSERT INTO event (owner,Name,Description,Category,TimeStart,TimeEnd,DateStart,DateEnd,Type,Checked,Color,MainTaskID) VALUES (?,?,?,?,?,?,?,?,?,?,?,?);
 
 updateEvent:
 UPDATE event
@@ -85,7 +88,7 @@ UPDATE event
         Checked = ?,
         Color = ?,
         MainTaskID = ?
-    WHERE Name = ? AND Category = ? AND Description = ? AND DateStart = ? AND Color = ?;
+    WHERE id = ?;
 
 deleteEvent{
 DELETE FROM event WHERE id = ?;
