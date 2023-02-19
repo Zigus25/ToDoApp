@@ -6,6 +6,7 @@ import pl.mazy.todoapp.Notes
 class NotesRepository (
     private var database: Database
 ) {
+    var loginU = ""
     fun getNotes(): List<Notes> =
         database.noteQueries.selectNotes().executeAsList()
 

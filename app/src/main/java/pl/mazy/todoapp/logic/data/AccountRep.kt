@@ -2,7 +2,6 @@ package pl.mazy.todoapp.logic.data
 
 import pl.mazy.todoapp.Database
 
-var uLogin = ""
 class AccountRep (
     private var database: Database
 ) {
@@ -11,14 +10,9 @@ class AccountRep (
     }
 
     fun signInUser(login: String,passwd: String):Boolean{
-        val tf =  database.userQueries.checkUser(login, passwd).equals(1)
-        if (tf){
-            uLogin = login
-        }
-        return tf
+        return database.userQueries.checkUser(login, passwd).executeAsOne().toInt() == 1
     }
 
     fun signOut(){
-        uLogin = ""
     }
 }

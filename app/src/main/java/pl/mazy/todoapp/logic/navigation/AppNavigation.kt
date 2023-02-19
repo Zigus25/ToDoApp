@@ -4,7 +4,7 @@ import pl.mazy.todoapp.logic.data.Event
 
 
 sealed interface Destinations {
-    object TaskList : Destinations
+    class TaskList(val login: String? = null) : Destinations
     object Notes : Destinations
     object Schedule: Destinations
     object SignUp:Destinations

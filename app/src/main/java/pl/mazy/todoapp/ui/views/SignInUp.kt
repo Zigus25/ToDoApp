@@ -145,6 +145,7 @@ fun SignUp(navController: NavController<Destinations>){
 @Composable
 fun SignIn(navController: NavController<Destinations>){
     val userRepository: AccountRep by localDI().instance()
+    var passwordVisible by remember { mutableStateOf(false) }
     var login by remember { mutableStateOf("") }
     var passwd by remember { mutableStateOf("") }
     Column(modifier = Modifier
@@ -173,14 +174,25 @@ fun SignIn(navController: NavController<Destinations>){
             textStyle= TextStyle(
                 color = MaterialTheme.colorScheme.onBackground,
             ),
-            onValueChange = { passwd = it },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            onValueChange = {
+                passwd = it
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done,keyboardType = KeyboardType.Password),
             label = { Text("Password") },
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val image = if (passwordVisible)
+                    Icons.Filled.Visibility
+                else Icons.Filled.VisibilityOff
+                IconButton(onClick = {passwordVisible = !passwordVisible}){
+                    Icon(imageVector  = image, contentDescription = "")
+                }
+            }
         )
         Button(onClick = {
             if(login!=""&&passwd!="") {
                 if (userRepository.signInUser(login, passwd)) {
-                    navController.navigate(Destinations.TaskList)
+                    navController.navigate(Destinations.TaskList(login))
                 }
             }
          },modifier = Modifier.padding(top = 120.dp)) {

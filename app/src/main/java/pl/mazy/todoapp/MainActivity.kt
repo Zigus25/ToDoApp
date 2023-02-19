@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     val controller: NavController<Destinations> by remember {
-                        mutableStateOf(NavController(Destinations.TaskList))
+                        mutableStateOf(NavController(Destinations.TaskList()))
                     }
                     BackHandler(!controller.isLast()) {
                         controller.pop()
@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
                                 onClick = {
                                     program = "Tasks"
                                     scope.launch { drawerState.close() }
-                                    controller.navigate(Destinations.TaskList)
+                                    controller.navigate(Destinations.TaskList())
                                 },
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                             )
@@ -139,7 +139,7 @@ class MainActivity : ComponentActivity() {
                                 Box(modifier = Modifier.weight(1f)) {
                                     when (val x = controller.currentBackStackEntry.value) {
                                         is Destinations.TaskList ->{
-                                            TaskList(controller)
+                                            TaskList(controller,x.login)
                                             program = "Tasks"
                                         }
                                         is Destinations.NoteDetails -> NoteAdding(controller,x.noteP)

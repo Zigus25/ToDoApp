@@ -9,8 +9,9 @@ import pl.mazy.todoapp.Database
 class ToDoRepository(
     private var database: Database
 ) {
+    var loginU = ""
     fun addCategory(taskListName: String) =
-        database.calendarQueries.insertCategory(taskListName)
+        database.calendarQueries.insertCategory(taskListName,loginU)
 
     private fun consolidate(events:List<Event>): List<Event> {
         val list = events.toMutableList()
