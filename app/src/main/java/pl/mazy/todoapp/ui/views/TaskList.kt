@@ -25,14 +25,10 @@ import pl.mazy.todoapp.ui.components.task.*
 
 @Composable
 fun TaskList(
-    navController: NavController<Destinations>,
-    login:String?,
+    navController: NavController<Destinations>
 ) {
     var selAdd = false
     val toDoRepository: ToDoRepository by localDI().instance()
-    if (login != null) {
-        toDoRepository.loginU = login
-    }
     var titles = toDoRepository.getTusk()
     var addingGroup by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -92,7 +88,6 @@ fun TaskList(
                 }
             }
             if (addingGroup) {
-                Log.i("",toDoRepository.loginU)
                 Box(modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8F))

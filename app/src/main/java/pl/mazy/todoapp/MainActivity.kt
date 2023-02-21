@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -32,7 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import org.kodein.di.compose.localDI
 import org.kodein.di.compose.withDI
+import org.kodein.di.instance
+import pl.mazy.todoapp.logic.data.AccountRep
+import pl.mazy.todoapp.logic.data.ToDoRepository
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
 import pl.mazy.todoapp.ui.components.calendar.EventAddEdit
@@ -51,12 +56,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             withDI((application as ToDoApplication).di) {
                 ToDoAPpTheme {
+                    val userRepository: AccountRep by localDI().instance()
+                    userRepository.getActiveUser()
                     var program by remember {
                         mutableStateOf("Task List")
                     }
 
                     val controller: NavController<Destinations> by remember {
-                        mutableStateOf(NavController(Destinations.TaskList()))
+                        mutableStateOf(NavController(Destinations.TaskList))
                     }
                     BackHandler(!controller.isLast()) {
                         controller.pop()
@@ -82,7 +89,7 @@ class MainActivity : ComponentActivity() {
                                 onClick = {
                                     program = "Tasks"
                                     scope.launch { drawerState.close() }
-                                    controller.navigate(Destinations.TaskList())
+                                    controller.navigate(Destinations.TaskList)
                                 },
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                             )
@@ -114,6 +121,18 @@ class MainActivity : ComponentActivity() {
                                 },
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                             )
+                            Spacer(modifier = Modifier.weight(1f))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 20.dp)
+                            ) {
+                                if (userRepository.loginU == ""){
+                                    Text(text = "Sign In", modifier = Modifier.clickable { controller.navigate(Destinations.SignIn) })
+                                }else{
+                                    Text(text = userRepository.loginU, modifier = Modifier.clickable { userRepository.signOut() })
+                                }
+                            }
                         },
                         content = {
                             Column {
@@ -139,7 +158,7 @@ class MainActivity : ComponentActivity() {
                                 Box(modifier = Modifier.weight(1f)) {
                                     when (val x = controller.currentBackStackEntry.value) {
                                         is Destinations.TaskList ->{
-                                            TaskList(controller,x.login)
+                                            TaskList(controller)
                                             program = "Tasks"
                                         }
                                         is Destinations.NoteDetails -> NoteAdding(controller,x.noteP)

@@ -192,7 +192,7 @@ fun SignIn(navController: NavController<Destinations>){
         Button(onClick = {
             if(login!=""&&passwd!="") {
                 if (userRepository.signInUser(login, passwd)) {
-                    navController.navigate(Destinations.TaskList(login))
+                    navController.navigate(Destinations.TaskList)
                 }
             }
          },modifier = Modifier.padding(top = 120.dp)) {

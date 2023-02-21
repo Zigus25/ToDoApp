@@ -405,7 +405,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
         BottomAppBar {
             if (ev != null) {
                 IconButton(onClick = {
-                    navController.navigate(if (isTask){Destinations.TaskList()}else{Destinations.Schedule})
+                    navController.navigate(if (isTask){Destinations.TaskList}else{Destinations.Schedule})
                     calendarRepository.deleteEvent(ev)
                 }) {
                     Icon(Icons.Filled.Delete, contentDescription = "Menu Icon")
@@ -424,7 +424,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                             if (ev == null) {
                                 navController.navigate(
                                     if (isTask) {
-                                        Destinations.TaskList()
+                                        Destinations.TaskList
                                     } else {
                                         Destinations.Schedule
                                     }
@@ -433,7 +433,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                             } else {
                                 navController.navigate(
                                     if (isTask) {
-                                        Destinations.TaskList()
+                                        Destinations.TaskList
                                     } else {
                                         Destinations.Schedule
                                     }

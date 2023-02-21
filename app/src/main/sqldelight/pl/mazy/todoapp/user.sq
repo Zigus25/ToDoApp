@@ -1,11 +1,20 @@
 CREATE TABLE user (
     login TEXT NOT NULL,
     eMail TEXT NOT NULL,
-    passwd TEXT NOT NULL
+    passwd TEXT NOT NULL,
+    active INTEGER AS Boolean NOT NULL
 );
 
 insertUser:
-INSERT INTO user (login,eMail,passwd) VALUES (?,?,?);
+INSERT INTO user (login,eMail,passwd,active) VALUES (?,?,?,0);
 
 checkUser:
 SELECT count(login) FROM user WHERE login = ? AND passwd = ?;
+
+toggleActive:
+UPDATE user
+SET active = ((active | 1) - (active & 1))
+WHERE login = ?;
+
+selectActive:
+SELECT login FROM user WHERE active = 1;
