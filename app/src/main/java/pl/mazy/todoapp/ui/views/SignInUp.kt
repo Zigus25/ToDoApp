@@ -32,7 +32,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.logic.data.AccountRep
+import pl.mazy.todoapp.logic.data.LoginData
+import pl.mazy.todoapp.logic.data.repos.AccountRep
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
 import java.util.regex.Pattern
@@ -134,7 +135,8 @@ fun SignUp(navController: NavController<Destinations>){
         Button(onClick = {
              if((!showErrorL&&!showErrorM&&!showErrorP)&&login!=""&&passwd!=""&&mailU!=""){
                  userRepository.signUpUser(login,passwd,mailU)
-                 navController.navigate(Destinations.SignIn)
+                 LoginData.logIn(login)
+                 navController.navigate(Destinations.TaskList)
              }
         },modifier = Modifier.padding(top = 120.dp)) {
             Text(text = "Sign Up")
@@ -193,6 +195,7 @@ fun SignIn(navController: NavController<Destinations>){
             if(login!=""&&passwd!="") {
                 if (userRepository.signInUser(login, passwd)) {
                     navController.navigate(Destinations.TaskList)
+                    LoginData.logIn(login)
                 }
             }
          },modifier = Modifier.padding(top = 120.dp)) {

@@ -1,7 +1,8 @@
-package pl.mazy.todoapp.logic.data
+package pl.mazy.todoapp.logic.data.repos
 
 import android.annotation.SuppressLint
 import pl.mazy.todoapp.Database
+import pl.mazy.todoapp.logic.data.Event
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -11,6 +12,7 @@ class CalendarRepository (
 ) {
     private val format: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     private val today: String = LocalDate.now().format( format)
+
     @SuppressLint("WeekBasedYear")
     fun selEvents():List<Event>{
         return database.calendarQueries.selBetweenDate(today,today).executeAsList().map {
@@ -31,11 +33,11 @@ class CalendarRepository (
         }
     }
 
-    fun addEvent(ev: Event,subList:List<String>){
-        database.calendarQueries.addEvent("",ev.Name,ev.Description,ev.Category,ev.TimeStart,ev.TimeEnd,ev.DateStart,ev.DateEnd,ev.Type,ev.Checked,ev.Color,ev.MainTaskID)
+    fun addEvent(ev: Event, subList:List<String>,owner:String?){
+        database.calendarQueries.addEvent(owner,ev.Name,ev.Description,ev.Category,ev.TimeStart,ev.TimeEnd,ev.DateStart,ev.DateEnd,ev.Type,ev.Checked,ev.Color,ev.MainTaskID)
         val id = database.calendarQueries.selMyID().executeAsOne().max
         subList.forEach{
-            database.calendarQueries.addEvent(it,"","",ev.Category,null,null,null,null, Type = true, Checked = false, ev.Color,id)
+            database.calendarQueries.addEvent("",it,"",ev.Category,null,null,null,null, Type = true, Checked = false, ev.Color,id)
 
         }
     }
@@ -49,7 +51,7 @@ class CalendarRepository (
         database.calendarQueries.changeStateFalse(event.id)
         toggleCheck(event)
     }
-    private fun toggleCheck(ev:Event){
+    private fun toggleCheck(ev: Event){
         if (ev.MainTaskID!=null) {
             database.calendarQueries.changeStateFalse(ev.MainTaskID)
             val c = database.calendarQueries.selById(ev.MainTaskID).executeAsOne()

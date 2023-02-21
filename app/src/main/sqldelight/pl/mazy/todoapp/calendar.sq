@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS event(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    owner TEXT  NOT NULL,
+    owner TEXT,
     Name TEXT NOT NULL,
     Description TEXT NOT NULL ,
-    Category TEXT NOT NULL,
+    Category INTEGER NOT NULL,
     TimeStart TEXT,
     TimeEnd TEXT,
     DateStart TEXT,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS event(
 CREATE TABLE category(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL,
-    owner TEXT NOT NULL
+    owner TEXT
 );
 
 --Categorys:
@@ -29,7 +29,7 @@ insertCategory:
 INSERT INTO category(name,owner) VALUES (?,?);
 
 deleteCategory{
-DELETE FROM category WHERE  name = ?;
+DELETE FROM category WHERE  id = ?;
 DELETE FROM event WHERE Category = ?;
 }
 
@@ -59,9 +59,6 @@ WHERE MainTaskID = ?;
 
 selById:
 SELECT * FROM event WHERE id = ?;
-
-countSubTaskFalse:
-SELECT COUNT(*) AS c FROM event WHERE MainTaskID = ? AND Checked = 0;
 
 
 --Events:

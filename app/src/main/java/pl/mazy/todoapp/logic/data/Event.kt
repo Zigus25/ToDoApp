@@ -4,7 +4,7 @@ data class Event(
     val id: Long,
     val Name: String,
     val Description: String,
-    val Category: String,
+    val Category: Long,
     val TimeStart: String?,
     val TimeEnd: String?,
     val DateStart: String?,

@@ -1,10 +1,11 @@
-package pl.mazy.todoapp.logic.data
+package pl.mazy.todoapp.logic.data.repos
 
 import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import pl.mazy.todoapp.Database
+import pl.mazy.todoapp.logic.data.Event
 
 class ToDoRepository(
     private var database: Database
@@ -56,7 +57,7 @@ class ToDoRepository(
         toggleCheckBack(event)
     }
 
-    private fun toggleCheckBack(ev:Event){
+    private fun toggleCheckBack(ev: Event){
         if (ev.MainTaskID!=null) {
             database.calendarQueries.changeStateFalse(ev.MainTaskID)
             val c = database.calendarQueries.selById(ev.MainTaskID).executeAsOne()
@@ -66,7 +67,7 @@ class ToDoRepository(
         }
     }
     
-    private fun toggleCheckSub(ev:Event){
+    private fun toggleCheckSub(ev: Event){
         database.calendarQueries.changeStateTrueWhere(ev.id)
         if (ev.SubList.isNotEmpty()){
             ev.SubList.forEach{

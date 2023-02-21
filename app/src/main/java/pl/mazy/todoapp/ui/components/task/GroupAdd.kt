@@ -16,7 +16,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.logic.data.ToDoRepository
+import pl.mazy.todoapp.logic.data.repos.ToDoRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

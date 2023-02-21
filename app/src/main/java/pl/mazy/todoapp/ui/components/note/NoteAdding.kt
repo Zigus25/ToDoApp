@@ -18,7 +18,7 @@ import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.Notes
 import pl.mazy.todoapp.logic.navigation.Destinations
-import pl.mazy.todoapp.logic.data.NotesRepository
+import pl.mazy.todoapp.logic.data.repos.NotesRepository
 import pl.mazy.todoapp.logic.navigation.NavController
 
 @Composable

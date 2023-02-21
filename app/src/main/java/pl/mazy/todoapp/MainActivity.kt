@@ -36,8 +36,8 @@ import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.compose.withDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.logic.data.AccountRep
-import pl.mazy.todoapp.logic.data.ToDoRepository
+import pl.mazy.todoapp.logic.data.LoginData
+import pl.mazy.todoapp.logic.data.repos.AccountRep
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
 import pl.mazy.todoapp.ui.components.calendar.EventAddEdit
@@ -48,6 +48,7 @@ import pl.mazy.todoapp.ui.views.Schedule
 import pl.mazy.todoapp.ui.views.SignIn
 import pl.mazy.todoapp.ui.views.SignUp
 import pl.mazy.todoapp.ui.views.TaskList
+import java.lang.NullPointerException
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +58,9 @@ class MainActivity : ComponentActivity() {
             withDI((application as ToDoApplication).di) {
                 ToDoAPpTheme {
                     val userRepository: AccountRep by localDI().instance()
-                    userRepository.getActiveUser()
+                    try {
+                        LoginData.logIn(userRepository.getActiveUser())
+                    }catch (_:NullPointerException){ }
                     var program by remember {
                         mutableStateOf("Task List")
                     }
@@ -125,12 +128,20 @@ class MainActivity : ComponentActivity() {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(bottom = 20.dp)
+                                    .padding(start = 30.dp,bottom = 20.dp)
                             ) {
-                                if (userRepository.loginU == ""){
-                                    Text(text = "Sign In", modifier = Modifier.clickable { controller.navigate(Destinations.SignIn) })
+                                if (LoginData.loginU == null){
+                                    Text(text = "Sign In", modifier = Modifier.clickable {
+                                        scope.launch { drawerState.close() }
+                                        controller.navigate(Destinations.SignIn) },
+                                        fontSize = 30.sp)
                                 }else{
-                                    Text(text = userRepository.loginU, modifier = Modifier.clickable { userRepository.signOut() })
+                                    Text(text = LoginData.loginU!!, modifier = Modifier.clickable {
+                                        scope.launch { drawerState.close() }
+                                        userRepository.signOut(LoginData.loginU!!)
+                                        LoginData.logOut()
+                                   },
+                                        fontSize = 30.sp)
                                 }
                             }
                         },
@@ -147,7 +158,13 @@ class MainActivity : ComponentActivity() {
                                     Spacer(modifier = Modifier.weight(1f))
                                     Text(text = program, fontSize = 24.sp, color = MaterialTheme.colorScheme.onBackground)
                                     Spacer(modifier = Modifier.weight(1f))
-                                    IconButton(onClick = { controller.navigate(Destinations.SignIn) }) {
+                                    IconButton(onClick = {
+                                            if (LoginData.loginU == null){
+                                                controller.navigate(Destinations.SignIn)
+                                            }else{
+                                                userRepository.signOut(LoginData.loginU!!)
+                                                LoginData.logOut()
+                                        }}) {
                                         Icon(
                                             Icons.Filled.SupervisedUserCircle,
                                             contentDescription = "Profile icon",

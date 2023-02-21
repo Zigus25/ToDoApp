@@ -1,6 +1,5 @@
 package pl.mazy.todoapp.ui.views
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -19,7 +18,7 @@ import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.logic.navigation.Destinations
-import pl.mazy.todoapp.logic.data.ToDoRepository
+import pl.mazy.todoapp.logic.data.repos.ToDoRepository
 import pl.mazy.todoapp.logic.navigation.NavController
 import pl.mazy.todoapp.ui.components.task.*
 
