@@ -4,8 +4,12 @@ object LoginData {
     var loginU :String? = null
         private set
 
-    fun logIn(login:String){
+    var userId: Long? = null
+        private set
+
+    fun logIn(login:String,id:Long){
         loginU = login
+        userId = id
     }
 
     fun logOut(){

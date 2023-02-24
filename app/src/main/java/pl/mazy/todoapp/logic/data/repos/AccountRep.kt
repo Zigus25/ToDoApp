@@ -6,8 +6,9 @@ class AccountRep (
     private var database: Database
 ) {
 
-    fun getActiveUser():String{
-        return database.userQueries.selectActive().executeAsOne()
+    fun getActiveUser():Pair<Long,String>{
+        val x =database.userQueries.selectActive().executeAsOne()
+        return Pair(x.id,x.login)
     }
     fun signUpUser(login:String,passwd:String,eMail:String){
         database.userQueries.insertUser(login, eMail, passwd)

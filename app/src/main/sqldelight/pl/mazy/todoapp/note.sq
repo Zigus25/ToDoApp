@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS notes (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    owner TEXT,
+    owner INTEGER,
     name TEXT NOT NULL,
     description TEXT NOT NULL
 

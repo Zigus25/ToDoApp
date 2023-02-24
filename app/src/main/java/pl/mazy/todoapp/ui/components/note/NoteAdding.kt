@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.Notes
+import pl.mazy.todoapp.logic.data.LoginData
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.data.repos.NotesRepository
 import pl.mazy.todoapp.logic.navigation.NavController
@@ -32,6 +33,7 @@ fun NoteAdding(
         mutableStateOf(
             noteP?: Notes(
                 0,
+                null,
                 "",
                 ""
             )
@@ -87,7 +89,7 @@ fun NoteAdding(
                     onClick = {
                         if(noteP == null){
                             navController.navigate(Destinations.Notes)
-                            noteRepository.addNote(note)
+                            noteRepository.addNote(note,LoginData.userId)
                         }else{
                             navController.navigate(Destinations.Notes)
                             noteRepository.updateNote(note)

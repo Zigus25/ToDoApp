@@ -1,5 +1,3 @@
-@file:Suppress("OPT_IN_IS_NOT_ENABLED")
-
 package pl.mazy.todoapp.ui.components.task
 
 import androidx.compose.foundation.layout.*
@@ -16,9 +14,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
+import pl.mazy.todoapp.logic.data.LoginData
 import pl.mazy.todoapp.logic.data.repos.ToDoRepository
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupAdd(closeAdder: () -> Unit = {}){
     val focusManager = LocalFocusManager.current
@@ -50,7 +48,7 @@ fun GroupAdd(closeAdder: () -> Unit = {}){
         Row(verticalAlignment = Alignment.CenterVertically) {
             Spacer(modifier = Modifier.weight(1f))
             Button(onClick = {
-                toDoRepository.addCategory(text)
+                toDoRepository.addCategory(text,LoginData.userId)
                 closeAdder()},
                 modifier = Modifier.padding(end = 10.dp)) {
                 Text(text = "Save")

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS event(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    owner TEXT,
+    owner INTEGER,
     Name TEXT NOT NULL,
     Description TEXT NOT NULL ,
     Category INTEGER NOT NULL,
@@ -17,13 +17,13 @@ CREATE TABLE IF NOT EXISTS event(
 
 CREATE TABLE category(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    name TEXT UNIQUE NOT NULL,
-    owner TEXT
+    name TEXT NOT NULL,
+    owner INTEGER
 );
 
 --Categorys:
 selectCategorys:
-SELECT DISTINCT name FROM category;
+SELECT * FROM category WHERE owner = ?;
 
 insertCategory:
 INSERT INTO category(name,owner) VALUES (?,?);

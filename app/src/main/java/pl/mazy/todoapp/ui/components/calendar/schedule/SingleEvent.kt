@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatter
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun SingleEvent(navController: NavController<Destinations>, event: Event, DateNow: LocalDate? = null){
+fun SingleEvent(navController: NavController<Destinations>, event: Event, dateNow: LocalDate? = null){
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     Column(modifier = Modifier
         .height(75.dp)
@@ -47,9 +47,9 @@ fun SingleEvent(navController: NavController<Destinations>, event: Event, DateNo
                 if (LocalDate.parse(event.DateStart,formatter)==LocalDate.parse(event.DateEnd,formatter)) {
                     Text(text = "${event.TimeStart.takeLast(5)} - ${event.TimeEnd.takeLast(5)}")
                 }else{
-                    if (LocalDate.parse(event.DateStart,formatter)==DateNow){
+                    if (LocalDate.parse(event.DateStart,formatter)==dateNow){
                         Text(text = event.TimeStart.takeLast(5))
-                    }else if (LocalDate.parse(event.DateEnd,formatter)==DateNow){
+                    }else if (LocalDate.parse(event.DateEnd,formatter)==dateNow){
                         Text(text = event.TimeEnd.takeLast(5))
                     }
                 }

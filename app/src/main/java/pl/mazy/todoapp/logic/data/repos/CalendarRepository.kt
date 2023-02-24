@@ -33,11 +33,11 @@ class CalendarRepository (
         }
     }
 
-    fun addEvent(ev: Event, subList:List<String>,owner:String?){
+    fun addEvent(ev: Event, subList:List<String>,owner:Long?){
         database.calendarQueries.addEvent(owner,ev.Name,ev.Description,ev.Category,ev.TimeStart,ev.TimeEnd,ev.DateStart,ev.DateEnd,ev.Type,ev.Checked,ev.Color,ev.MainTaskID)
         val id = database.calendarQueries.selMyID().executeAsOne().max
         subList.forEach{
-            database.calendarQueries.addEvent("",it,"",ev.Category,null,null,null,null, Type = true, Checked = false, ev.Color,id)
+            database.calendarQueries.addEvent(null,it,"",ev.Category,null,null,null,null, Type = true, Checked = false, ev.Color,id)
 
         }
     }
@@ -46,7 +46,20 @@ class CalendarRepository (
         database.calendarQueries.updateEvent(event.Name,event.Description,event.Category,event.TimeStart,event.TimeEnd,event.DateStart,event.DateEnd,event.Type,event.Checked,event.Color,event.MainTaskID,event.id)
         val size:Int = selectSubList(event.id).size
         for (index in size until subList.size){
-            database.calendarQueries.addEvent(subList[index],"","",event.Category,null,null,null,null, true, false, event.Color,event.id)
+            database.calendarQueries.addEvent(
+                owner = null,
+                Name =  subList[index],
+                Description = "",
+                Category = event.Category,
+                TimeStart = null,
+                TimeEnd = null,
+                DateStart = null,
+                DateEnd = null,
+                Type = true,
+                Checked = false,
+                Color = event.Color,
+                MainTaskID = event.id
+            )
         }
         database.calendarQueries.changeStateFalse(event.id)
         toggleCheck(event)

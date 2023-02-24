@@ -135,7 +135,7 @@ fun SignUp(navController: NavController<Destinations>){
         Button(onClick = {
              if((!showErrorL&&!showErrorM&&!showErrorP)&&login!=""&&passwd!=""&&mailU!=""){
                  userRepository.signUpUser(login,passwd,mailU)
-                 LoginData.logIn(login)
+                 LoginData.logIn(login,userRepository.getActiveUser().first)
                  navController.navigate(Destinations.TaskList)
              }
         },modifier = Modifier.padding(top = 120.dp)) {
@@ -195,7 +195,7 @@ fun SignIn(navController: NavController<Destinations>){
             if(login!=""&&passwd!="") {
                 if (userRepository.signInUser(login, passwd)) {
                     navController.navigate(Destinations.TaskList)
-                    LoginData.logIn(login)
+                    LoginData.logIn(login,userRepository.getActiveUser().first)
                 }
             }
          },modifier = Modifier.padding(top = 120.dp)) {

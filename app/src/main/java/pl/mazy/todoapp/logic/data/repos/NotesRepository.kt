@@ -6,11 +6,11 @@ import pl.mazy.todoapp.Notes
 class NotesRepository (
     private var database: Database
 ) {
-    fun getNotes(): List<Notes> =
-        database.noteQueries.selectNotes().executeAsList()
+    fun getNotes(owner:Long?): List<Notes> =
+        database.noteQueries.selectNotes(owner).executeAsList()
 
-    fun addNote(note:Notes) =
-        database.noteQueries.insert(note.name,note.description)
+    fun addNote(note:Notes,owner: Long?) =
+        database.noteQueries.insert(note.name,owner,note.description)
 
     fun deleteNote(id:Long) =
         database.noteQueries.deleteNote(id)

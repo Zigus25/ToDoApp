@@ -22,7 +22,6 @@ import pl.mazy.todoapp.ui.components.calendar.schedule.SingleEvent
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-@Suppress("OPT_IN_IS_NOT_ENABLED")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Schedule(

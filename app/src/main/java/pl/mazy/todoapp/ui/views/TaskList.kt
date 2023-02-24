@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
+import pl.mazy.todoapp.logic.data.LoginData
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.data.repos.ToDoRepository
 import pl.mazy.todoapp.logic.navigation.NavController
@@ -28,19 +29,19 @@ fun TaskList(
 ) {
     var selAdd = false
     val toDoRepository: ToDoRepository by localDI().instance()
-    var titles = toDoRepository.getTusk()
+    var titles = toDoRepository.getTusk(LoginData.userId)
     var addingGroup by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     if (titles.isEmpty()) {
-        toDoRepository.addCategory("Main")
+        toDoRepository.addCategory("Main",LoginData.userId)
     }
 
     var category by remember { mutableStateOf(titles[0]) }
 
-    val todos by toDoRepository.getToDos(category).collectAsState(initial = listOf())
+    val todos by toDoRepository.getToDos(category.id).collectAsState(initial = listOf())
     fun refreshTitle() = scope.launch {
-        titles = toDoRepository.getTusk()
+        titles = toDoRepository.getTusk(LoginData.userId)
     }
 
     LaunchedEffect(category) {
@@ -56,7 +57,7 @@ fun TaskList(
                     selected = i == index,
                     onClick = { category = title },
                     unselectedContentColor = MaterialTheme.colorScheme.onBackground,
-                    text = { Text(text = title, maxLines = 1) })
+                    text = { Text(text = title.name, maxLines = 1) })
             }
             Tab(selected = selAdd,
                 onClick = {
@@ -98,8 +99,8 @@ fun TaskList(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (titles.size > 1) {
                         IconButton(onClick = {
-                            toDoRepository.deleteGroup(category)
-                            titles = toDoRepository.getTusk()
+                            toDoRepository.deleteGroup(category.id)
+                            titles = toDoRepository.getTusk(LoginData.userId)
                             category = titles[0]
                         }) {
                             Icon(

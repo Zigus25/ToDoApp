@@ -3,7 +3,6 @@ package pl.mazy.todoapp.ui.components.calendar
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.graphics.Color.parseColor
-import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -37,6 +36,7 @@ import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.logic.data.repos.CalendarRepository
 import pl.mazy.todoapp.logic.data.Event
+import pl.mazy.todoapp.logic.data.LoginData
 import pl.mazy.todoapp.logic.data.repos.ToDoRepository
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.logic.navigation.NavController
@@ -65,7 +65,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
     }
 
     val calendar = Calendar.getInstance()
-    val options = toDoRepository.getTusk()
+    val options = toDoRepository.getTusk(LoginData.userId)
     var expanded by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val formatDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -84,7 +84,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                 0,
                 "",
                 "",
-                options[0],
+                options[0].id,
                 null,
                 null,
                 null,
@@ -144,10 +144,12 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                         Row(modifier = Modifier
                             .clickable { expanded = true }
                             .padding(start = 20.dp)) {
-                            Text(
-                                text = event.Category,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
+                            options.find { it.id == event.Category }?.let {
+                                Text(
+                                    text = it.name,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
                             Icon(
                                 imageVector = Icons.Default.ExpandMore,
                                 contentDescription = null,
@@ -159,9 +161,9 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                             ) {
                                 options.forEach { selectionOption ->
                                     DropdownMenuItem(
-                                        text = { Text(selectionOption) },
+                                        text = { Text(selectionOption.name) },
                                         onClick = {
-                                            event = event.copy(Category = selectionOption)
+                                            event = event.copy(Category = selectionOption.id)
                                             expanded = false
                                         }
                                     )
@@ -374,7 +376,6 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                                 OutlinedTextField(value = subTaskName, onValueChange = {subTaskName = it})
                                 Button(onClick = {
                                     subList.add(subTaskName)
-                                    Log.i("",subList.toString())
                                     subTaskName = ""
                                 }) {
                                     Text(text = "Add")
@@ -429,7 +430,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                                         Destinations.Schedule
                                     }
                                 )
-                                calendarRepository.addEvent(event,subList.toList())
+                                calendarRepository.addEvent(event,subList.toList(),LoginData.userId)
                             } else {
                                 navController.navigate(
                                     if (isTask) {

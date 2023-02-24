@@ -1,5 +1,3 @@
-@file:Suppress("OPT_IN_IS_NOT_ENABLED")
-
 package pl.mazy.todoapp.ui.views
 
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -19,6 +17,7 @@ import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.logic.navigation.Destinations
 import pl.mazy.todoapp.Notes
+import pl.mazy.todoapp.logic.data.LoginData
 import pl.mazy.todoapp.logic.data.repos.NotesRepository
 import pl.mazy.todoapp.logic.navigation.NavController
 import pl.mazy.todoapp.ui.components.note.*
@@ -29,7 +28,7 @@ fun NoteList(
     navController: NavController<Destinations>,
 ){
     val notesRepository: NotesRepository by localDI().instance()
-    val notes: List<Notes>? by remember { mutableStateOf(notesRepository.getNotes()) }
+    val notes: List<Notes>? by remember { mutableStateOf(notesRepository.getNotes(LoginData.userId)) }
 
     Scaffold(
             floatingActionButton = {

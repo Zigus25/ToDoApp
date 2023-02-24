@@ -4,14 +4,15 @@ import com.squareup.sqldelight.runtime.coroutines.asFlow
 import com.squareup.sqldelight.runtime.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import pl.mazy.todoapp.Category
 import pl.mazy.todoapp.Database
 import pl.mazy.todoapp.logic.data.Event
 
 class ToDoRepository(
     private var database: Database
 ) {
-    fun addCategory(taskListName: String) =
-        database.calendarQueries.insertCategory(taskListName,"")
+    fun addCategory(taskListName: String,owner: Long?) =
+        database.calendarQueries.insertCategory(taskListName,owner)
 
     private fun consolidate(events:List<Event>): List<Event> {
         val list = events.toMutableList()
@@ -25,7 +26,7 @@ class ToDoRepository(
         return list.filter { it.MainTaskID == null }
     }
 
-    fun getToDos(listName: String): Flow<List<Event>> =
+    fun getToDos(listName: Long): Flow<List<Event>> =
         database.calendarQueries.selecFromtList(listName).asFlow().mapToList().map {
             it.map { e ->
                 Event(
@@ -46,8 +47,8 @@ class ToDoRepository(
             }
         }.map(::consolidate)
 
-    fun getTusk(): List<String> =
-        database.calendarQueries.selectCategorys().executeAsList()
+    fun getTusk(owner:Long?): List<Category> =
+        database.calendarQueries.selectCategorys(owner).executeAsList()
 
     fun changeCheck(event: Event) {
         database.calendarQueries.toggleState(event.id)
@@ -76,7 +77,7 @@ class ToDoRepository(
         }
     }
 
-    fun deleteGroup(name: String) {
-        database.calendarQueries.deleteCategory(name, name)
+    fun deleteGroup(id: Long) {
+        database.calendarQueries.deleteCategory(id,id)
     }
 }

@@ -59,7 +59,8 @@ class MainActivity : ComponentActivity() {
                 ToDoAPpTheme {
                     val userRepository: AccountRep by localDI().instance()
                     try {
-                        LoginData.logIn(userRepository.getActiveUser())
+                        val pair = userRepository.getActiveUser()
+                        LoginData.logIn(pair.second,pair.first)
                     }catch (_:NullPointerException){ }
                     var program by remember {
                         mutableStateOf("Task List")
