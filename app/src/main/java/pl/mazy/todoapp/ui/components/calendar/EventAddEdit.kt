@@ -142,7 +142,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                             .padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(modifier = Modifier
-                            .clickable { expanded = true }
+                            .clickable { if(event.MainTaskID==null)expanded = true }
                             .padding(start = 20.dp)) {
                             options.find { it.id == event.Category }?.let {
                                 Text(
@@ -150,11 +150,13 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                                     color = MaterialTheme.colorScheme.onBackground
                                 )
                             }
-                            Icon(
-                                imageVector = Icons.Default.ExpandMore,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
+                            if(event.MainTaskID==null) {
+                                Icon(
+                                    imageVector = Icons.Default.ExpandMore,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onBackground
+                                )
+                            }
                             DropdownMenu(
                                 expanded = expanded,
                                 onDismissRequest = { expanded = false }
