@@ -432,7 +432,11 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                                         Destinations.Schedule
                                     }
                                 )
-                                calendarRepository.addEvent(event,subList.toList(),LoginData.userId)
+                                LoginData.userId?.let {
+                                    calendarRepository.addEvent(event,subList.toList(),
+                                        it
+                                    )
+                                }
                             } else {
                                 navController.navigate(
                                     if (isTask) {

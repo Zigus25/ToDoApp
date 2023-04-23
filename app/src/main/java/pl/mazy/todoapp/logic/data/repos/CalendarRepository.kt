@@ -33,11 +33,11 @@ class CalendarRepository (
         }
     }
 
-    fun addEvent(ev: Event, subList:List<String>,owner:Long?){
+    fun addEvent(ev: Event, subList:List<String>,owner:Long){
         database.calendarQueries.addEvent(owner,ev.Name,ev.Description,ev.Category,ev.TimeStart,ev.TimeEnd,ev.DateStart,ev.DateEnd,ev.Type,ev.Checked,ev.Color,ev.MainTaskID)
         val id = database.calendarQueries.selMyID().executeAsOne().max
         subList.forEach{
-            database.calendarQueries.addEvent(null,it,"",ev.Category,null,null,null,null, Type = true, Checked = false, ev.Color,id)
+            database.calendarQueries.addEvent(owner,it,"",ev.Category,null,null,null,null, Type = true, Checked = false, ev.Color,id)
 
         }
     }
