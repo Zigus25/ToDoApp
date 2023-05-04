@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,12 +31,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.logic.data.LoginData
-import pl.mazy.todoapp.logic.data.repos.AccountRep
-import pl.mazy.todoapp.logic.navigation.Destinations
-import pl.mazy.todoapp.logic.navigation.NavController
+import pl.mazy.todoapp.data.LoginData
+import pl.mazy.todoapp.data.local.AccountRep
+import pl.mazy.todoapp.data.remote.TDAService
+import pl.mazy.todoapp.data.remote.model.request.AuthReq
+import pl.mazy.todoapp.data.remote.model.request.SingUpReq
+import pl.mazy.todoapp.navigation.Destinations
+import pl.mazy.todoapp.navigation.NavController
 import java.util.regex.Pattern
 
 @Composable
@@ -49,6 +54,8 @@ fun SignUp(navController: NavController<Destinations>){
     var showErrorP by remember { mutableStateOf(false) }
     var passwordVisible by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+    val api: TDAService by localDI().instance()
+    val scope = rememberCoroutineScope()
 
     fun errorM(){
         if (showErrorL){
@@ -134,9 +141,14 @@ fun SignUp(navController: NavController<Destinations>){
         Text(text = errorMessage, color = MaterialTheme.colorScheme.error, modifier = Modifier.fillMaxWidth())
         Button(onClick = {
              if((!showErrorL&&!showErrorM&&!showErrorP)&&login!=""&&passwd!=""&&mailU!=""){
-                 userRepository.signUpUser(login,passwd,mailU)
-                 LoginData.logIn(login,userRepository.getActiveUser().first)
-                 navController.navigate(Destinations.TaskList)
+                 scope.launch {
+                     val token = api.signup(SingUpReq(mailU,login,passwd))
+                     if(token != null) {
+                         navController.navigate(Destinations.TaskList)
+                         LoginData.logIn(login, token.access_token)
+                         userRepository.signUpUser(login,passwd,mailU,token.access_token)
+                     }
+                 }
              }
         },modifier = Modifier.padding(top = 120.dp)) {
             Text(text = "Sign Up")
@@ -147,9 +159,12 @@ fun SignUp(navController: NavController<Destinations>){
 @Composable
 fun SignIn(navController: NavController<Destinations>){
     val userRepository: AccountRep by localDI().instance()
+    val api: TDAService by localDI().instance()
     var passwordVisible by remember { mutableStateOf(false) }
     var login by remember { mutableStateOf("") }
     var passwd by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+
     Column(modifier = Modifier
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.background),
@@ -194,8 +209,14 @@ fun SignIn(navController: NavController<Destinations>){
         Button(onClick = {
             if(login!=""&&passwd!="") {
                 if (userRepository.signInUser(login, passwd)) {
-                    navController.navigate(Destinations.TaskList)
-                    LoginData.logIn(login,userRepository.getActiveUser().first)
+                    scope.launch {
+                        val token = api.auth(AuthReq(login,passwd))
+                        if(token !=null) {
+                            navController.navigate(Destinations.TaskList)
+                            LoginData.logIn(login, token.access_token)
+                            userRepository.signUpUser("",passwd,login,token.access_token)
+                        }
+                    }
                 }
             }
          },modifier = Modifier.padding(top = 120.dp)) {

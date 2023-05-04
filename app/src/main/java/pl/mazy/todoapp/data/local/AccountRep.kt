@@ -1,4 +1,4 @@
-package pl.mazy.todoapp.logic.data.repos
+package pl.mazy.todoapp.data.local
 
 import pl.mazy.todoapp.Database
 
@@ -6,12 +6,12 @@ class AccountRep (
     private var database: Database
 ) {
 
-    fun getActiveUser():Pair<Long,String>{
+    fun getActiveUser():Pair<String,String>{
         val x =database.userQueries.selectActive().executeAsOne()
-        return Pair(x.id,x.login)
+        return Pair(x.token,x.login)
     }
-    fun signUpUser(login:String,passwd:String,eMail:String){
-        database.userQueries.insertUser(login, eMail, passwd)
+    fun signUpUser(login:String,passwd:String,eMail:String,token: String){
+        database.userQueries.insertUser(login, eMail, passwd,token)
         signInUser(login, passwd)
     }
 
@@ -21,6 +21,9 @@ class AccountRep (
             database.userQueries.toggleActive(login)
         }
         return sign
+    }
+    fun checkExist(eMail: String,passwd: String):Boolean{
+        return database.userQueries.checkUser(eMail,passwd).executeAsOne().toInt()==0
     }
 
     fun signOut(login:String){

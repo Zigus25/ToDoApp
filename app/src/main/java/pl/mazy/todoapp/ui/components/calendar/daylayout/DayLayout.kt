@@ -5,9 +5,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import pl.mazy.todoapp.logic.data.Event
-import pl.mazy.todoapp.logic.navigation.Destinations
-import pl.mazy.todoapp.logic.navigation.NavController
+import pl.mazy.todoapp.data.model.Event
+import pl.mazy.todoapp.navigation.Destinations
+import pl.mazy.todoapp.navigation.NavController
 import pl.mazy.todoapp.ui.components.calendar.schedule.SingleEvent
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -91,8 +91,8 @@ interface CalendarScope{
     fun item(time1:LocalTime,time2:LocalTime,content: @Composable () -> Unit)
     fun item(navController: NavController<Destinations>, event: Event){
         val formatter = DateTimeFormatter.ofPattern("HH:mm")
-        val time1 = LocalTime.parse(event.TimeStart, formatter)
-        val time2 = LocalTime.parse(event.TimeEnd, formatter)
+        val time1 = LocalTime.parse(event.timeStart, formatter)
+        val time2 = LocalTime.parse(event.timeEnd, formatter)
         item(time1,time2) { SingleEvent(navController,event) }
     }
 }

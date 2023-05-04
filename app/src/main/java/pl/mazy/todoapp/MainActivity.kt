@@ -36,10 +36,10 @@ import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.compose.withDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.logic.data.LoginData
-import pl.mazy.todoapp.logic.data.repos.AccountRep
-import pl.mazy.todoapp.logic.navigation.Destinations
-import pl.mazy.todoapp.logic.navigation.NavController
+import pl.mazy.todoapp.data.LoginData
+import pl.mazy.todoapp.data.local.AccountRep
+import pl.mazy.todoapp.navigation.Destinations
+import pl.mazy.todoapp.navigation.NavController
 import pl.mazy.todoapp.ui.components.calendar.EventAddEdit
 import pl.mazy.todoapp.ui.components.note.NoteAdding
 import pl.mazy.todoapp.ui.theme.ToDoAPpTheme
@@ -131,15 +131,15 @@ class MainActivity : ComponentActivity() {
                                     .fillMaxWidth()
                                     .padding(start = 30.dp,bottom = 20.dp)
                             ) {
-                                if (LoginData.loginU == null){
-                                    Text(text = "Sign In", modifier = Modifier.clickable {
+                                if (LoginData.token == ""){
+                                    Text(text = "Local", modifier = Modifier.clickable {
                                         scope.launch { drawerState.close() }
                                         controller.navigate(Destinations.SignIn) },
                                         fontSize = 30.sp)
                                 }else{
-                                    Text(text = LoginData.loginU!!, modifier = Modifier.clickable {
+                                    Text(text = LoginData.login!!, modifier = Modifier.clickable {
                                         scope.launch { drawerState.close() }
-                                        userRepository.signOut(LoginData.loginU!!)
+                                        userRepository.signOut(LoginData.login!!)
                                         LoginData.logOut()
                                    },
                                         fontSize = 30.sp)
@@ -160,10 +160,10 @@ class MainActivity : ComponentActivity() {
                                     Text(text = program, fontSize = 24.sp, color = MaterialTheme.colorScheme.onBackground)
                                     Spacer(modifier = Modifier.weight(1f))
                                     IconButton(onClick = {
-                                            if (LoginData.loginU == null){
+                                            if (LoginData.token == ""){
                                                 controller.navigate(Destinations.SignIn)
                                             }else{
-                                                userRepository.signOut(LoginData.loginU!!)
+                                                userRepository.signOut(LoginData.login!!)
                                                 LoginData.logOut()
                                         }}) {
                                         Icon(

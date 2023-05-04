@@ -18,9 +18,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import pl.mazy.todoapp.logic.data.Event
-import pl.mazy.todoapp.logic.navigation.Destinations
-import pl.mazy.todoapp.logic.navigation.NavController
+import pl.mazy.todoapp.data.model.Event
+import pl.mazy.todoapp.navigation.Destinations
+import pl.mazy.todoapp.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,13 +30,13 @@ fun Task(
     check:(event: Event) -> Unit
 ){
     Card(
-        border = if (event.MainTaskID==null) {
-            BorderStroke(1.dp, Color(parseColor(event.Color)))
+        border = if (event.mainTask_id==null) {
+            BorderStroke(1.dp, Color(parseColor(event.color)))
         }else{
             BorderStroke(0.dp,MaterialTheme.colorScheme.background)
         },
         modifier = Modifier
-            .padding(if (event.MainTaskID==null) {10.dp}else{0.dp})
+            .padding(if (event.mainTask_id==null) {10.dp}else{0.dp})
             .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
@@ -48,9 +48,9 @@ fun Task(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.background)
-                    .clickable { navController.navigate(Destinations.EventAdd(event, event.Type)) }
+                    .clickable { navController.navigate(Destinations.EventAdd(event, event.type)) }
                     .padding(
-                        start = if (event.MainTaskID != null) {
+                        start = if (event.mainTask_id != null) {
                             30.dp
                         } else {
                             5.dp
@@ -58,10 +58,10 @@ fun Task(
                     ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (event.MainTaskID != null) {
+                if (event.mainTask_id != null) {
                     Icon(
                         Icons.Filled.RadioButtonChecked,
-                        tint = if (!event.Checked) {
+                        tint = if (!event.checked) {
                             MaterialTheme.colorScheme.onBackground
                         } else {
                             Color.Red
@@ -70,7 +70,7 @@ fun Task(
                     )
                 }
                 Text(
-                    text = event.Name,
+                    text = event.name,
                     fontSize = 18.sp,
                     color = MaterialTheme.colorScheme.onBackground,
                     maxLines = 1,
@@ -79,25 +79,25 @@ fun Task(
                         .padding(start = 10.dp),
                     overflow = TextOverflow.Ellipsis,
                     style = TextStyle(
-                        textDecoration = if (event.Checked) {
+                        textDecoration = if (event.checked) {
                             TextDecoration.LineThrough
                         } else {
                             TextDecoration.None
                         }
                     )
                 )
-                Checkbox(checked = event.Checked, onCheckedChange = {
+                Checkbox(checked = event.checked, onCheckedChange = {
                     check(event)
                 })
             }
-            if (event.SubList.isNotEmpty()) {
+            if (event.subList.isNotEmpty()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 10.dp)
                         .background(MaterialTheme.colorScheme.background)
                 ) {
-                    event.SubList.forEach { subEvent ->
+                    event.subList.forEach { subEvent ->
                         Task(navController = navController, event = subEvent, check = {
                             check(it)
                             Log.i("asd", subEvent.id.toString())

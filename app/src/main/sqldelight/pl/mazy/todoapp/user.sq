@@ -3,14 +3,15 @@ CREATE TABLE user (
     login TEXT NOT NULL,
     eMail TEXT NOT NULL,
     passwd TEXT NOT NULL,
+    token TEXT NOT NULL,
     active INTEGER AS Boolean NOT NULL
 );
 
 insertUser:
-INSERT INTO user (login,eMail,passwd,active) VALUES (?,?,?,0);
+INSERT INTO user (login,eMail,passwd,token,active) VALUES (?,?,?,?,0);
 
 checkUser:
-SELECT count(login) FROM user WHERE login = ? AND passwd = ?;
+SELECT count(login) FROM user WHERE eMail = ? AND passwd = ?;
 
 toggleActive:
 UPDATE user
@@ -18,4 +19,4 @@ SET active = ((active | 1) - (active & 1))
 WHERE login = ?;
 
 selectActive:
-SELECT id,login FROM user WHERE active = 1;
+SELECT token,login FROM user WHERE active = 1;

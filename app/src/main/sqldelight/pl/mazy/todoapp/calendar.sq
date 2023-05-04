@@ -17,16 +17,15 @@ CREATE TABLE IF NOT EXISTS event(
 
 CREATE TABLE category(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    owner INTEGER
+    name TEXT NOT NULL
 );
 
 --Categorys:
 selectCategorys:
-SELECT * FROM category WHERE owner = ?;
+SELECT * FROM category;
 
 insertCategory:
-INSERT INTO category(name,owner) VALUES (?,?);
+INSERT INTO category(name) VALUES (?);
 
 deleteCategory{
 DELETE FROM category WHERE  id = ?;

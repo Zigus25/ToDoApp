@@ -13,10 +13,13 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.logic.data.repos.CalendarRepository
-import pl.mazy.todoapp.logic.data.Event
-import pl.mazy.todoapp.logic.navigation.Destinations
-import pl.mazy.todoapp.logic.navigation.NavController
+import pl.mazy.todoapp.data.LoginData
+import pl.mazy.todoapp.data.interfaces.CalendarInter
+import pl.mazy.todoapp.data.local.CalendarRepoLocal
+import pl.mazy.todoapp.data.model.Event
+import pl.mazy.todoapp.data.remote.repos.CalendarRepo
+import pl.mazy.todoapp.navigation.Destinations
+import pl.mazy.todoapp.navigation.NavController
 import pl.mazy.todoapp.ui.components.calendar.schedule.DateShow
 import pl.mazy.todoapp.ui.components.calendar.schedule.SingleEvent
 import java.time.LocalDate
@@ -27,23 +30,35 @@ import java.time.format.DateTimeFormatter
 fun Schedule(
     navController: NavController<Destinations>,
 ) {
-    val calendarRepository: CalendarRepository by localDI().instance()
-    var events: List<Event>? by remember { mutableStateOf(null) }
+    val calRepo:CalendarInter = if (LoginData.token==""){
+        val caR:CalendarRepoLocal by localDI().instance()
+        caR
+    }else{
+        val caR:CalendarRepo by localDI().instance()
+        caR
+    }
+    var events: List<Event> by remember { mutableStateOf(listOf()) }
     val scope = rememberCoroutineScope()
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val date: LocalDate = LocalDate.parse(LocalDate.now().format(formatter),formatter)
-    val maxDate = if (calendarRepository.selMaxDate() != null) {
-        LocalDate.parse(calendarRepository.selMaxDate(), formatter)
-    } else {
-        date
-    }
+    var maxDate:LocalDate = date
 
     fun listDates(now:LocalDate,max:LocalDate):List<LocalDate> = List(now.until(max).days+1){now.plusDays(it.toLong())}
+    fun foundMaxDate(list:List<Event>):LocalDate{
+        return if (list.isNotEmpty()) {
+            LocalDate.parse(list[list.lastIndex].dateEnd, formatter)
+        }else{
+            date
+        }
+    }
 
     fun loadEvents() = scope.launch {
-        events = calendarRepository.selEvents()
+        events = calRepo.selByDate(date)
     }
-    loadEvents()
+    LaunchedEffect(events){
+        loadEvents()
+        maxDate = foundMaxDate(events)
+    }
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -67,13 +82,13 @@ fun Schedule(
         ) {
 
             LazyColumn(modifier = Modifier.weight(1f)) {
-                if (events != null) {
+                if (events.isNotEmpty()) {
                     items(listDates(date, maxDate)) {
-                        val e = events!!.filter { ev ->
-                            ev.DateEnd != null && LocalDate.parse(
-                                ev.DateEnd,
+                        val e = events.filter { ev ->
+                            ev.dateEnd != null && LocalDate.parse(
+                                ev.dateEnd,
                                 formatter
-                            ) >= it && LocalDate.parse(ev.DateStart, formatter) <= it
+                            ) >= it && LocalDate.parse(ev.dateStart, formatter) <= it
                         }
                         if (e.isNotEmpty() || it == date)
                             DateShow(dateD = it.toString())

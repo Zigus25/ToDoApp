@@ -15,11 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.logic.navigation.Destinations
-import pl.mazy.todoapp.Notes
-import pl.mazy.todoapp.logic.data.LoginData
-import pl.mazy.todoapp.logic.data.repos.NotesRepository
-import pl.mazy.todoapp.logic.navigation.NavController
+import pl.mazy.todoapp.navigation.Destinations
+import pl.mazy.todoapp.data.LoginData
+import pl.mazy.todoapp.data.interfaces.NotesInter
+import pl.mazy.todoapp.data.local.NotesRepoLocal
+import pl.mazy.todoapp.data.model.Note
+import pl.mazy.todoapp.data.remote.repos.NotesRepo
+import pl.mazy.todoapp.navigation.NavController
 import pl.mazy.todoapp.ui.components.note.*
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -27,9 +29,17 @@ import pl.mazy.todoapp.ui.components.note.*
 fun NoteList(
     navController: NavController<Destinations>,
 ){
-    val notesRepository: NotesRepository by localDI().instance()
-    val notes: List<Notes>? by remember { mutableStateOf(notesRepository.getNotes(LoginData.userId)) }
-
+    val noteRepo:NotesInter = if (LoginData.token==""){
+        val noR:NotesRepoLocal by localDI().instance()
+        noR
+    }else{
+        val noR: NotesRepo by localDI().instance()
+        noR
+    }
+    var notes: List<Note> by remember { mutableStateOf(listOf()) }
+    LaunchedEffect(notes) {
+        notes = noteRepo.getNotes()
+    }
     Scaffold(
             floatingActionButton = {
                 FloatingActionButton(
@@ -60,7 +70,7 @@ fun NoteList(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(notes ?: listOf()) { note ->
+                    items(notes) { note ->
                         SingleNote(note, navController)
                     }
                 }

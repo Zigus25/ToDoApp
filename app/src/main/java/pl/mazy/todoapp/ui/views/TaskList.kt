@@ -17,10 +17,14 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.logic.data.LoginData
-import pl.mazy.todoapp.logic.navigation.Destinations
-import pl.mazy.todoapp.logic.data.repos.ToDoRepository
-import pl.mazy.todoapp.logic.navigation.NavController
+import pl.mazy.todoapp.data.LoginData
+import pl.mazy.todoapp.data.interfaces.TasksInter
+import pl.mazy.todoapp.data.local.TasksRepoLocal
+import pl.mazy.todoapp.navigation.Destinations
+import pl.mazy.todoapp.data.model.Category
+import pl.mazy.todoapp.data.model.Event
+import pl.mazy.todoapp.data.remote.repos.TasksRepo
+import pl.mazy.todoapp.navigation.NavController
 import pl.mazy.todoapp.ui.components.task.*
 
 @Composable
@@ -28,34 +32,65 @@ fun TaskList(
     navController: NavController<Destinations>
 ) {
     var selAdd = false
-    val toDoRepository: ToDoRepository by localDI().instance()
-    var titles = toDoRepository.getTusk(LoginData.userId)
+    var i by remember {
+        mutableStateOf(0)
+    }
+    val taskRepo: TasksInter = if (LoginData.token==""){
+        val taR: TasksRepoLocal by localDI().instance()
+        taR
+    }else{
+        val taR: TasksRepo by localDI().instance()
+        taR
+    }
+    var titles:List<Category> by remember { mutableStateOf(listOf()) }
     var addingGroup by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    if (titles.isEmpty()) {
-        toDoRepository.addCategory("Main",LoginData.userId)
+    var category:Category by remember { mutableStateOf(Category(0,"",0,null)) }
+
+    var todos :List<Event> by remember {
+        mutableStateOf(listOf())
     }
-
-    var category by remember { mutableStateOf(titles[0]) }
-
-    val todos by toDoRepository.getToDos(category.id).collectAsState(initial = listOf())
     fun refreshTitle() = scope.launch {
-        titles = toDoRepository.getTusk(LoginData.userId)
+        titles = taskRepo.getCategory()
+        if (titles.isEmpty()){
+            titles = listOf(Category(0,"",0,null))
+        }else{
+            category = titles[0]
+        }
     }
 
-    LaunchedEffect(category) {
+    fun refreshEvents() = scope.launch {
+        todos = if (category.shareId==null) {
+            taskRepo.getTusks(category.id)
+        }else{
+            taskRepo.getTusks(category.shareId!!)
+        }
+    }
+
+    LaunchedEffect(category,titles) {
+        scope.launch { titles = taskRepo.getCategory() }
         refreshTitle()
+
+        scope.launch {
+            if ((titles.isEmpty()||titles[0].id==0)&&LoginData.token == "") {
+                taskRepo.addCategory("Main")
+                refreshTitle()
+            }
+        }
+        refreshEvents()
     }
     Column(modifier = Modifier.fillMaxSize()) {
-        val i = titles.indexOf(category)
         ScrollableTabRow(
             selectedTabIndex = i, edgePadding = 15.dp, modifier = Modifier.fillMaxWidth(), divider = {}
         ) {
             titles.forEachIndexed { index, title ->
                 Tab(modifier = Modifier.weight(1f),
                     selected = i == index,
-                    onClick = { category = title },
+                    onClick = {
+                        category = title
+                        i = index
+                    },
                     unselectedContentColor = MaterialTheme.colorScheme.onBackground,
                     text = { Text(text = title.name, maxLines = 1) })
             }
@@ -83,7 +118,9 @@ fun TaskList(
             ) {
                 items(todos) { ev ->
                     Task(navController, ev){
-                        toDoRepository.changeCheck(it)
+                        scope.launch {
+                            it.id?.let { it1 -> taskRepo.toggle(it1) }
+                        }
                     }
                 }
             }
@@ -93,15 +130,21 @@ fun TaskList(
                     .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8F))
                     .blur(8.dp)
                     .clickable { addingGroup = false })
-                GroupAdd { addingGroup = false }
+                GroupAdd {
+                    addingGroup = false
+                    titles = listOf()
+                }
             }
             if (!addingGroup) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (titles.size > 1) {
                         IconButton(onClick = {
-                            toDoRepository.deleteGroup(category.id)
-                            titles = toDoRepository.getTusk(LoginData.userId)
-                            category = titles[0]
+                            scope.launch {
+                                taskRepo.delCategory(category.id)
+                                titles = taskRepo.getCategory()
+                                category = titles[0]
+                                i = 0
+                            }
                         }) {
                             Icon(
                                 Icons.Filled.Delete,

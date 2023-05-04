@@ -18,9 +18,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import pl.mazy.todoapp.logic.data.Event
-import pl.mazy.todoapp.logic.navigation.Destinations
-import pl.mazy.todoapp.logic.navigation.NavController
+import pl.mazy.todoapp.data.model.Event
+import pl.mazy.todoapp.navigation.Destinations
+import pl.mazy.todoapp.navigation.NavController
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -34,23 +34,23 @@ fun SingleEvent(navController: NavController<Destinations>, event: Event, dateNo
         .padding(10.dp)
         .clip(RoundedCornerShape(5.dp))
         .background(
-            Color(parseColor(event.Color))
+            Color(parseColor(event.color))
         )
         .clickable {
             navController.navigate(Destinations.EventAdd(event,false))
         }
     ) {
-        Text(text = event.Name, fontSize = 24.sp)
+        Text(text = event.name, fontSize = 24.sp)
         Row {
             Spacer(modifier = Modifier.weight(1f))
-            if (event.TimeStart!=null&&event.TimeEnd!=null) {
-                if (LocalDate.parse(event.DateStart,formatter)==LocalDate.parse(event.DateEnd,formatter)) {
-                    Text(text = "${event.TimeStart.takeLast(5)} - ${event.TimeEnd.takeLast(5)}")
+            if (event.timeStart!=null&&event.timeEnd!=null) {
+                if (LocalDate.parse(event.dateStart,formatter)==LocalDate.parse(event.dateEnd,formatter)) {
+                    Text(text = "${event.timeStart.takeLast(5)} - ${event.timeEnd.takeLast(5)}")
                 }else{
-                    if (LocalDate.parse(event.DateStart,formatter)==dateNow){
-                        Text(text = event.TimeStart.takeLast(5))
-                    }else if (LocalDate.parse(event.DateEnd,formatter)==dateNow){
-                        Text(text = event.TimeEnd.takeLast(5))
+                    if (LocalDate.parse(event.dateStart,formatter)==dateNow){
+                        Text(text = event.timeStart.takeLast(5))
+                    }else if (LocalDate.parse(event.dateEnd,formatter)==dateNow){
+                        Text(text = event.timeEnd.takeLast(5))
                     }
                 }
             }

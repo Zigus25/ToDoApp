@@ -10,14 +10,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import pl.mazy.todoapp.logic.navigation.Destinations
+import pl.mazy.todoapp.navigation.Destinations
 import pl.mazy.todoapp.Notes
-import pl.mazy.todoapp.logic.navigation.NavController
+import pl.mazy.todoapp.data.model.Note
+import pl.mazy.todoapp.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SingleNote(
-    note: Notes,
+    note: Note,
     navController: NavController<Destinations>
 ){
     Card(
@@ -42,11 +43,13 @@ fun SingleNote(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis)
 
-            Text(text = note.description,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(start = 7.dp, end = 7.dp, bottom = 8.dp).fillMaxWidth(),
-                maxLines = 20,
-                overflow = TextOverflow.Ellipsis)
+            note.description?.let {
+                Text(text = it,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(start = 7.dp, end = 7.dp, bottom = 8.dp).fillMaxWidth(),
+                    maxLines = 20,
+                    overflow = TextOverflow.Ellipsis)
+            }
         }
     }
 

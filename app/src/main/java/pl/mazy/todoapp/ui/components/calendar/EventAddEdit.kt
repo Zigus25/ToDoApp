@@ -18,9 +18,11 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.SaveAs
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,14 +34,20 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.logic.data.repos.CalendarRepository
-import pl.mazy.todoapp.logic.data.Event
-import pl.mazy.todoapp.logic.data.LoginData
-import pl.mazy.todoapp.logic.data.repos.ToDoRepository
-import pl.mazy.todoapp.logic.navigation.Destinations
-import pl.mazy.todoapp.logic.navigation.NavController
+import pl.mazy.todoapp.data.LoginData
+import pl.mazy.todoapp.data.interfaces.CalendarInter
+import pl.mazy.todoapp.data.interfaces.TasksInter
+import pl.mazy.todoapp.data.local.CalendarRepoLocal
+import pl.mazy.todoapp.data.local.TasksRepoLocal
+import pl.mazy.todoapp.data.model.Category
+import pl.mazy.todoapp.data.model.Event
+import pl.mazy.todoapp.data.remote.repos.CalendarRepo
+import pl.mazy.todoapp.data.remote.repos.TasksRepo
+import pl.mazy.todoapp.navigation.Destinations
+import pl.mazy.todoapp.navigation.NavController
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -51,21 +59,27 @@ import java.util.*
 @Composable
 fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:Boolean) {
 
-    val toDoRepository: ToDoRepository by localDI().instance()
-    val calendarRepository: CalendarRepository by localDI().instance()
+    val taskRepo: TasksInter = if (LoginData.token==""){
+        val taR: TasksRepoLocal by localDI().instance()
+        taR
+    }else{
+        val taR: TasksRepo by localDI().instance()
+        taR
+    }
+    val calRepo: CalendarInter = if (LoginData.token==""){
+        val caR: CalendarRepoLocal by localDI().instance()
+        caR
+    }else{
+        val caR: CalendarRepo by localDI().instance()
+        caR
+    }
+    val scope = rememberCoroutineScope()
 
     var canAddSL by remember { mutableStateOf(true) }
 
     val subList = remember { mutableListOf<String>() }
-    if (ev!=null&&canAddSL){
-        calendarRepository.selectSubList(ev.id).forEach{
-            subList.add(it)
-        }
-        canAddSL = false
-    }
-
     val calendar = Calendar.getInstance()
-    val options = toDoRepository.getTusk(LoginData.userId)
+    var options:List<Category> by remember { mutableStateOf(listOf()) }
     var expanded by remember { mutableStateOf(false) }
     val focusManager = LocalFocusManager.current
     val formatDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -80,25 +94,42 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
 
     var event by remember {
         mutableStateOf(
-            ev?:Event(
-                0,
-                "",
-                "",
-                options[0].id,
-                null,
-                null,
-                null,
-                null,
-                isTask,
-                false,
-                "#2471a3",
-                null,
-                listOf()
-            )) }
-    var wantDate by remember { mutableStateOf(event.DateStart!=null) }
-    var wantTime by remember { mutableStateOf(event.TimeStart!=null) }
-    if (!event.Type){
+            ev?: Event(
+                id = null,
+                owner_id = null,
+                name = "",
+                description = null,
+                category_id = options[0].id,
+                dateEnd = null,
+                dateStart = null,
+                timeEnd = null,
+                timeStart = null,
+                type = isTask,
+                checked = false,
+                color = "#2471a3",
+                mainTask_id = null,
+                subList = listOf()
+            )
+        ) }
+    var wantDate by remember { mutableStateOf(event.dateStart!=null) }
+    var wantTime by remember { mutableStateOf(event.dateEnd!=null) }
+    if (!event.type){
         wantDate = true
+    }
+    LaunchedEffect(options){
+        scope.launch {
+            options = taskRepo.getCategory()
+        }
+        if (ev!=null&&canAddSL){
+            scope.launch {
+                ev.id?.let {e->
+                    calRepo.namesSubList(e).forEach{
+                        subList.add(it)
+                    }
+                }
+                canAddSL = false
+            }
+        }
     }
 
     Column(
@@ -119,12 +150,12 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                         modifier = Modifier
                             .padding(5.dp)
                             .fillMaxWidth(),
-                        value = event.Name,
+                        value = event.name,
                         textStyle = TextStyle(
                             color = MaterialTheme.colorScheme.onBackground,
                         ),
                         onValueChange = {
-                            event = event.copy(Name = it)
+                            event = event.copy(name = it)
                         },
                         keyboardActions = KeyboardActions(onDone = {
                             focusManager.moveFocus(
@@ -142,15 +173,15 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                             .padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(modifier = Modifier
-                            .clickable { if(event.MainTaskID==null)expanded = true }
+                            .clickable { if (event.mainTask_id == null) expanded = true }
                             .padding(start = 20.dp)) {
-                            options.find { it.id == event.Category }?.let {
+                            options.find { it.id == event.category_id }?.let {
                                 Text(
                                     text = it.name,
                                     color = MaterialTheme.colorScheme.onBackground
                                 )
                             }
-                            if(event.MainTaskID==null) {
+                            if(event.mainTask_id==null) {
                                 Icon(
                                     imageVector = Icons.Default.ExpandMore,
                                     contentDescription = null,
@@ -165,7 +196,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                                     DropdownMenuItem(
                                         text = { Text(selectionOption.name) },
                                         onClick = {
-                                            event = event.copy(Category = selectionOption.id)
+                                            event = event.copy(category_id = selectionOption.id)
                                             expanded = false
                                         }
                                     )
@@ -179,8 +210,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                         ) {
                             Text(text = "task:", color = MaterialTheme.colorScheme.onBackground)
                             Checkbox(
-                                checked = event.Type,
-                                onCheckedChange = {event = event.copy(Type = !event.Type)
+                                checked = event.type,
+                                onCheckedChange = {event = event.copy(type = !event.type)
                                 }
                             )
                         }
@@ -200,7 +231,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                                         .background(
                                             Color(
                                                 parseColor(
-                                                    event.Color
+                                                    event.color
                                                 )
                                             )
                                         )
@@ -211,20 +242,22 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                     }
 
                     //Description input
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .height(200.dp)
-                            .fillMaxWidth()
-                            .padding(5.dp),
-                        value = event.Description,
-                        textStyle = TextStyle(
-                            color = MaterialTheme.colorScheme.onBackground,
-                        ),
-                        onValueChange = {
-                            event = event.copy(Description = it)
-                        },
-                        label = { Text("Description") }
-                    )
+                    event.description?.let { des ->
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .height(200.dp)
+                                .fillMaxWidth()
+                                .padding(5.dp),
+                            value = des,
+                            textStyle = TextStyle(
+                                color = MaterialTheme.colorScheme.onBackground,
+                            ),
+                            onValueChange = {
+                                event = event.copy(description = it)
+                            },
+                            label = { Text("Description") }
+                        )
+                    }
 
                     //Checkboxes for date want
                     Row(modifier = Modifier
@@ -234,24 +267,24 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                         Text(text = "Date:",color = MaterialTheme.colorScheme.onBackground)
                         Checkbox(checked = wantDate, onCheckedChange = {
                             wantDate = !wantDate
-                            event = if(event.DateStart == null){
-                                event.copy(DateStart = defaultDateE, DateEnd = defaultDateE)
+                            event = if(event.dateStart == null){
+                                event.copy(dateStart = defaultDateE, dateEnd = defaultDateE)
                             }else{
-                                event.copy(DateStart = null, DateEnd = null,TimeStart = null, TimeEnd = null)
+                                event.copy(dateStart = null, dateEnd = null, timeStart = null, timeEnd = null)
                             }
                             if(wantTime && wantDate){
-                                event = event.copy(TimeStart = defaultTimeFE, TimeEnd = defaultTimeTE)
+                                event = event.copy(timeStart = defaultTimeFE, timeEnd = defaultTimeTE)
                             }
-                        }, enabled = event.Type)
+                        }, enabled = event.type)
                         if (wantDate){
                             Spacer(modifier = Modifier.weight(1f))
                             Text(text = "Time:",color = MaterialTheme.colorScheme.onBackground)
                             Checkbox(checked = wantTime, onCheckedChange = {
                                 wantTime = !wantTime
-                                event = if(event.TimeStart == null){
-                                    event.copy(TimeStart = defaultTimeFE, TimeEnd = defaultTimeTE)
+                                event = if(event.timeStart == null){
+                                    event.copy(timeStart = defaultTimeFE, timeEnd = defaultTimeTE)
                                 }else{
-                                    event.copy(TimeStart = null, TimeEnd = null)
+                                    event.copy(timeStart = null, timeEnd = null)
                                 }
                             })
                         }
@@ -259,8 +292,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
 
                     //Date Choosers
                     if (wantDate) {
-                        if (event.DateStart==null){
-                            event = event.copy(DateStart = defaultDateE, DateEnd = defaultDateE)
+                        if (event.dateStart==null){
+                            event = event.copy(dateStart = defaultDateE, dateEnd = defaultDateE)
                         }
                         Row(
                             modifier = Modifier
@@ -269,18 +302,18 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                         ) {
                             //Date choosers
                             Column {
-                                val dateF = LocalDate.parse(event.DateStart, formatDate)
+                                val dateF = LocalDate.parse(event.dateStart, formatDate)
                                 val fDatePickerDialog = DatePickerDialog(
                                     LocalContext.current,
                                     { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
                                         event = event.copy(
-                                            DateStart = "$mYear-${if (mMonth + 1 < 10) { "0${mMonth + 1}" } else { mMonth + 1 }}-${if (mDayOfMonth < 10) { "0${mDayOfMonth}" } else { mDayOfMonth }}")
+                                            dateStart = "$mYear-${if (mMonth + 1 < 10) { "0${mMonth + 1}" } else { mMonth + 1 }}-${if (mDayOfMonth < 10) { "0${mDayOfMonth}" } else { mDayOfMonth }}")
                                         if (LocalDate.parse(
-                                                event.DateEnd,
+                                                event.dateEnd,
                                                 formatDate
-                                            ) < LocalDate.parse(event.DateStart, formatDate)
+                                            ) < LocalDate.parse(event.dateStart, formatDate)
                                         ) {
-                                            event = event.copy(DateEnd = event.DateStart)
+                                            event = event.copy(dateEnd = event.dateStart)
                                         }
                                     }, dateF.year, dateF.monthValue - 1, dateF.dayOfMonth
                                 )
@@ -289,19 +322,19 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                                     .clickable {
                                         fDatePickerDialog.show()
                                     }) {
-                                    event.DateStart?.let {
+                                    event.dateStart?.let {
                                         Text(
                                             text = it,
                                             color = MaterialTheme.colorScheme.onBackground
                                         )
                                     }
                                 }
-                                val dateT = LocalDate.parse(event.DateEnd, formatDate)
+                                val dateT = LocalDate.parse(event.dateEnd, formatDate)
                                 val tDatePickerDialog = DatePickerDialog(
                                     LocalContext.current,
                                     { _: DatePicker, mYear: Int, mMonth: Int, mDayOfMonth: Int ->
                                         event = event.copy(
-                                            DateEnd = "$mYear-${if (mMonth + 1 < 10) { "0${mMonth + 1}" } else { mMonth + 1 }}-${if (mDayOfMonth < 10) { "0${mDayOfMonth}" } else { mDayOfMonth }}") }, dateT.year, dateT.monthValue - 1, dateT.dayOfMonth
+                                            dateEnd = "$mYear-${if (mMonth + 1 < 10) { "0${mMonth + 1}" } else { mMonth + 1 }}-${if (mDayOfMonth < 10) { "0${mDayOfMonth}" } else { mDayOfMonth }}") }, dateT.year, dateT.monthValue - 1, dateT.dayOfMonth
                                 )
                                 Box(modifier = Modifier
                                     .padding(5.dp)
@@ -309,7 +342,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                                         tDatePickerDialog.datePicker.minDate = calendar.timeInMillis
                                         tDatePickerDialog.show()
                                     }) {
-                                    event.DateEnd?.let {
+                                    event.dateEnd?.let {
                                         Text(
                                             text = it,
                                             color = MaterialTheme.colorScheme.onBackground
@@ -321,34 +354,34 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                             //Time  choosers
                             if (wantTime) {
                                 Column {
-                                    val timeF = LocalDateTime.parse(event.TimeStart, formatTime)
+                                    val timeF = LocalDateTime.parse(event.timeStart, formatTime)
                                     val fTimePickerDialog = TimePickerDialog(
                                         LocalContext.current,
                                         { _, mHour: Int, mMinute: Int ->
                                             event = event.copy(
-                                                TimeStart = "$defaultDate ${if (mHour < 10) { "0$mHour" } else { mHour }}:${if (mMinute < 10) { "0$mMinute" } else { mMinute }}") }, timeF.hour, timeF.minute, true
+                                                timeStart = "$defaultDate ${if (mHour < 10) { "0$mHour" } else { mHour }}:${if (mMinute < 10) { "0$mMinute" } else { mMinute }}") }, timeF.hour, timeF.minute, true
                                     )
                                     Box(modifier = Modifier
                                         .padding(5.dp)
                                         .clickable {
                                             fTimePickerDialog.show()
                                         }) {
-                                        event.TimeStart?.let {
+                                        event.timeStart?.let {
                                             Text(
                                                 text = it.takeLast(5),
                                                 color = MaterialTheme.colorScheme.onBackground
                                             )
                                         }
                                     }
-                                    val timeT = LocalDateTime.parse(event.TimeEnd, formatTime)
+                                    val timeT = LocalDateTime.parse(event.timeEnd, formatTime)
                                     val tTimePickerDialog = TimePickerDialog(
                                         LocalContext.current,
                                         { _, mHour: Int, mMinute: Int ->
                                             event = event.copy(
-                                                TimeEnd = "$defaultDate ${if (mHour < 10) { "0$mHour" } else { mHour }}:${if (mMinute < 10) { "0$mMinute" } else { mMinute }}") }, timeT.hour, timeT.minute, true
+                                                timeEnd = "$defaultDate ${if (mHour < 10) { "0$mHour" } else { mHour }}:${if (mMinute < 10) { "0$mMinute" } else { mMinute }}") }, timeT.hour, timeT.minute, true
                                     )
 
-                                    val minDate = LocalDate.parse(event.DateStart, formatDate)
+                                    val minDate = LocalDate.parse(event.dateStart, formatDate)
                                     calendar.set(
                                         minDate.year,
                                         minDate.monthValue - 1,
@@ -359,7 +392,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                                         .clickable {
                                             tTimePickerDialog.show()
                                         }) {
-                                        event.TimeEnd?.let {
+                                        event.timeEnd?.let {
                                             Text(
                                                 text = it.takeLast(5),
                                                 color = MaterialTheme.colorScheme.onBackground
@@ -372,7 +405,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                     }
 
                     //SubTusk Input
-                    if (event.Type){
+                    if (event.type){
                         Column {
                             Row {
                                 OutlinedTextField(value = subTaskName, onValueChange = {subTaskName = it})
@@ -399,7 +432,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                         .background(Color.Black.copy(alpha = 0.7F))
                         .blur(8.dp)
                         .clickable { colorPicker = false })
-                    PickAColor({ colorPicker = false }, { event = event.copy(Color = it) })
+                    PickAColor({ colorPicker = false }, { event = event.copy(color = it) })
                 }
             }
         }
@@ -408,16 +441,18 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
         BottomAppBar {
             if (ev != null) {
                 IconButton(onClick = {
-                    navController.navigate(if (isTask){Destinations.TaskList}else{Destinations.Schedule})
-                    calendarRepository.deleteEvent(ev)
+                    navController.navigate(if (isTask){
+                        Destinations.TaskList}else{
+                        Destinations.Schedule})
+                    ev.id?.let { scope.launch { calRepo.delEvent(it) } }
                 }) {
                     Icon(Icons.Filled.Delete, contentDescription = "Menu Icon")
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
             var canSave = true
-            if (event.DateStart != null&&event.TimeStart != null){
-                canSave = LocalDate.parse(event.DateEnd,formatDate)!=LocalDate.parse(event.DateStart,formatDate)||LocalDate.parse(event.DateEnd,formatDate)==LocalDate.parse(event.DateStart,formatDate)&&LocalDateTime.parse(event.TimeEnd,formatTime)>LocalDateTime.parse(event.TimeStart,formatTime)
+            if (event.dateStart != null&&event.timeStart != null){
+                canSave = LocalDate.parse(event.dateEnd,formatDate)!=LocalDate.parse(event.dateStart,formatDate)||LocalDate.parse(event.dateEnd,formatDate)==LocalDate.parse(event.dateStart,formatDate)&&LocalDateTime.parse(event.timeEnd,formatTime)>LocalDateTime.parse(event.timeStart,formatTime)
             }
 
             if (canSave) {
@@ -432,10 +467,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                                         Destinations.Schedule
                                     }
                                 )
-                                LoginData.userId?.let {
-                                    calendarRepository.addEvent(event,subList.toList(),
-                                        it
-                                    )
+                                scope.launch {
+                                    calRepo.addEvent(event, subList.toList())
                                 }
                             } else {
                                 navController.navigate(
@@ -445,7 +478,9 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                                         Destinations.Schedule
                                     }
                                 )
-                                calendarRepository.updateEvent(event, subList.toList())
+                                scope.launch {
+                                    calRepo.updateEvent(event, subList.toList())
+                                }
                             }
                         },
                         modifier = Modifier

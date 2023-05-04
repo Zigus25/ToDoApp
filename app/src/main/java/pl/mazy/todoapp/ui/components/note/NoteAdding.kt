@@ -14,28 +14,39 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.Notes
-import pl.mazy.todoapp.logic.data.LoginData
-import pl.mazy.todoapp.logic.navigation.Destinations
-import pl.mazy.todoapp.logic.data.repos.NotesRepository
-import pl.mazy.todoapp.logic.navigation.NavController
+import pl.mazy.todoapp.data.LoginData
+import pl.mazy.todoapp.data.interfaces.NotesInter
+import pl.mazy.todoapp.data.local.NotesRepoLocal
+import pl.mazy.todoapp.navigation.Destinations
+import pl.mazy.todoapp.data.model.Note
+import pl.mazy.todoapp.data.remote.repos.NotesRepo
+import pl.mazy.todoapp.navigation.NavController
 
 @Composable
 fun NoteAdding(
     navController: NavController<Destinations>,
-    noteP: Notes?
+    noteP: Note?
 ){
     val focusManager = LocalFocusManager.current
-    val noteRepository: NotesRepository by localDI().instance()
+    val noteRepo: NotesInter = if (LoginData.token==""){
+        val noR: NotesRepoLocal by localDI().instance()
+        noR
+    }else{
+        val noR: NotesRepo by localDI().instance()
+        noR
+    }
+
+    val scope = rememberCoroutineScope()
     var note by remember {
         mutableStateOf(
-            noteP?: Notes(
-                0,
+            noteP?: Note(
+                null,
                 null,
                 "",
-                ""
+                null
             )
         ) }
 
@@ -61,38 +72,47 @@ fun NoteAdding(
             label = { Text("Name") }
         )
 
-        OutlinedTextField(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(5.dp),
-            value = note.description,
-            textStyle= TextStyle(
-                color = MaterialTheme.colorScheme.onBackground,
-            ),
-            onValueChange = { note = note.copy(description = it) },
-            label = { Text("Description") }
-        )
+        note.description?.let {
+            OutlinedTextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                value = it,
+                textStyle= TextStyle(
+                    color = MaterialTheme.colorScheme.onBackground,
+                ),
+                onValueChange = { note = note.copy(description = it) },
+                label = { Text("Description") }
+            )
+        }
 
         BottomAppBar {
-            if (noteP != null){
-                IconButton(onClick = {
-                    navController.navigate(Destinations.Notes)
-                    noteRepository.deleteNote(noteP.id)
-                }) {
-                    Icon(Icons.Filled.Delete, contentDescription = "Menu Icon")
+            if (noteP != null) {
+                if (noteP.id != null){
+                    IconButton(onClick = {
+                        navController.navigate(Destinations.Notes)
+                        scope.launch {
+                            noteRepo.deleteNote(noteP.id)
+                        }
+                    }) {
+                        Icon(Icons.Filled.Delete, contentDescription = "Menu Icon")
+                    }
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
             Box(modifier = Modifier.padding(10.dp)) {
                 SmallFloatingActionButton(
                     onClick = {
-                        if(noteP == null){
-                            navController.navigate(Destinations.Notes)
-                            noteRepository.addNote(note,LoginData.userId)
-                        }else{
-                            navController.navigate(Destinations.Notes)
-                            noteRepository.updateNote(note)
+                        scope.launch {
+                            if (noteP == null) {
+                                navController.navigate(Destinations.Notes)
+
+                                noteRepo.addNote(note)
+                            } else {
+                                navController.navigate(Destinations.Notes)
+                                noteRepo.updateNote(note)
+                            }
                         }
                     },
                     modifier = Modifier

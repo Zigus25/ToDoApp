@@ -12,16 +12,27 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
-import pl.mazy.todoapp.logic.data.LoginData
-import pl.mazy.todoapp.logic.data.repos.ToDoRepository
+import pl.mazy.todoapp.data.LoginData
+import pl.mazy.todoapp.data.interfaces.TasksInter
+import pl.mazy.todoapp.data.local.TasksRepoLocal
+import pl.mazy.todoapp.data.remote.repos.TasksRepo
 
 @Composable
 fun GroupAdd(closeAdder: () -> Unit = {}){
     val focusManager = LocalFocusManager.current
-    val toDoRepository: ToDoRepository by localDI().instance()
+    val taskRepo: TasksInter = if (LoginData.token==""){
+        val taR: TasksRepoLocal by localDI().instance()
+        taR
+    }else{
+        val taR: TasksRepo by localDI().instance()
+        taR
+    }
     var text by remember { mutableStateOf("") }
+
+    val scope = rememberCoroutineScope()
 
 
     Column(
@@ -48,8 +59,10 @@ fun GroupAdd(closeAdder: () -> Unit = {}){
         Row(verticalAlignment = Alignment.CenterVertically) {
             Spacer(modifier = Modifier.weight(1f))
             Button(onClick = {
-                toDoRepository.addCategory(text,LoginData.userId)
-                closeAdder()},
+                scope.launch {
+                    taskRepo.addCategory(text)
+                    closeAdder()
+                }},
                 modifier = Modifier.padding(end = 10.dp)) {
                 Text(text = "Save")
             }
