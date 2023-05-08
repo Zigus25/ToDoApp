@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS event(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     owner INTEGER,
     Name TEXT NOT NULL,
-    Description TEXT NOT NULL ,
+    Description TEXT,
     Category INTEGER NOT NULL,
     TimeStart TEXT,
     TimeEnd TEXT,

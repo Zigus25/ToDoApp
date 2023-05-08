@@ -18,7 +18,7 @@ class CalendarRepo(val api: TDAService):CalendarInter {
         TODO("Not yet implemented")
     }
 
-    override suspend fun delEvent(id: Int) {
+    override suspend fun delEvent(ev: Event) {
         TODO("Not yet implemented")
     }
 

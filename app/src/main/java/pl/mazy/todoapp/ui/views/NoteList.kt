@@ -13,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 import pl.mazy.todoapp.navigation.Destinations
@@ -37,8 +38,11 @@ fun NoteList(
         noR
     }
     var notes: List<Note> by remember { mutableStateOf(listOf()) }
+    val scope = rememberCoroutineScope()
     LaunchedEffect(notes) {
-        notes = noteRepo.getNotes()
+        scope.launch {
+            notes = noteRepo.getNotes()
+        }
     }
     Scaffold(
             floatingActionButton = {

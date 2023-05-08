@@ -48,7 +48,7 @@ fun Schedule(
         return if (list.isNotEmpty()) {
             LocalDate.parse(list[list.lastIndex].dateEnd, formatter)
         }else{
-            date
+            date.plusDays(2)
         }
     }
 
@@ -56,7 +56,9 @@ fun Schedule(
         events = calRepo.selByDate(date)
     }
     LaunchedEffect(events){
-        loadEvents()
+        scope.launch {
+            loadEvents()
+        }
         maxDate = foundMaxDate(events)
     }
     Scaffold(

@@ -21,7 +21,7 @@ class TasksRepoLocal(
         return list.toList()
     }
 
-    private fun consolidate(events:List<Event>): List<Event> {
+    fun consolidate(events:List<Event>): List<Event> {
         val list = events.toMutableList()
         for (i in (list.size -1) downTo 0) {
             val e = list[i]
@@ -61,6 +61,6 @@ class TasksRepoLocal(
     }
 
     override suspend fun toggle(id: Int) {
-        TODO("Not yet implemented")
+        database.calendarQueries.toggleState(id.toLong())
     }
 }

@@ -12,7 +12,7 @@ VALUES (?,?,?);
 
 selectNotes:
 SELECT *
-FROM  notes WHERE owner = ?;
+FROM  notes;
 
 updateNote:
 UPDATE notes

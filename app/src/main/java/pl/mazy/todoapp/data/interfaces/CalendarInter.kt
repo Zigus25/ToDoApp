@@ -7,7 +7,7 @@ import java.util.Date
 interface CalendarInter {
     suspend fun addEvent(ev:Event,subList: List<String>)
     suspend fun updateEvent(ev: Event,subList:List<String>)
-    suspend fun delEvent(id:Int)
+    suspend fun delEvent(ev: Event)
     suspend fun namesSubList(id:Int):List<String>
     suspend fun selByDate(date: LocalDate):List<Event>
 }

@@ -43,7 +43,7 @@ fun NoteAdding(
     var note by remember {
         mutableStateOf(
             noteP?: Note(
-                null,
+                "",
                 null,
                 "",
                 null
@@ -72,20 +72,18 @@ fun NoteAdding(
             label = { Text("Name") }
         )
 
-        note.description?.let {
-            OutlinedTextField(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(5.dp),
-                value = it,
-                textStyle= TextStyle(
-                    color = MaterialTheme.colorScheme.onBackground,
-                ),
-                onValueChange = { note = note.copy(description = it) },
-                label = { Text("Description") }
-            )
-        }
+        OutlinedTextField(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(5.dp),
+            value = note.description,
+            textStyle= TextStyle(
+                color = MaterialTheme.colorScheme.onBackground,
+            ),
+            onValueChange = { note = note.copy(description = it) },
+            label = { Text("Description") }
+        )
 
         BottomAppBar {
             if (noteP != null) {

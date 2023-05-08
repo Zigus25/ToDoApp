@@ -74,18 +74,17 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
         caR
     }
     val scope = rememberCoroutineScope()
-
-    var canAddSL by remember { mutableStateOf(true) }
+    val focusManager = LocalFocusManager.current
+    var expanded by remember { mutableStateOf(false) }
+    var colorPicker by remember { mutableStateOf(false) }
 
     val subList = remember { mutableListOf<String>() }
-    val calendar = Calendar.getInstance()
     var options:List<Category> by remember { mutableStateOf(listOf()) }
-    var expanded by remember { mutableStateOf(false) }
-    val focusManager = LocalFocusManager.current
+    var subTaskName by remember { mutableStateOf("") }
+
+    val calendar = Calendar.getInstance()
     val formatDate = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val formatTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-    var colorPicker by remember { mutableStateOf(false) }
-    var subTaskName by remember { mutableStateOf("") }
 
     val defaultDate = "1970-01-01"
     val defaultTimeFE = "$defaultDate ${if(calendar[Calendar.HOUR_OF_DAY]<10){"0${calendar[Calendar.HOUR_OF_DAY]}"}else{calendar[Calendar.HOUR_OF_DAY]}}:00"
@@ -98,8 +97,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                 id = null,
                 owner_id = null,
                 name = "",
-                description = null,
-                category_id = options[0].id,
+                description = "",
+                category_id = 0,
                 dateEnd = null,
                 dateStart = null,
                 timeEnd = null,
@@ -120,15 +119,17 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
         scope.launch {
             options = taskRepo.getCategory()
         }
-        if (ev!=null&&canAddSL){
+        if (ev!=null){
             scope.launch {
                 ev.id?.let {e->
                     calRepo.namesSubList(e).forEach{
                         subList.add(it)
                     }
                 }
-                canAddSL = false
             }
+        }
+        if (options.isNotEmpty()){
+            event = event.copy(category_id = options[0].id)
         }
     }
 
@@ -242,22 +243,20 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                     }
 
                     //Description input
-                    event.description?.let { des ->
-                        OutlinedTextField(
-                            modifier = Modifier
-                                .height(200.dp)
-                                .fillMaxWidth()
-                                .padding(5.dp),
-                            value = des,
-                            textStyle = TextStyle(
-                                color = MaterialTheme.colorScheme.onBackground,
-                            ),
-                            onValueChange = {
-                                event = event.copy(description = it)
-                            },
-                            label = { Text("Description") }
-                        )
-                    }
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .height(200.dp)
+                            .fillMaxWidth()
+                            .padding(5.dp),
+                        value = event.description.toString(),
+                        textStyle = TextStyle(
+                            color = MaterialTheme.colorScheme.onBackground,
+                        ),
+                        onValueChange = {
+                            event = event.copy(description = it)
+                        },
+                        label = { Text("Description") }
+                    )
 
                     //Checkboxes for date want
                     Row(modifier = Modifier
@@ -444,7 +443,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                     navController.navigate(if (isTask){
                         Destinations.TaskList}else{
                         Destinations.Schedule})
-                    ev.id?.let { scope.launch { calRepo.delEvent(it) } }
+                    scope.launch { calRepo.delEvent(ev) }
                 }) {
                     Icon(Icons.Filled.Delete, contentDescription = "Menu Icon")
                 }
