@@ -2,7 +2,9 @@ package pl.mazy.todoapp.data.remote
 
 
 import io.ktor.client.*
+import io.ktor.client.features.get
 import io.ktor.client.request.*
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.*
 import pl.mazy.todoapp.data.model.Category
 import pl.mazy.todoapp.data.model.Event
@@ -16,7 +18,7 @@ class TDAServiceImp(
 ) :TDAService {
 
     //auth
-    override suspend fun auth(authReq: AuthReq): AuthResponse? {
+    override suspend fun auth(authReq: AuthReq): AuthResponse {
         return client.post<AuthResponse> {
             url("https://mazy.dev/auth/authenticate")
             contentType(ContentType.Application.Json)
@@ -24,7 +26,7 @@ class TDAServiceImp(
         }
     }
 
-    override suspend fun signup(singUpReq: SingUpReq): AuthResponse? {
+    override suspend fun signup(singUpReq: SingUpReq): AuthResponse {
         return client.post<AuthResponse> {
             url("https://mazy.dev/auth/register")
             contentType(ContentType.Application.Json)
@@ -33,12 +35,20 @@ class TDAServiceImp(
     }
 
     override suspend fun logout(token: String) {
-        TODO("Not yet implemented")
+        val r:HttpResponse = client.get("https://mazy.dev/auth/logout") {
+            headers{
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
+        }
     }
 
     //categories
     override suspend fun getCategories(token: String): List<Category> {
-        TODO("Not yet implemented")
+        return client.get("https://mazy.dev/category"){
+            headers{
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
+        }
     }
 
     override suspend fun postCategory(token: String, name: String) {
@@ -74,7 +84,7 @@ class TDAServiceImp(
         TODO("Not yet implemented")
     }
 
-    override suspend fun toggleTask(token: String, eId: Int) {
+    override suspend fun toggleTask(token: String, ev: Event) {
         TODO("Not yet implemented")
     }
 

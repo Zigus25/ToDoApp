@@ -33,7 +33,7 @@ interface TDAService {
 
         //Tasks
         suspend fun getTasksByCat(token: String,cId: Int):List<Event>
-        suspend fun toggleTask(token: String,eId: Int)
+        suspend fun toggleTask(token: String,ev: Event)
         suspend fun changeFalse(token: String,eId: Int)
         suspend fun changeTrue(token: String,eId: Int)
         suspend fun getInMainTask(token: String,mId: Int):List<Event>
