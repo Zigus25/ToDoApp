@@ -60,7 +60,45 @@ class TasksRepoLocal(
         return consolidate(list.toList())
     }
 
-    override suspend fun toggle(id: Int) {
-        database.calendarQueries.toggleState(id.toLong())
+    override suspend fun toggle(event: Event) {
+        database.calendarQueries.toggleState(event.id!!.toLong())
+        if (event.subList.isNotEmpty()){
+            toggleCheckSub(event)
+        }
+        toggleCheckBack(event)
+    }
+
+    private fun toggleCheckBack(ev: Event){
+        if (ev.mainTask_id!=null) {
+            database.calendarQueries.changeStateFalse(ev.mainTask_id.toLong())
+            val c = database.calendarQueries.selById(ev.mainTask_id.toLong()).executeAsOne()
+            if (c.MainTaskID!=null){
+                toggleCheckBack(
+                    Event(
+                        id= c.id.toInt(),
+                        owner_id = -1,
+                        name = c.Name,
+                        description = c.Description,
+                        category_id = c.Category.toInt(),
+                        timeStart = c.TimeStart,
+                        timeEnd = c.TimeEnd,
+                        dateStart = c.DateStart,
+                        dateEnd = c.DateEnd,
+                        type = c.Type,
+                        checked = c.Checked,
+                        color = c.Color,
+                        mainTask_id = c.MainTaskID.toInt(),
+                        subList = listOf()))
+            }
+        }
+    }
+
+    private fun toggleCheckSub(ev: Event){
+        database.calendarQueries.changeStateTrueWhere(ev.id!!.toLong())
+        if (ev.subList.isNotEmpty()){
+            ev.subList.forEach{
+                toggleCheckSub(it)
+            }
+        }
     }
 }

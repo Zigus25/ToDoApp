@@ -111,7 +111,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
             )
         ) }
     var wantDate by remember { mutableStateOf(event.dateStart!=null) }
-    var wantTime by remember { mutableStateOf(event.dateEnd!=null) }
+    var wantTime by remember { mutableStateOf(event.timeEnd!=null) }
     if (!event.type){
         wantDate = true
     }

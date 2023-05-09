@@ -11,5 +11,5 @@ interface TasksInter {
 
     suspend fun getTusks(id: Int): List<Event>
 
-    suspend fun toggle(id: Int)
+    suspend fun toggle(event: Event)
 }

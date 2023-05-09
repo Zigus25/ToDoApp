@@ -4,13 +4,12 @@ import pl.mazy.todoapp.Database
 import pl.mazy.todoapp.data.interfaces.CalendarInter
 import pl.mazy.todoapp.data.model.Event
 import java.time.LocalDate
-import java.util.Date
 
 class CalendarRepoLocal(
     private var database: Database
 ):CalendarInter {
 
-    val tR = TasksRepoLocal(database)
+    private val tR = TasksRepoLocal(database)
     override suspend fun addEvent(ev: Event, subList: List<String>) {
             database.calendarQueries.addEvent(
                 null,
@@ -70,7 +69,6 @@ class CalendarRepoLocal(
             }
         }
         ev.id?.let { database.calendarQueries.changeStateFalse(it.toLong()) }
-//        toggleCheck(event)
     }
 
     override suspend fun delEvent(ev: Event) {

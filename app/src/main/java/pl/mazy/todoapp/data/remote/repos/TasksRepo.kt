@@ -25,7 +25,7 @@ class TasksRepo(val api: TDAService):TasksInter {
         TODO("Not yet implemented")
     }
 
-    override suspend fun toggle(id: Int) {
+    override suspend fun toggle(event: Event) {
         TODO("Not yet implemented")
     }
 }
