@@ -42,6 +42,7 @@ fun TaskList(
         val taR: TasksRepo by localDI().instance()
         taR
     }
+    var checked by remember { mutableStateOf(false) }
     var titles:List<Category> by remember { mutableStateOf(listOf()) }
     var addingGroup by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -68,7 +69,7 @@ fun TaskList(
         }
     }
 
-    LaunchedEffect(category,titles) {
+    LaunchedEffect(category,titles,checked) {
         scope.launch { titles = taskRepo.getCategory() }
         refreshTitle()
 
@@ -119,7 +120,8 @@ fun TaskList(
                 items(todos) { ev ->
                     Task(navController, ev){
                         scope.launch {
-                            it.id?.let { it1 -> taskRepo.toggle(it1) }
+                            taskRepo.toggle(it)
+                            checked = !checked
                         }
                     }
                 }
