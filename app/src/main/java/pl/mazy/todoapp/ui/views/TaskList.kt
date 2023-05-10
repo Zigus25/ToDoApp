@@ -47,7 +47,7 @@ fun TaskList(
     var addingGroup by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    var category:Category by remember { mutableStateOf(Category(0,"",0,null)) }
+    var category:Category by remember { mutableStateOf(Category(-1,"",0,null)) }
 
     var todos :List<Event> by remember {
         mutableStateOf(listOf())
@@ -55,7 +55,7 @@ fun TaskList(
     fun refreshTitle() = scope.launch {
         titles = taskRepo.getCategory()
         if (titles.isEmpty()){
-            titles = listOf(Category(0,"",0,null))
+            titles = listOf(Category(-1,"",0,null))
         }else{
             category = titles[0]
         }
@@ -74,12 +74,14 @@ fun TaskList(
         refreshTitle()
 
         scope.launch {
-            if ((titles.isEmpty()||titles[0].id==0)&&LoginData.token == "") {
+            if ((titles.isEmpty()||titles[0].id==-1)&&LoginData.token == "") {
                 taskRepo.addCategory("Main")
                 refreshTitle()
             }
         }
-        refreshEvents()
+        if(category.id!=-1) {
+            refreshEvents()
+        }
     }
     Column(modifier = Modifier.fillMaxSize()) {
         ScrollableTabRow(

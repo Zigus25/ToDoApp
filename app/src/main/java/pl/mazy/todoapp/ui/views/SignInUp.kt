@@ -208,16 +208,16 @@ fun SignIn(navController: NavController<Destinations>){
         )
         Button(onClick = {
             if(login!=""&&passwd!="") {
-                if (userRepository.signInUser(login, passwd)) {
+//                if (userRepository.signInUser(login, passwd)) {
                     scope.launch {
                         val token = api.auth(AuthReq(login,passwd))
                         if(token !=null) {
                             navController.navigate(Destinations.TaskList)
                             LoginData.logIn(login, token.access_token)
-                            userRepository.signUpUser("",passwd,login,token.access_token)
+//                            userRepository.signUpUser("",passwd,login,token.access_token)
                         }
                     }
-                }
+//                }
             }
          },modifier = Modifier.padding(top = 120.dp)) {
             Text(text = "Sign In")

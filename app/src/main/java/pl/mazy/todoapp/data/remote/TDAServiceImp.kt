@@ -81,7 +81,11 @@ class TDAServiceImp(
     }
 
     override suspend fun getTasksByCat(token: String, cId: Int): List<Event> {
-        TODO("Not yet implemented")
+        return client.get("https://mazy.dev/events/$cId"){
+            headers{
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
+        }
     }
 
     override suspend fun toggleTask(token: String, ev: Event) {
