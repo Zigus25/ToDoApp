@@ -80,7 +80,7 @@ class CalendarRepoLocal(
         }
     }
 
-    override suspend fun namesSubList(id: Int): List<String> {
+    private fun namesSubList(id: Int): List<String> {
         return database.calendarQueries.selNameByID(id.toLong()).executeAsList()
     }
 

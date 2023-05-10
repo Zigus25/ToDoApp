@@ -8,24 +8,23 @@ import pl.mazy.todoapp.data.model.Event
 import pl.mazy.todoapp.data.remote.TDAService
 
 class TasksRepo(private val api: TDAService):TasksInter {
-    private val token = LoginData.token
     override suspend fun addCategory(name: String) {
-        api.postCategory(token,name)
+        api.postCategory(LoginData.token,name)
     }
 
     override suspend fun getCategory(): List<Category> {
-        return api.getCategories(token)
+        return api.getCategories(LoginData.token)
     }
 
     override suspend fun delCategory(id: Int) {
-        api.deleteCategory(token,id)
+        api.deleteCategory(LoginData.token,id)
     }
 
     override suspend fun getTusks(id: Int): List<Event> {
-        return api.getTasksByCat(token,id)
+        return api.getTasksByCat(LoginData.token,id)
     }
 
     override suspend fun toggle(event: Event) {
-        api.toggleTask(token,event)
+        api.toggleTask(LoginData.token,event)
     }
 }

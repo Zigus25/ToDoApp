@@ -69,7 +69,7 @@ fun TaskList(
         }
     }
 
-    LaunchedEffect(category,titles,checked) {
+    LaunchedEffect(category,titles,checked,LoginData.login) {
         scope.launch { titles = taskRepo.getCategory() }
         refreshTitle()
 

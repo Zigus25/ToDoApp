@@ -119,14 +119,8 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
         scope.launch {
             options = taskRepo.getCategory()
         }
-        if (ev!=null){
-            scope.launch {
-                ev.id?.let {e->
-                    calRepo.namesSubList(e).forEach{
-                        subList.add(it)
-                    }
-                }
-            }
+        ev?.subList?.forEach {
+            subList.add(it.name)
         }
         if (options.isNotEmpty()){
             event = event.copy(category_id = options[0].id)

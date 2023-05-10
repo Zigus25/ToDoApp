@@ -11,22 +11,19 @@ import java.util.Date
 class CalendarRepo(val api: TDAService):CalendarInter {
     val loginData = LoginData
     override suspend fun addEvent(ev: Event, subList: List<String>) {
-        TODO("Not yet implemented")
+        api.newEvent(LoginData.token,ev)
+        TODO("subtask adding")
     }
 
     override suspend fun updateEvent(ev: Event, subList: List<String>) {
-        TODO("Not yet implemented")
+        api.newEvent(LoginData.token,ev)
     }
 
     override suspend fun delEvent(ev: Event) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun namesSubList(id: Int): List<String> {
-        TODO("Not yet implemented")
+        api.deleteEvent(LoginData.token,ev)
     }
 
     override suspend fun selByDate(date: LocalDate): List<Event> {
-        TODO("Not yet implemented")
+        return api.getByDate(LoginData.token,date.toString())
     }
 }

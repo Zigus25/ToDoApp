@@ -24,9 +24,8 @@ interface TDAService {
     suspend fun shareCategory(token:String,cId:Int,sId:Int)
 
     //calendar
-    suspend fun deleteEvent(token: String,eId:Int)
+    suspend fun deleteEvent(token: String,ev: Event)
     suspend fun newEvent(token: String,ev:Event)
-    suspend fun getTaskByID(token: String,eId: Int):Event
 
         //Events
         suspend fun getByDate(token: String,date: String):List<Event>
@@ -34,14 +33,10 @@ interface TDAService {
         //Tasks
         suspend fun getTasksByCat(token: String,cId: Int):List<Event>
         suspend fun toggleTask(token: String,ev: Event)
-        suspend fun changeFalse(token: String,eId: Int)
-        suspend fun changeTrue(token: String,eId: Int)
-        suspend fun getInMainTask(token: String,mId: Int):List<Event>
-        suspend fun getNamesInMainTask(token: String,mId: Int):List<Event>
 
     //Notes
     suspend fun newNote(token: String,note: Note)
-    suspend fun getNotes(token: String)
+    suspend fun getNotes(token: String):List<Note>
     suspend fun delNote(token: String,nId:Int)
     companion object{
         fun create():TDAService{
