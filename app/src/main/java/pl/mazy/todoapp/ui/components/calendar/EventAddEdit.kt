@@ -88,7 +88,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
 
     val defaultDate = "1970-01-01"
     val defaultTimeFE = "$defaultDate ${if(calendar[Calendar.HOUR_OF_DAY]<10){"0${calendar[Calendar.HOUR_OF_DAY]}"}else{calendar[Calendar.HOUR_OF_DAY]}}:00"
-    val defaultTimeTE = "$defaultDate ${if(calendar[Calendar.HOUR_OF_DAY]<10){"0${calendar[Calendar.HOUR_OF_DAY]+1}"}else{calendar[Calendar.HOUR_OF_DAY]+1}}:00"
+    val defaultTimeTE = "$defaultDate ${if(calendar[Calendar.HOUR_OF_DAY]<9){"0${calendar[Calendar.HOUR_OF_DAY]+1}"}else{calendar[Calendar.HOUR_OF_DAY]+1}}:00"
     val defaultDateE = LocalDate.now().format(formatDate)
 
     var event by remember {
@@ -206,7 +206,10 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                             Text(text = "task:", color = MaterialTheme.colorScheme.onBackground)
                             Checkbox(
                                 checked = event.type,
-                                onCheckedChange = {event = event.copy(type = !event.type)
+                                onCheckedChange = {
+                                    if(event.subList.isEmpty()&&event.mainTask_id==null) {
+                                        event = event.copy(type = !event.type)
+                                    }
                                 }
                             )
                         }

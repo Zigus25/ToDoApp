@@ -39,6 +39,7 @@ import pl.mazy.todoapp.data.local.AccountRep
 import pl.mazy.todoapp.data.remote.TDAService
 import pl.mazy.todoapp.data.remote.model.request.AuthReq
 import pl.mazy.todoapp.data.remote.model.request.SingUpReq
+import pl.mazy.todoapp.data.remote.model.response.AuthResponse
 import pl.mazy.todoapp.navigation.Destinations
 import pl.mazy.todoapp.navigation.NavController
 import java.util.regex.Pattern
@@ -161,8 +162,9 @@ fun SignIn(navController: NavController<Destinations>){
     val userRepository: AccountRep by localDI().instance()
     val api: TDAService by localDI().instance()
     var passwordVisible by remember { mutableStateOf(false) }
-    var login by remember { mutableStateOf("") }
+    var mail by remember { mutableStateOf("") }
     var passwd by remember { mutableStateOf("") }
+    var err by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
     Column(modifier = Modifier
@@ -175,13 +177,13 @@ fun SignIn(navController: NavController<Destinations>){
             modifier = Modifier
                 .padding(5.dp)
                 .fillMaxWidth(),
-            value = login,
+            value = mail,
             textStyle= TextStyle(
                 color = MaterialTheme.colorScheme.onBackground,
             ),
-            onValueChange = { login = it },
+            onValueChange = { mail = it },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            label = { Text("Login") },
+            label = { Text("eMail") },
         )
         OutlinedTextField(
             modifier = Modifier
@@ -207,21 +209,35 @@ fun SignIn(navController: NavController<Destinations>){
             }
         )
         Button(onClick = {
-            if(login!=""&&passwd!="") {
-//                if (userRepository.signInUser(login, passwd)) {
-                    scope.launch {
-                        val token = api.auth(AuthReq(login,passwd))
-                        if(token !=null) {
+            if(mail!=""&&passwd!="") {
+                scope.launch {
+                    try {
+                        var token = api.auth(AuthReq(mail, passwd))
+                        if (token != null) {
                             LoginData.logIn(token.login, token.access_token)
                             navController.navigate(Destinations.TaskList)
-//                            userRepository.signUpUser("",passwd,login,token.access_token)
+                            if (userRepository.checkExist(mail, passwd)) {
+                                userRepository.signUpUser(
+                                    token.login,
+                                    passwd,
+                                    mail,
+                                    token.access_token
+                                )
+                            } else {
+                                userRepository.signInUser(token.login, passwd)
+                            }
+                        } else {
+                            err = "Problem with sign in"
                         }
+                    }catch (e:Exception){
+                        err = "connection error"
                     }
-//                }
+                }
             }
          },modifier = Modifier.padding(top = 120.dp)) {
             Text(text = "Sign In")
         }
+        Text(text = err, color = MaterialTheme.colorScheme.error)
         Text(
             text = "Sign Up Now",
             color = MaterialTheme.colorScheme.onBackground,

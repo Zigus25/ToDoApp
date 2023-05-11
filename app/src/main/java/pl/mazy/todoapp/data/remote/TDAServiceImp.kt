@@ -77,9 +77,7 @@ class TDAServiceImp(
 
     //Calendar
     override suspend fun deleteEvent(token: String, ev: Event) {
-        client.delete<HttpResponse>("https://mazy.dev/events"){
-            contentType(ContentType.Application.Json)
-            body = ev
+        client.delete<HttpResponse>("https://mazy.dev/events/${ev.id}"){
             headers{
                 append(HttpHeaders.Authorization, "Bearer $token")
             }
