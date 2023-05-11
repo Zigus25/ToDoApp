@@ -10,6 +10,7 @@ import pl.mazy.todoapp.data.model.Event
 import pl.mazy.todoapp.data.model.Note
 import pl.mazy.todoapp.data.remote.model.request.AuthReq
 import pl.mazy.todoapp.data.remote.model.request.SingUpReq
+import pl.mazy.todoapp.data.remote.model.request.evS
 import pl.mazy.todoapp.data.remote.model.response.AuthResponse
 
 class TDAServiceImp(
@@ -85,8 +86,8 @@ class TDAServiceImp(
         }
     }
 
-    override suspend fun newEvent(token: String, ev: Event) {
-        client.post<AuthResponse> {
+    override suspend fun newEvent(token: String, ev: evS) {
+        client.post<HttpResponse> {
             url("https://mazy.dev/events")
             contentType(ContentType.Application.Json)
             body = ev
@@ -113,7 +114,7 @@ class TDAServiceImp(
     }
 
     override suspend fun toggleTask(token: String, ev: Event) {
-        client.post<AuthResponse> {
+        client.post<HttpResponse> {
             url("https://mazy.dev/events/t")
             contentType(ContentType.Application.Json)
             body = ev
@@ -125,7 +126,7 @@ class TDAServiceImp(
 
     //Notes
     override suspend fun newNote(token: String, note: Note) {
-        client.post<AuthResponse> {
+        client.post<HttpResponse> {
             url("https://mazy.dev/notes")
             contentType(ContentType.Application.Json)
             body = note

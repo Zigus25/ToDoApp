@@ -42,7 +42,7 @@ fun TaskList(
         val taR: TasksRepo by localDI().instance()
         taR
     }
-    var checked by remember { mutableStateOf(false) }
+    var checked by remember { mutableStateOf(0) }
     var titles:List<Category> by remember { mutableStateOf(listOf()) }
     var addingGroup by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -123,7 +123,7 @@ fun TaskList(
                     Task(navController, ev){
                         scope.launch {
                             taskRepo.toggle(it)
-                            checked = !checked
+                            checked++
                         }
                     }
                 }

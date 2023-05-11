@@ -9,6 +9,7 @@ import pl.mazy.todoapp.data.model.Event
 import pl.mazy.todoapp.data.model.Note
 import pl.mazy.todoapp.data.remote.model.request.AuthReq
 import pl.mazy.todoapp.data.remote.model.request.SingUpReq
+import pl.mazy.todoapp.data.remote.model.request.evS
 import pl.mazy.todoapp.data.remote.model.response.AuthResponse
 
 interface TDAService {
@@ -25,7 +26,7 @@ interface TDAService {
 
     //calendar
     suspend fun deleteEvent(token: String,ev: Event)
-    suspend fun newEvent(token: String,ev:Event)
+    suspend fun newEvent(token: String,ev:evS)
 
         //Events
         suspend fun getByDate(token: String,date: String):List<Event>
