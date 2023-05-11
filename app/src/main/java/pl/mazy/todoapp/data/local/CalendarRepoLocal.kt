@@ -1,5 +1,7 @@
 package pl.mazy.todoapp.data.local
 
+import com.squareup.sqldelight.runtime.coroutines.asFlow
+import com.squareup.sqldelight.runtime.coroutines.mapToOne
 import pl.mazy.todoapp.Database
 import pl.mazy.todoapp.data.interfaces.CalendarInter
 import pl.mazy.todoapp.data.model.Event
@@ -69,6 +71,7 @@ class CalendarRepoLocal(
             }
         }
         ev.id?.let { database.calendarQueries.changeStateFalse(it.toLong()) }
+        checkBack(ev.mainTask_id?.toLong())
     }
 
     override suspend fun delEvent(ev: Event) {
@@ -105,5 +108,13 @@ class CalendarRepoLocal(
             ))
         }
         return tR.consolidate(list.toList())
+    }
+
+    private fun checkBack(mainTaskId: Long?) {
+        if (mainTaskId != null) {
+            var ev = database.calendarQueries.selById(mainTaskId).executeAsOne()
+            database.calendarQueries.changeStateFalse(ev.id)
+            checkBack(ev.MainTaskID)
+        }
     }
 }
