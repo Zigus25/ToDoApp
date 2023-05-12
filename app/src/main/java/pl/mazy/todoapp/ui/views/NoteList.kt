@@ -39,7 +39,7 @@ fun NoteList(
     }
     var notes: List<Note> by remember { mutableStateOf(listOf()) }
     val scope = rememberCoroutineScope()
-    LaunchedEffect(notes) {
+    LaunchedEffect(notes,LoginData.login) {
         scope.launch {
             notes = noteRepo.getNotes()
         }

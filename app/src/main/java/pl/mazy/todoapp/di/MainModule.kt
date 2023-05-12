@@ -10,6 +10,9 @@ import pl.mazy.todoapp.data.local.NotesRepoLocal
 import pl.mazy.todoapp.data.local.TasksRepoLocal
 import pl.mazy.todoapp.data.local.AccountRep
 import pl.mazy.todoapp.data.remote.TDAService
+import pl.mazy.todoapp.data.remote.repos.CalendarRepo
+import pl.mazy.todoapp.data.remote.repos.NotesRepo
+import pl.mazy.todoapp.data.remote.repos.TasksRepo
 
 
 val mainModule = DI.Module("main") {
@@ -23,4 +26,7 @@ val mainModule = DI.Module("main") {
     bindSingleton { CalendarRepoLocal(instance()) }
     bindSingleton { AccountRep(instance()) }
     bindSingleton { TDAService.create() }
+    bindSingleton { TasksRepo(instance()) }
+    bindSingleton { NotesRepo(instance()) }
+    bindSingleton { CalendarRepo(instance()) }
 }

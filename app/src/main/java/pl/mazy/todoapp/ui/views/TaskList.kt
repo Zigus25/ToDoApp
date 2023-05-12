@@ -42,12 +42,12 @@ fun TaskList(
         val taR: TasksRepo by localDI().instance()
         taR
     }
-    var checked by remember { mutableStateOf(false) }
+    var checked by remember { mutableStateOf(0) }
     var titles:List<Category> by remember { mutableStateOf(listOf()) }
     var addingGroup by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    var category:Category by remember { mutableStateOf(Category(0,"",0,null)) }
+    var category:Category by remember { mutableStateOf(Category(-1,"",0,null)) }
 
     var todos :List<Event> by remember {
         mutableStateOf(listOf())
@@ -55,7 +55,7 @@ fun TaskList(
     fun refreshTitle() = scope.launch {
         titles = taskRepo.getCategory()
         if (titles.isEmpty()){
-            titles = listOf(Category(0,"",0,null))
+            titles = listOf(Category(-1,"",0,null))
         }else{
             category = titles[0]
         }
@@ -69,17 +69,19 @@ fun TaskList(
         }
     }
 
-    LaunchedEffect(category,titles,checked) {
+    LaunchedEffect(category,titles,checked,LoginData.login) {
         scope.launch { titles = taskRepo.getCategory() }
         refreshTitle()
 
         scope.launch {
-            if ((titles.isEmpty()||titles[0].id==0)&&LoginData.token == "") {
+            if ((titles.isEmpty()||titles[0].id==-1)&&LoginData.token == "") {
                 taskRepo.addCategory("Main")
                 refreshTitle()
             }
         }
-        refreshEvents()
+        if(category.id!=-1) {
+            refreshEvents()
+        }
     }
     Column(modifier = Modifier.fillMaxSize()) {
         ScrollableTabRow(
@@ -121,7 +123,7 @@ fun TaskList(
                     Task(navController, ev){
                         scope.launch {
                             taskRepo.toggle(it)
-                            checked = !checked
+                            checked++
                         }
                     }
                 }

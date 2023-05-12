@@ -55,7 +55,7 @@ fun Schedule(
     fun loadEvents() = scope.launch {
         events = calRepo.selByDate(date)
     }
-    LaunchedEffect(events){
+    LaunchedEffect(events,LoginData.login){
         scope.launch {
             loadEvents()
         }

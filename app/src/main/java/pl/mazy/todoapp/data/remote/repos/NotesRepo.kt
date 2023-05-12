@@ -7,20 +7,19 @@ import pl.mazy.todoapp.data.model.Note
 import pl.mazy.todoapp.data.remote.TDAService
 
 class NotesRepo(val api: TDAService): NotesInter {
-    val loginData = LoginData
     override suspend fun getNotes(): List<Note> {
-        TODO("Not yet implemented")
+        return api.getNotes(LoginData.token)
     }
 
     override suspend fun addNote(note: Note) {
-        TODO("Not yet implemented")
+        api.newNote(LoginData.token,note)
     }
 
     override suspend fun deleteNote(id: Int) {
-        TODO("Not yet implemented")
+        api.delNote(LoginData.token,id)
     }
 
     override suspend fun updateNote(note: Note) {
-        TODO("Not yet implemented")
+        api.newNote(LoginData.token,note)
     }
 }

@@ -144,8 +144,8 @@ fun SignUp(navController: NavController<Destinations>){
                  scope.launch {
                      val token = api.signup(SingUpReq(mailU,login,passwd))
                      if(token != null) {
+                         LoginData.logIn(token.login, token.access_token)
                          navController.navigate(Destinations.TaskList)
-                         LoginData.logIn(login, token.access_token)
                          userRepository.signUpUser(login,passwd,mailU,token.access_token)
                      }
                  }
@@ -208,16 +208,16 @@ fun SignIn(navController: NavController<Destinations>){
         )
         Button(onClick = {
             if(login!=""&&passwd!="") {
-                if (userRepository.signInUser(login, passwd)) {
+//                if (userRepository.signInUser(login, passwd)) {
                     scope.launch {
                         val token = api.auth(AuthReq(login,passwd))
                         if(token !=null) {
+                            LoginData.logIn(token.login, token.access_token)
                             navController.navigate(Destinations.TaskList)
-                            LoginData.logIn(login, token.access_token)
-                            userRepository.signUpUser("",passwd,login,token.access_token)
+//                            userRepository.signUpUser("",passwd,login,token.access_token)
                         }
                     }
-                }
+//                }
             }
          },modifier = Modifier.padding(top = 120.dp)) {
             Text(text = "Sign In")
