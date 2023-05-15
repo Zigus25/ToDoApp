@@ -10,6 +10,7 @@ This is project that combines three apps
 * Material theme 3
 * Android 8.0
 * Jetpack Compose
+* Ktor
 * SQLDeLight
 ## Documentation
 TBD
