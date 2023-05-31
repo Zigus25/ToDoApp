@@ -57,7 +57,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:Boolean) {
+fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:Boolean, cId:Int?) {
 
     val taskRepo: TasksInter = if (LoginData.token==""){
         val taR: TasksRepoLocal by localDI().instance()
@@ -98,7 +98,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                 owner_id = null,
                 name = "",
                 description = "",
-                category_id = 0,
+                category_id = cId ?: 0,
                 dateEnd = null,
                 dateStart = null,
                 timeEnd = null,
@@ -122,7 +122,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
         ev?.subList?.forEach {
             subList.add(it.name)
         }
-        if (options.isNotEmpty()){
+        if (options.isNotEmpty()&&event.category_id == 0){
             event = event.copy(category_id = options[0].id)
         }
     }

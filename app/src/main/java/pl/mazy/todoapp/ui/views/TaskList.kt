@@ -1,5 +1,6 @@
 package pl.mazy.todoapp.ui.views
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -13,6 +14,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.LinearGradientShader
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
@@ -31,7 +34,6 @@ import pl.mazy.todoapp.ui.components.task.*
 fun TaskList(
     navController: NavController<Destinations>
 ) {
-    var selAdd = false
     var i by remember {
         mutableStateOf(0)
     }
@@ -57,15 +59,15 @@ fun TaskList(
         if (titles.isEmpty()){
             titles = listOf(Category(-1,"",0,null))
         }else{
-            category = titles[0]
+            category = titles[i]
         }
     }
 
-    fun refreshEvents() = scope.launch {
-        todos = if (category.shareId==null) {
-            taskRepo.getTusks(category.id)
+    fun refreshEvents(cat:Category) = scope.launch {
+        todos = if (cat.shareId==null) {
+            taskRepo.getTusks(cat.id)
         }else{
-            taskRepo.getTusks(category.shareId!!)
+            taskRepo.getTusks(cat.shareId!!)
         }
     }
 
@@ -80,38 +82,38 @@ fun TaskList(
             }
         }
         if(category.id!=-1) {
-            refreshEvents()
+            refreshEvents(category)
         }
     }
     Column(modifier = Modifier.fillMaxSize()) {
         ScrollableTabRow(
-            selectedTabIndex = i, edgePadding = 15.dp, modifier = Modifier.fillMaxWidth(), divider = {}
+            selectedTabIndex = if(addingGroup){titles.size}else{i}, edgePadding = 15.dp, modifier = Modifier.fillMaxWidth(), divider = {}
         ) {
             titles.forEachIndexed { index, title ->
                 Tab(modifier = Modifier.weight(1f),
-                    selected = i == index,
+                    selected = !addingGroup&&i == index,
                     onClick = {
                         category = title
+                        addingGroup = false
                         i = index
                     },
                     unselectedContentColor = MaterialTheme.colorScheme.onBackground,
                     text = { Text(text = title.name, maxLines = 1) })
             }
-            Tab(selected = selAdd,
+            Tab(selected = addingGroup,
                 onClick = {
-                    selAdd = true
                     addingGroup = true
                 },
                 unselectedContentColor = MaterialTheme.colorScheme.onBackground,
                 text = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "Add new ", maxLines = 1)
+                        Text(text = "Group ", maxLines = 1)
                         Icon(
                             Icons.Filled.Add,
                             contentDescription = "Add Icon",
-                            tint = MaterialTheme.colorScheme.onBackground
+                            tint = if(!addingGroup){MaterialTheme.colorScheme.onBackground}else{MaterialTheme.colorScheme.primary}
                         )
-                }})
+                    }})
         }
         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.BottomCenter) {
             LazyColumn(
@@ -128,46 +130,61 @@ fun TaskList(
                     }
                 }
             }
-            if (addingGroup) {
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8F))
-                    .blur(8.dp)
-                    .clickable { addingGroup = false })
-                GroupAdd {
-                    addingGroup = false
-                    titles = listOf()
-                }
-            }
-            if (!addingGroup) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (titles.size > 1) {
-                        IconButton(onClick = {
-                            scope.launch {
-                                taskRepo.delCategory(category.id)
-                                titles = taskRepo.getCategory()
-                                category = titles[0]
-                                i = 0
-                            }
-                        }) {
-                            Icon(
-                                Icons.Filled.Delete,
-                                contentDescription = "Delete Icon",
-                            )
+            Column {
+                AnimatedVisibility(visible = addingGroup) {
+                    Column(
+                        Modifier
+                            .clickable { addingGroup = false }
+                            .fillMaxSize(1f)
+                            .background(Brush.verticalGradient( listOf( MaterialTheme.colorScheme.primary.copy(alpha = 0F), MaterialTheme.colorScheme.primary.copy(alpha = 0.18F))))
+                    ) {
+                        Spacer(modifier = Modifier.weight(1f))
+                        GroupAdd {
+                            addingGroup = false
+                            titles = listOf()
                         }
                     }
-                    Spacer(modifier = Modifier.weight(1f))
-                    Box(modifier = Modifier.padding(15.dp)) {
-                        SmallFloatingActionButton(
-                            onClick = { navController.navigate(Destinations.EventAdd(null, true)) },
-                            modifier = Modifier
-                                .height(50.dp)
-                                .width(50.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = null,
-                            )
+                }
+            }
+            Column {
+                AnimatedVisibility(visible = !addingGroup) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (titles.size > 1) {
+                            IconButton(onClick = {
+                                scope.launch {
+                                    taskRepo.delCategory(category.id)
+                                    titles = taskRepo.getCategory()
+                                    category = titles[0]
+                                    i = 0
+                                }
+                            }) {
+                                Icon(
+                                    Icons.Filled.Delete,
+                                    contentDescription = "Delete Icon",
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        Box(modifier = Modifier.padding(15.dp)) {
+                            SmallFloatingActionButton(
+                                onClick = {
+                                    navController.navigate(
+                                        Destinations.EventAdd(
+                                            null,
+                                            true,
+                                            category.id
+                                        )
+                                    )
+                                },
+                                modifier = Modifier
+                                    .height(50.dp)
+                                    .width(50.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = null,
+                                )
+                            }
                         }
                     }
                 }

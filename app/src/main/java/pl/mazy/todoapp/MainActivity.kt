@@ -188,7 +188,7 @@ class MainActivity : ComponentActivity() {
                                             Schedule(controller)
                                             program = "Calendar"
                                         }
-                                        is Destinations.EventAdd -> EventAddEdit(controller,x.event,x.isTask)
+                                        is Destinations.EventAdd -> EventAddEdit(controller,x.event,x.isTask,x.cId)
                                         is Destinations.SignIn -> {
                                             SignIn(controller)
                                             program = ""

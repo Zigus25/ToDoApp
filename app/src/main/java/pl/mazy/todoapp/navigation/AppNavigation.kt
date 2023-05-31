@@ -11,5 +11,5 @@ sealed interface Destinations {
     object SignUp: Destinations
     object SignIn: Destinations
     class NoteDetails(val noteP: Note?) : Destinations
-    class EventAdd(val event: Event?, val isTask: Boolean) : Destinations
+    class EventAdd(val event: Event?, val isTask: Boolean, val cId:Int?) : Destinations
 }

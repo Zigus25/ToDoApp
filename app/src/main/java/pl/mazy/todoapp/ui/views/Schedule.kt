@@ -64,7 +64,7 @@ fun Schedule(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(Destinations.EventAdd(null, false)) },
+                onClick = { navController.navigate(Destinations.EventAdd(null, false,null)) },
                 modifier = Modifier
                     .height(50.dp)
                     .width(50.dp)
