@@ -23,6 +23,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +49,6 @@ import pl.mazy.todoapp.ui.views.Schedule
 import pl.mazy.todoapp.ui.views.SignIn
 import pl.mazy.todoapp.ui.views.SignUp
 import pl.mazy.todoapp.ui.views.TaskList
-import java.lang.NullPointerException
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -58,25 +58,30 @@ class MainActivity : ComponentActivity() {
             withDI((application as ToDoApplication).di) {
                 ToDoAPpTheme {
                     val userRepository: AccountRep by localDI().instance()
-                    try {
-                        val pair = userRepository.getActiveUser()
-                        LoginData.logIn(pair.second,pair.first)
-                    }catch (_:NullPointerException){ }
-                    var program by remember {
-                        mutableStateOf("Task List")
-                    }
-
+                    val scope = rememberCoroutineScope()
                     val controller: NavController<Destinations> by remember {
                         mutableStateOf(NavController(Destinations.TaskList))
                     }
+                    var program by remember {
+                        mutableStateOf("Task List")
+                    }
+                    var logO by remember {
+                        mutableStateOf(false)
+                    }
+
                     BackHandler(!controller.isLast()) {
                         controller.pop()
                     }
-                    val scope = rememberCoroutineScope()
                     val drawerState = rememberDrawerState(DrawerValue.Closed)
                     BackHandler( enabled = drawerState.isOpen) {
                         scope.launch {
                             drawerState.close()
+                        }
+                    }
+                    LaunchedEffect(drawerState,logO){
+                        val uD = userRepository.getActiveUser()
+                        if (uD!=null) {
+                            controller.navigate(Destinations.SignIn(uD))
                         }
                     }
                     ModalNavigationDrawer(
@@ -129,18 +134,20 @@ class MainActivity : ComponentActivity() {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(start = 30.dp,bottom = 20.dp)
+                                    .padding(start = 30.dp, bottom = 20.dp)
                             ) {
                                 if (LoginData.token == ""){
                                     Text(text = "Local", modifier = Modifier.clickable {
                                         scope.launch { drawerState.close() }
-                                        controller.navigate(Destinations.SignIn) },
+                                        controller.navigate(Destinations.SignIn(null)) },
                                         fontSize = 30.sp)
                                 }else{
-                                    Text(text = LoginData.login!!, modifier = Modifier.clickable {
-                                        scope.launch { drawerState.close() }
-                                        userRepository.signOut(LoginData.login!!)
-                                        LoginData.logOut()
+                                    Text(text = (LoginData.login!!+" #"+LoginData.sid), modifier = Modifier.clickable {
+                                        scope.launch {
+                                            userRepository.signOut(LoginData.sid!!)
+                                            LoginData.logOut()
+                                            drawerState.close()
+                                        }
                                    },
                                         fontSize = 30.sp)
                                 }
@@ -161,10 +168,11 @@ class MainActivity : ComponentActivity() {
                                     Spacer(modifier = Modifier.weight(1f))
                                     IconButton(onClick = {
                                             if (LoginData.token == ""){
-                                                controller.navigate(Destinations.SignIn)
+                                                controller.navigate(Destinations.SignIn(null))
                                             }else{
-                                                userRepository.signOut(LoginData.login!!)
+                                                userRepository.signOut(LoginData.sid!!)
                                                 LoginData.logOut()
+                                                logO = !logO
                                         }}) {
                                         Icon(
                                             Icons.Filled.SupervisedUserCircle,
@@ -190,7 +198,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                         is Destinations.EventAdd -> EventAddEdit(controller,x.event,x.isTask,x.cId)
                                         is Destinations.SignIn -> {
-                                            SignIn(controller)
+                                            SignIn(controller,x.user)
                                             program = ""
                                         }
                                         is Destinations.SignUp -> {

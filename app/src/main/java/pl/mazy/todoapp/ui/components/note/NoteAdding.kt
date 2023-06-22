@@ -104,12 +104,11 @@ fun NoteAdding(
                     onClick = {
                         scope.launch {
                             if (noteP == null) {
-                                navController.navigate(Destinations.Notes)
-
                                 noteRepo.addNote(note)
-                            } else {
                                 navController.navigate(Destinations.Notes)
+                            } else {
                                 noteRepo.updateNote(note)
+                                navController.navigate(Destinations.Notes)
                             }
                         }
                     },

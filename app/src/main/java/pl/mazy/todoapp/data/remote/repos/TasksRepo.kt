@@ -6,6 +6,7 @@ import pl.mazy.todoapp.data.interfaces.TasksInter
 import pl.mazy.todoapp.data.model.Category
 import pl.mazy.todoapp.data.model.Event
 import pl.mazy.todoapp.data.remote.TDAService
+import java.lang.Exception
 
 class TasksRepo(private val api: TDAService):TasksInter {
     override suspend fun addCategory(name: String) {
@@ -13,7 +14,15 @@ class TasksRepo(private val api: TDAService):TasksInter {
     }
 
     override suspend fun getCategory(): List<Category> {
-        return api.getCategories(LoginData.token)
+        return try {
+            api.getCategories(LoginData.token)
+        }catch (e:Exception){
+            listOf()
+        }
+    }
+
+    override suspend fun shareCategory(cId: Int, sId: Int) {
+        api.shareCategory(LoginData.token,cId,sId)
     }
 
     override suspend fun delCategory(id: Int) {

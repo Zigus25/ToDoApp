@@ -456,26 +456,26 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                     SmallFloatingActionButton(
                         onClick = {
                             if (ev == null) {
-                                navController.navigate(
-                                    if (isTask) {
-                                        Destinations.TaskList
-                                    } else {
-                                        Destinations.Schedule
-                                    }
-                                )
                                 scope.launch {
                                     calRepo.addEvent(event, subList.toList())
+                                    navController.navigate(
+                                        if (isTask) {
+                                            Destinations.TaskList
+                                        } else {
+                                            Destinations.Schedule
+                                        }
+                                    )
                                 }
                             } else {
-                                navController.navigate(
-                                    if (isTask) {
-                                        Destinations.TaskList
-                                    } else {
-                                        Destinations.Schedule
-                                    }
-                                )
                                 scope.launch {
                                     calRepo.updateEvent(event, subList.toList())
+                                    navController.navigate(
+                                        if (isTask) {
+                                            Destinations.TaskList
+                                        } else {
+                                            Destinations.Schedule
+                                        }
+                                    )
                                 }
                             }
                         },

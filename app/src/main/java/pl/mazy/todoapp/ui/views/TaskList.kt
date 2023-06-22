@@ -13,9 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.LinearGradientShader
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
@@ -44,10 +42,13 @@ fun TaskList(
         val taR: TasksRepo by localDI().instance()
         taR
     }
+    var logRe by remember { mutableStateOf(LoginData.login) }
     var checked by remember { mutableStateOf(0) }
     var titles:List<Category> by remember { mutableStateOf(listOf()) }
     var addingGroup by remember { mutableStateOf(false) }
+    var share by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    var options by remember { mutableStateOf(false) }
 
     var category:Category by remember { mutableStateOf(Category(-1,"",0,null)) }
 
@@ -64,15 +65,15 @@ fun TaskList(
     }
 
     fun refreshEvents(cat:Category) = scope.launch {
-        todos = if (cat.shareId==null) {
-            taskRepo.getTusks(cat.id)
-        }else{
-            taskRepo.getTusks(cat.shareId!!)
-        }
+        todos = taskRepo.getTusks(cat.id)
     }
 
     LaunchedEffect(category,titles,checked,LoginData.login) {
         scope.launch { titles = taskRepo.getCategory() }
+        if (LoginData.login != logRe){
+            i = 0
+            logRe = LoginData.login
+        }
         refreshTitle()
 
         scope.launch {
@@ -95,6 +96,7 @@ fun TaskList(
                     onClick = {
                         category = title
                         addingGroup = false
+                        share = false
                         i = index
                     },
                     unselectedContentColor = MaterialTheme.colorScheme.onBackground,
@@ -136,7 +138,15 @@ fun TaskList(
                         Modifier
                             .clickable { addingGroup = false }
                             .fillMaxSize(1f)
-                            .background(Brush.verticalGradient( listOf( MaterialTheme.colorScheme.primary.copy(alpha = 0F), MaterialTheme.colorScheme.primary.copy(alpha = 0.18F))))
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        MaterialTheme.colorScheme.primary.copy(
+                                            alpha = 0F
+                                        ), MaterialTheme.colorScheme.primary.copy(alpha = 0.18F)
+                                    )
+                                )
+                            )
                     ) {
                         Spacer(modifier = Modifier.weight(1f))
                         GroupAdd {
@@ -145,23 +155,85 @@ fun TaskList(
                         }
                     }
                 }
+                AnimatedVisibility(visible = share) {
+                    Column(
+                        Modifier
+                            .clickable { share = false }
+                            .fillMaxSize(1f)
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        MaterialTheme.colorScheme.primary.copy(
+                                            alpha = 0F
+                                        ), MaterialTheme.colorScheme.primary.copy(alpha = 0.18F)
+                                    )
+                                )
+                            )
+                    ) {
+                        Spacer(modifier = Modifier.weight(1f))
+                        ShareCategory(category.id) {
+                            share = false
+                        }
+                    }
+                }
             }
             Column {
-                AnimatedVisibility(visible = !addingGroup) {
+                AnimatedVisibility(visible = (!addingGroup&&!share)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (titles.size > 1) {
+                        if (titles.size > 1||(LoginData.token != ""&&category.shareId!=null)) {
                             IconButton(onClick = {
-                                scope.launch {
-                                    taskRepo.delCategory(category.id)
-                                    titles = taskRepo.getCategory()
-                                    category = titles[0]
-                                    i = 0
-                                }
+                                options = true
                             }) {
                                 Icon(
-                                    Icons.Filled.Delete,
-                                    contentDescription = "Delete Icon",
+                                    Icons.Filled.MoreVert,
+                                    contentDescription = "More options vertically",
                                 )
+                            }
+                            DropdownMenu(
+                                expanded = options,
+                                onDismissRequest = { options = false }
+                            ) {
+                                if (titles.size > 1) {
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row {
+                                                Icon(
+                                                    Icons.Filled.Delete,
+                                                    contentDescription = "Delete Icon",
+                                                    modifier = Modifier.padding(end = 10.dp)
+                                                )
+                                                Text("Delete")
+                                            }
+                                        },
+                                        onClick = {
+                                            scope.launch {
+                                                taskRepo.delCategory(category.id)
+                                                titles = taskRepo.getCategory()
+                                                category = titles[0]
+                                                i = 0
+                                                options = false
+                                            }
+                                        }
+                                    )
+                                }
+                                if (LoginData.token != ""&&category.shareId==null) {
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row {
+                                                Icon(
+                                                    Icons.Filled.Share,
+                                                    contentDescription = "Share Icon",
+                                                    modifier = Modifier.padding(end = 10.dp)
+                                                )
+                                                Text("Share")
+                                            }
+                                        },
+                                        onClick = {
+                                            share = true
+                                            options = false
+                                        }
+                                    )
+                                }
                             }
                         }
                         Spacer(modifier = Modifier.weight(1f))
