@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,12 +13,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
+import pl.mazy.todoapp.User
 import pl.mazy.todoapp.data.LoginData
 import pl.mazy.todoapp.data.local.AccountRep
 import pl.mazy.todoapp.data.remote.TDAService
@@ -144,9 +149,9 @@ fun SignUp(navController: NavController<Destinations>){
                  scope.launch {
                      val token = api.signup(SingUpReq(mailU,login,passwd))
                      if(token != null) {
-                         LoginData.logIn(token.login, token.access_token)
+                         LoginData.logIn(token.login, token.access_token,token.sid)
                          navController.navigate(Destinations.TaskList)
-                         userRepository.signUpUser(login,passwd,mailU,token.access_token)
+                         userRepository.signUpUser(login,passwd,mailU,token.sid)
                      }
                  }
              }
@@ -157,31 +162,92 @@ fun SignUp(navController: NavController<Destinations>){
 }
 
 @Composable
-fun SignIn(navController: NavController<Destinations>){
+fun SignIn(navController: NavController<Destinations>,user: User?){
     val userRepository: AccountRep by localDI().instance()
     val api: TDAService by localDI().instance()
     var passwordVisible by remember { mutableStateOf(false) }
-    var login by remember { mutableStateOf("") }
+    var mail by remember { mutableStateOf("") }
     var passwd by remember { mutableStateOf("") }
+    var err by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
-
+    val options = userRepository.getUsers()
+    var userE by remember { mutableStateOf(false) }
+    fun signU(){
+        scope.launch {
+            try {
+                val token = api.auth(AuthReq(mail, passwd))
+                if (token != null) {
+                    LoginData.logIn(token.login, token.access_token, token.sid)
+                    if (userRepository.checkExist(mail, passwd)) {
+                        userRepository.signUpUser(
+                            token.login,
+                            passwd,
+                            mail,
+                            token.sid
+                        )
+                        navController.navigate(Destinations.TaskList)
+                    } else {
+                        userRepository.signInUser(token.sid)
+                        navController.navigate(Destinations.TaskList)
+                    }
+                } else {
+                    err = "Problem with sign in"
+                }
+            }catch (e:Exception){
+                err = "connection error"
+            }
+        }
+    }
+    LaunchedEffect(options){
+        if (user!=null){
+            passwd = user.passwd
+            mail = user.eMail
+            signU()
+        }
+    }
     Column(modifier = Modifier
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.background),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Row {
+            Text(
+                text = "Local",
+                modifier = Modifier
+                    .clickable { userE = true },
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            DropdownMenu(
+                expanded = userE,
+                onDismissRequest = { userE = false }
+            ) {
+                options.forEach {
+                    DropdownMenuItem(
+                        text = {
+                            Text(it.login)
+                        },
+                        onClick = {
+                            mail = it.eMail
+                            passwd = it.passwd
+                            userE = false
+                            signU()
+                        }
+                    )
+                }
+            }
+        }
         OutlinedTextField(
             modifier = Modifier
                 .padding(5.dp)
                 .fillMaxWidth(),
-            value = login,
+            value = mail,
             textStyle= TextStyle(
                 color = MaterialTheme.colorScheme.onBackground,
             ),
-            onValueChange = { login = it },
+            onValueChange = { mail = it },
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            label = { Text("Login") },
+            label = { Text("eMail") },
         )
         OutlinedTextField(
             modifier = Modifier
@@ -207,21 +273,13 @@ fun SignIn(navController: NavController<Destinations>){
             }
         )
         Button(onClick = {
-            if(login!=""&&passwd!="") {
-//                if (userRepository.signInUser(login, passwd)) {
-                    scope.launch {
-                        val token = api.auth(AuthReq(login,passwd))
-                        if(token !=null) {
-                            LoginData.logIn(token.login, token.access_token)
-                            navController.navigate(Destinations.TaskList)
-//                            userRepository.signUpUser("",passwd,login,token.access_token)
-                        }
-                    }
-//                }
+            if(mail!=""&&passwd!="") {
+                signU()
             }
          },modifier = Modifier.padding(top = 120.dp)) {
             Text(text = "Sign In")
         }
+        Text(text = err, color = MaterialTheme.colorScheme.error)
         Text(
             text = "Sign Up Now",
             color = MaterialTheme.colorScheme.onBackground,
@@ -249,3 +307,4 @@ fun isValidPasswd(passwdStr:String) =
             "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{4,}$",
             Pattern.CASE_INSENSITIVE
         ).matcher(passwdStr).find()
+

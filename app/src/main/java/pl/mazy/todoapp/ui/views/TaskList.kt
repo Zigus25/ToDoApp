@@ -1,5 +1,6 @@
 package pl.mazy.todoapp.ui.views
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.localDI
@@ -31,7 +32,6 @@ import pl.mazy.todoapp.ui.components.task.*
 fun TaskList(
     navController: NavController<Destinations>
 ) {
-    var selAdd = false
     var i by remember {
         mutableStateOf(0)
     }
@@ -42,10 +42,13 @@ fun TaskList(
         val taR: TasksRepo by localDI().instance()
         taR
     }
+    var logRe by remember { mutableStateOf(LoginData.login) }
     var checked by remember { mutableStateOf(0) }
     var titles:List<Category> by remember { mutableStateOf(listOf()) }
     var addingGroup by remember { mutableStateOf(false) }
+    var share by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    var options by remember { mutableStateOf(false) }
 
     var category:Category by remember { mutableStateOf(Category(-1,"",0,null)) }
 
@@ -57,20 +60,20 @@ fun TaskList(
         if (titles.isEmpty()){
             titles = listOf(Category(-1,"",0,null))
         }else{
-            category = titles[0]
+            category = titles[i]
         }
     }
 
-    fun refreshEvents() = scope.launch {
-        todos = if (category.shareId==null) {
-            taskRepo.getTusks(category.id)
-        }else{
-            taskRepo.getTusks(category.shareId!!)
-        }
+    fun refreshEvents(cat:Category) = scope.launch {
+        todos = taskRepo.getTusks(cat.id)
     }
 
     LaunchedEffect(category,titles,checked,LoginData.login) {
         scope.launch { titles = taskRepo.getCategory() }
+        if (LoginData.login != logRe){
+            i = 0
+            logRe = LoginData.login
+        }
         refreshTitle()
 
         scope.launch {
@@ -80,38 +83,39 @@ fun TaskList(
             }
         }
         if(category.id!=-1) {
-            refreshEvents()
+            refreshEvents(category)
         }
     }
     Column(modifier = Modifier.fillMaxSize()) {
         ScrollableTabRow(
-            selectedTabIndex = i, edgePadding = 15.dp, modifier = Modifier.fillMaxWidth(), divider = {}
+            selectedTabIndex = if(addingGroup){titles.size}else{i}, edgePadding = 15.dp, modifier = Modifier.fillMaxWidth(), divider = {}
         ) {
             titles.forEachIndexed { index, title ->
                 Tab(modifier = Modifier.weight(1f),
-                    selected = i == index,
+                    selected = !addingGroup&&i == index,
                     onClick = {
                         category = title
+                        addingGroup = false
+                        share = false
                         i = index
                     },
                     unselectedContentColor = MaterialTheme.colorScheme.onBackground,
                     text = { Text(text = title.name, maxLines = 1) })
             }
-            Tab(selected = selAdd,
+            Tab(selected = addingGroup,
                 onClick = {
-                    selAdd = true
                     addingGroup = true
                 },
                 unselectedContentColor = MaterialTheme.colorScheme.onBackground,
                 text = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "Add new ", maxLines = 1)
+                        Text(text = "Group ", maxLines = 1)
                         Icon(
                             Icons.Filled.Add,
                             contentDescription = "Add Icon",
-                            tint = MaterialTheme.colorScheme.onBackground
+                            tint = if(!addingGroup){MaterialTheme.colorScheme.onBackground}else{MaterialTheme.colorScheme.primary}
                         )
-                }})
+                    }})
         }
         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.BottomCenter) {
             LazyColumn(
@@ -128,46 +132,131 @@ fun TaskList(
                     }
                 }
             }
-            if (addingGroup) {
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8F))
-                    .blur(8.dp)
-                    .clickable { addingGroup = false })
-                GroupAdd {
-                    addingGroup = false
-                    titles = listOf()
-                }
-            }
-            if (!addingGroup) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (titles.size > 1) {
-                        IconButton(onClick = {
-                            scope.launch {
-                                taskRepo.delCategory(category.id)
-                                titles = taskRepo.getCategory()
-                                category = titles[0]
-                                i = 0
-                            }
-                        }) {
-                            Icon(
-                                Icons.Filled.Delete,
-                                contentDescription = "Delete Icon",
+            Column {
+                AnimatedVisibility(visible = addingGroup) {
+                    Column(
+                        Modifier
+                            .clickable { addingGroup = false }
+                            .fillMaxSize(1f)
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        MaterialTheme.colorScheme.primary.copy(
+                                            alpha = 0F
+                                        ), MaterialTheme.colorScheme.primary.copy(alpha = 0.18F)
+                                    )
+                                )
                             )
+                    ) {
+                        Spacer(modifier = Modifier.weight(1f))
+                        GroupAdd {
+                            addingGroup = false
+                            titles = listOf()
                         }
                     }
-                    Spacer(modifier = Modifier.weight(1f))
-                    Box(modifier = Modifier.padding(15.dp)) {
-                        SmallFloatingActionButton(
-                            onClick = { navController.navigate(Destinations.EventAdd(null, true)) },
-                            modifier = Modifier
-                                .height(50.dp)
-                                .width(50.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = null,
+                }
+                AnimatedVisibility(visible = share) {
+                    Column(
+                        Modifier
+                            .clickable { share = false }
+                            .fillMaxSize(1f)
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        MaterialTheme.colorScheme.primary.copy(
+                                            alpha = 0F
+                                        ), MaterialTheme.colorScheme.primary.copy(alpha = 0.18F)
+                                    )
+                                )
                             )
+                    ) {
+                        Spacer(modifier = Modifier.weight(1f))
+                        ShareCategory(category.id) {
+                            share = false
+                        }
+                    }
+                }
+            }
+            Column {
+                AnimatedVisibility(visible = (!addingGroup&&!share)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (titles.size > 1||(LoginData.token != ""&&category.shareId!=null)) {
+                            IconButton(onClick = {
+                                options = true
+                            }) {
+                                Icon(
+                                    Icons.Filled.MoreVert,
+                                    contentDescription = "More options vertically",
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = options,
+                                onDismissRequest = { options = false }
+                            ) {
+                                if (titles.size > 1) {
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row {
+                                                Icon(
+                                                    Icons.Filled.Delete,
+                                                    contentDescription = "Delete Icon",
+                                                    modifier = Modifier.padding(end = 10.dp)
+                                                )
+                                                Text("Delete")
+                                            }
+                                        },
+                                        onClick = {
+                                            scope.launch {
+                                                taskRepo.delCategory(category.id)
+                                                titles = taskRepo.getCategory()
+                                                category = titles[0]
+                                                i = 0
+                                                options = false
+                                            }
+                                        }
+                                    )
+                                }
+                                if (LoginData.token != ""&&category.shareId==null) {
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row {
+                                                Icon(
+                                                    Icons.Filled.Share,
+                                                    contentDescription = "Share Icon",
+                                                    modifier = Modifier.padding(end = 10.dp)
+                                                )
+                                                Text("Share")
+                                            }
+                                        },
+                                        onClick = {
+                                            share = true
+                                            options = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.weight(1f))
+                        Box(modifier = Modifier.padding(15.dp)) {
+                            SmallFloatingActionButton(
+                                onClick = {
+                                    navController.navigate(
+                                        Destinations.EventAdd(
+                                            null,
+                                            true,
+                                            category.id
+                                        )
+                                    )
+                                },
+                                modifier = Modifier
+                                    .height(50.dp)
+                                    .width(50.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = null,
+                                )
+                            }
                         }
                     }
                 }

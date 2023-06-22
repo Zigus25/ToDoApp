@@ -6,14 +6,18 @@ object LoginData {
 
     var token: String = ""
         private set
+    var sid: Int? = null
+        private set
 
-    fun logIn(l:String,t:String){
+    fun logIn(l:String?,t:String,s:Int?){
         login = l
         token = t
+        sid = s
     }
 
     fun logOut(){
         login = null
         token = ""
+        sid = null
     }
 }

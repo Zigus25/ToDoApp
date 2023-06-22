@@ -21,6 +21,9 @@ class TasksRepoLocal(
         return list.toList()
     }
 
+    override suspend fun shareCategory(cId: Int, sId: Int) { //Do nothing
+    }
+
     fun consolidate(events:List<Event>): List<Event> {
         val list = events.toMutableList()
         for (i in (list.size -1) downTo 0) {

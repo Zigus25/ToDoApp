@@ -41,9 +41,6 @@ fun Schedule(
     val scope = rememberCoroutineScope()
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val date: LocalDate = LocalDate.parse(LocalDate.now().format(formatter),formatter)
-    var maxDate:LocalDate = date
-
-    fun listDates(now:LocalDate,max:LocalDate):List<LocalDate> = List(now.until(max).days+1){now.plusDays(it.toLong())}
     fun foundMaxDate(list:List<Event>):LocalDate{
         return if (list.isNotEmpty()) {
             LocalDate.parse(list[list.lastIndex].dateEnd, formatter)
@@ -51,6 +48,8 @@ fun Schedule(
             date.plusDays(2)
         }
     }
+    fun listDates(now:LocalDate):List<LocalDate> = List(now.until(foundMaxDate(events)).days+1){now.plusDays(it.toLong())}
+
 
     fun loadEvents() = scope.launch {
         events = calRepo.selByDate(date)
@@ -59,12 +58,11 @@ fun Schedule(
         scope.launch {
             loadEvents()
         }
-        maxDate = foundMaxDate(events)
     }
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(Destinations.EventAdd(null, false)) },
+                onClick = { navController.navigate(Destinations.EventAdd(null, false,null)) },
                 modifier = Modifier
                     .height(50.dp)
                     .width(50.dp)
@@ -85,7 +83,7 @@ fun Schedule(
 
             LazyColumn(modifier = Modifier.weight(1f)) {
                 if (events.isNotEmpty()) {
-                    items(listDates(date, maxDate)) {
+                    items(listDates(date)) {
                         val e = events.filter { ev ->
                             ev.dateEnd != null && LocalDate.parse(
                                 ev.dateEnd,
@@ -111,9 +109,7 @@ fun Schedule(
                     .background(MaterialTheme.colorScheme.background)
             ) {
                 Spacer(modifier = Modifier.weight(1f))
-                Box(modifier = Modifier.padding(15.dp)) {
-
-                }
+                Box(modifier = Modifier.padding(15.dp)) {}
             }
         }
     }

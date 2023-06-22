@@ -48,7 +48,7 @@ fun Task(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.background)
-                    .clickable { navController.navigate(Destinations.EventAdd(event, event.type)) }
+                    .clickable { navController.navigate(Destinations.EventAdd(event, event.type, event.category_id)) }
                     .padding(
                         start = if (event.mainTask_id != null) {
                             30.dp

@@ -37,7 +37,7 @@ fun SingleEvent(navController: NavController<Destinations>, event: Event, dateNo
             Color(parseColor(event.color))
         )
         .clickable {
-            navController.navigate(Destinations.EventAdd(event,event.type))
+            navController.navigate(Destinations.EventAdd(event,event.type, event.category_id))
         }
     ) {
         Text(text = event.name, fontSize = 24.sp)

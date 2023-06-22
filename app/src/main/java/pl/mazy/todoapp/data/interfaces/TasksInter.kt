@@ -7,6 +7,7 @@ import pl.mazy.todoapp.data.model.Event
 interface TasksInter {
     suspend fun addCategory(name:String)
     suspend fun getCategory():List<Category>
+    suspend fun shareCategory(cId:Int,sId:Int)
     suspend fun delCategory(id:Int)
 
     suspend fun getTusks(id: Int): List<Event>

@@ -57,7 +57,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:Boolean) {
+fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:Boolean, cId:Int?) {
 
     val taskRepo: TasksInter = if (LoginData.token==""){
         val taR: TasksRepoLocal by localDI().instance()
@@ -88,7 +88,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
 
     val defaultDate = "1970-01-01"
     val defaultTimeFE = "$defaultDate ${if(calendar[Calendar.HOUR_OF_DAY]<10){"0${calendar[Calendar.HOUR_OF_DAY]}"}else{calendar[Calendar.HOUR_OF_DAY]}}:00"
-    val defaultTimeTE = "$defaultDate ${if(calendar[Calendar.HOUR_OF_DAY]<10){"0${calendar[Calendar.HOUR_OF_DAY]+1}"}else{calendar[Calendar.HOUR_OF_DAY]+1}}:00"
+    val defaultTimeTE = "$defaultDate ${if(calendar[Calendar.HOUR_OF_DAY]<9){"0${calendar[Calendar.HOUR_OF_DAY]+1}"}else{calendar[Calendar.HOUR_OF_DAY]+1}}:00"
     val defaultDateE = LocalDate.now().format(formatDate)
 
     var event by remember {
@@ -98,7 +98,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                 owner_id = null,
                 name = "",
                 description = "",
-                category_id = 0,
+                category_id = cId ?: 0,
                 dateEnd = null,
                 dateStart = null,
                 timeEnd = null,
@@ -122,7 +122,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
         ev?.subList?.forEach {
             subList.add(it.name)
         }
-        if (options.isNotEmpty()){
+        if (options.isNotEmpty()&&event.category_id == 0){
             event = event.copy(category_id = options[0].id)
         }
     }
@@ -206,7 +206,10 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                             Text(text = "task:", color = MaterialTheme.colorScheme.onBackground)
                             Checkbox(
                                 checked = event.type,
-                                onCheckedChange = {event = event.copy(type = !event.type)
+                                onCheckedChange = {
+                                    if(event.subList.isEmpty()&&event.mainTask_id==null) {
+                                        event = event.copy(type = !event.type)
+                                    }
                                 }
                             )
                         }
@@ -453,26 +456,26 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                     SmallFloatingActionButton(
                         onClick = {
                             if (ev == null) {
-                                navController.navigate(
-                                    if (isTask) {
-                                        Destinations.TaskList
-                                    } else {
-                                        Destinations.Schedule
-                                    }
-                                )
                                 scope.launch {
                                     calRepo.addEvent(event, subList.toList())
+                                    navController.navigate(
+                                        if (isTask) {
+                                            Destinations.TaskList
+                                        } else {
+                                            Destinations.Schedule
+                                        }
+                                    )
                                 }
                             } else {
-                                navController.navigate(
-                                    if (isTask) {
-                                        Destinations.TaskList
-                                    } else {
-                                        Destinations.Schedule
-                                    }
-                                )
                                 scope.launch {
                                     calRepo.updateEvent(event, subList.toList())
+                                    navController.navigate(
+                                        if (isTask) {
+                                            Destinations.TaskList
+                                        } else {
+                                            Destinations.Schedule
+                                        }
+                                    )
                                 }
                             }
                         },
