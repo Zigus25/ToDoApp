@@ -131,6 +131,16 @@ fun TaskList(
                         }
                     }
                 }
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.background)
+                    ) {
+                        Spacer(modifier = Modifier.weight(1f))
+                        Box(modifier = Modifier.padding(40.dp)) {}
+                    }
+                }
             }
             Column {
                 AnimatedVisibility(visible = addingGroup) {
