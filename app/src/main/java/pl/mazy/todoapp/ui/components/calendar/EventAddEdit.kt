@@ -115,13 +115,18 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
     if (!event.type){
         wantDate = true
     }
+    fun subRef(){
+        if (subList.isEmpty()){
+            ev?.subList?.forEach {
+                subList.add(it.name)
+            }
+        }
+    }
     LaunchedEffect(options){
         scope.launch {
             options = taskRepo.getCategory()
         }
-        ev?.subList?.forEach {
-            subList.add(it.name)
-        }
+        subRef()
         if (options.isNotEmpty()&&event.category_id == 0){
             event = event.copy(category_id = options[0].id)
         }
