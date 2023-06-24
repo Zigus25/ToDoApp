@@ -130,6 +130,13 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
         if (options.isNotEmpty()&&event.category_id == 0){
             event = event.copy(category_id = options[0].id)
         }
+        val ca = options.find { it.id == event.category_id }
+        if (ca == null) {
+            val cid = options.find { it.shareId == event.category_id }?.id
+            if (cid != null) {
+                event = event.copy(category_id =cid)
+            }
+        }
     }
 
     Column(
@@ -460,6 +467,10 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                 Box(modifier = Modifier.padding(10.dp)) {
                     SmallFloatingActionButton(
                         onClick = {
+                            val cat = options.find { it.id == event.category_id }?.shareId
+                            if (cat!= null){
+                                event = event.copy(category_id = cat)
+                            }
                             if (ev == null) {
                                 scope.launch {
                                     calRepo.addEvent(event, subList.toList())
