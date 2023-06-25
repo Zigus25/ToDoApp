@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
                     val userRepository: AccountRep by localDI().instance()
                     val scope = rememberCoroutineScope()
                     val controller: NavController<Destinations> by remember {
-                        mutableStateOf(NavController(Destinations.TaskList))
+                        mutableStateOf(NavController(Destinations.TaskList(0)))
                     }
                     var program by remember {
                         mutableStateOf("Task List")
@@ -98,7 +98,7 @@ class MainActivity : ComponentActivity() {
                                 onClick = {
                                     program = "Tasks"
                                     scope.launch { drawerState.close() }
-                                    controller.navigate(Destinations.TaskList)
+                                    controller.navigate(Destinations.TaskList(0))
                                 },
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                             )
@@ -184,7 +184,7 @@ class MainActivity : ComponentActivity() {
                                 Box(modifier = Modifier.weight(1f)) {
                                     when (val x = controller.currentBackStackEntry.value) {
                                         is Destinations.TaskList ->{
-                                            TaskList(controller)
+                                            TaskList(controller,x.bacCat)
                                             program = "Tasks"
                                         }
                                         is Destinations.NoteDetails -> NoteAdding(controller,x.noteP)

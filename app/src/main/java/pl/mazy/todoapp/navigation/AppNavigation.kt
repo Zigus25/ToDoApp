@@ -6,7 +6,7 @@ import pl.mazy.todoapp.data.model.Note
 
 
 sealed interface Destinations {
-    object TaskList: Destinations
+    class TaskList(val bacCat:Int): Destinations
     object Notes : Destinations
     object Schedule: Destinations
     object SignUp: Destinations

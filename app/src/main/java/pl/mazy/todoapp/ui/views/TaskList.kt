@@ -30,10 +30,14 @@ import pl.mazy.todoapp.ui.components.task.*
 
 @Composable
 fun TaskList(
-    navController: NavController<Destinations>
+    navController: NavController<Destinations>,
+    backCategory: Int
 ) {
     var i by remember {
         mutableStateOf(0)
+    }
+    var s by remember {
+        mutableStateOf(-1)
     }
     val taskRepo: TasksInter = if (LoginData.token==""){
         val taR: TasksRepoLocal by localDI().instance()
@@ -68,8 +72,15 @@ fun TaskList(
         todos = taskRepo.getTusks(cat.id)
     }
 
+
     LaunchedEffect(category,titles,checked,LoginData.login) {
-        scope.launch { titles = taskRepo.getCategory() }
+        scope.launch {
+            titles = taskRepo.getCategory()
+            if (s==-1&& titles.isNotEmpty()&&backCategory!=0){
+                i = titles.indexOfFirst{ it.id == backCategory }
+                s=0
+            }
+        }
         if (LoginData.login != logRe){
             i = 0
             logRe = LoginData.login
@@ -151,9 +162,9 @@ fun TaskList(
                             .background(
                                 Brush.verticalGradient(
                                     listOf(
-                                        MaterialTheme.colorScheme.primary.copy(
-                                            alpha = 0F
-                                        ), MaterialTheme.colorScheme.primary.copy(alpha = 0.18F)
+                                        MaterialTheme.colorScheme.background.copy(
+                                            alpha = 0.5F
+                                        ), MaterialTheme.colorScheme.background.copy(alpha = 0.8F)
                                     )
                                 )
                             )
@@ -173,9 +184,9 @@ fun TaskList(
                             .background(
                                 Brush.verticalGradient(
                                     listOf(
-                                        MaterialTheme.colorScheme.primary.copy(
-                                            alpha = 0F
-                                        ), MaterialTheme.colorScheme.primary.copy(alpha = 0.18F)
+                                        MaterialTheme.colorScheme.background.copy(
+                                            alpha = 0.5F
+                                        ), MaterialTheme.colorScheme.background.copy(alpha = 0.8F)
                                     )
                                 )
                             )

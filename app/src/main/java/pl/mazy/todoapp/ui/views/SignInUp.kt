@@ -150,7 +150,7 @@ fun SignUp(navController: NavController<Destinations>){
                      val token = api.signup(SingUpReq(mailU,login,passwd))
                      if(token != null) {
                          LoginData.logIn(token.login, token.access_token,token.sid)
-                         navController.navigate(Destinations.TaskList)
+                         navController.navigate(Destinations.TaskList(0))
                          userRepository.signUpUser(login,passwd,mailU,token.sid)
                      }
                  }
@@ -185,10 +185,10 @@ fun SignIn(navController: NavController<Destinations>,user: User?){
                             mail,
                             token.sid
                         )
-                        navController.navigate(Destinations.TaskList)
+                        navController.navigate(Destinations.TaskList(0))
                     } else {
                         userRepository.signInUser(token.sid)
-                        navController.navigate(Destinations.TaskList)
+                        navController.navigate(Destinations.TaskList(0))
                     }
                 } else {
                     err = "Problem with sign in"
