@@ -16,7 +16,6 @@ class CalendarRepo(val api: TDAService):CalendarInter {
     }
 
     override suspend fun updateEvent(ev: Event, subList: List<String>) {
-
         api.newEvent(LoginData.token,createEVS(ev, subList))
     }
 

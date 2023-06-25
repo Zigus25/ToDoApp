@@ -115,15 +115,27 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
     if (!event.type){
         wantDate = true
     }
+    fun subRef(){
+        if (subList.isEmpty()){
+            ev?.subList?.forEach {
+                subList.add(it.name)
+            }
+        }
+    }
     LaunchedEffect(options){
         scope.launch {
             options = taskRepo.getCategory()
         }
-        ev?.subList?.forEach {
-            subList.add(it.name)
-        }
+        subRef()
         if (options.isNotEmpty()&&event.category_id == 0){
             event = event.copy(category_id = options[0].id)
+        }
+        val ca = options.find { it.id == event.category_id }
+        if (ca == null) {
+            val cid = options.find { it.shareId == event.category_id }?.id
+            if (cid != null) {
+                event = event.copy(category_id =cid)
+            }
         }
     }
 
@@ -437,8 +449,9 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
         BottomAppBar {
             if (ev != null) {
                 IconButton(onClick = {
+                    val cat = options.find { it.shareId == ev.category_id }?.id
                     navController.navigate(if (isTask){
-                        Destinations.TaskList}else{
+                        Destinations.TaskList(cat?:ev.category_id)}else{
                         Destinations.Schedule})
                     scope.launch { calRepo.delEvent(ev) }
                 }) {
@@ -455,27 +468,33 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                 Box(modifier = Modifier.padding(10.dp)) {
                     SmallFloatingActionButton(
                         onClick = {
-                            if (ev == null) {
-                                scope.launch {
-                                    calRepo.addEvent(event, subList.toList())
-                                    navController.navigate(
-                                        if (isTask) {
-                                            Destinations.TaskList
-                                        } else {
-                                            Destinations.Schedule
-                                        }
-                                    )
-                                }
-                            } else {
-                                scope.launch {
-                                    calRepo.updateEvent(event, subList.toList())
-                                    navController.navigate(
-                                        if (isTask) {
-                                            Destinations.TaskList
-                                        } else {
-                                            Destinations.Schedule
-                                        }
-                                    )
+                            val cat = options.find { it.id == event.category_id }
+                            if (cat?.shareId != null){
+                                event = event.copy(category_id = cat.shareId)
+                            }
+                            if (cat!=null) {
+                                if (ev == null) {
+                                    scope.launch {
+                                        calRepo.addEvent(event, subList.toList())
+                                        navController.navigate(
+                                            if (isTask) {
+                                                Destinations.TaskList(cat.id)
+                                            } else {
+                                                Destinations.Schedule
+                                            }
+                                        )
+                                    }
+                                } else {
+                                    scope.launch {
+                                        calRepo.updateEvent(event, subList.toList())
+                                        navController.navigate(
+                                            if (isTask) {
+                                                Destinations.TaskList(cat.id)
+                                            } else {
+                                                Destinations.Schedule
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         },
