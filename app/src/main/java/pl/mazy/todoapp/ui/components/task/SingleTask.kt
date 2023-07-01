@@ -57,7 +57,7 @@ fun Task(
                     text = event.name,
                     fontSize = 18.sp,
                     color = if(!event.checked){MaterialTheme.colorScheme.onBackground}else{MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4F)},
-                    maxLines = 1,
+                    maxLines = 2,
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 10.dp),
@@ -71,7 +71,7 @@ fun Task(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 10.dp)
+                        .padding(start = 20.dp)
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     event.subList.forEach { subEvent ->
