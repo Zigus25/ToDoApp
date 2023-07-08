@@ -5,6 +5,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +27,9 @@ fun Task(
     event: Event,
     check:(event: Event) -> Unit
 ){
+    var expend by remember {
+        mutableStateOf(true)
+    }
     Card(
         border = if (event.mainTask_id==null) {
             BorderStroke(2.dp, Color(parseColor(event.color)).copy(alpha = 0.6F))
@@ -31,7 +37,13 @@ fun Task(
             BorderStroke(0.dp,MaterialTheme.colorScheme.background)
         },
         modifier = Modifier
-            .padding(if (event.mainTask_id==null) {10.dp}else{0.dp})
+            .padding(
+                if (event.mainTask_id == null) {
+                    10.dp
+                } else {
+                    0.dp
+                }
+            )
             .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
@@ -43,7 +55,15 @@ fun Task(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.background)
-                    .clickable { navController.navigate(Destinations.EventAdd(event, event.type, event.category_id)) }
+                    .clickable {
+                        navController.navigate(
+                            Destinations.EventAdd(
+                                event,
+                                event.type,
+                                event.category_id
+                            )
+                        )
+                    }
                     .padding(
                         start = if (event.mainTask_id != null) {
                             30.dp
@@ -63,11 +83,24 @@ fun Task(
                         .padding(start = 10.dp),
                     overflow = TextOverflow.Ellipsis
                 )
+                if (event.subList.isNotEmpty()) {
+                    IconButton(onClick = { expend = !expend }) {
+                        Icon(
+                            imageVector = if (expend) {
+                                Icons.Filled.ExpandMore
+                            } else {
+                                Icons.Filled.ExpandLess
+                            },
+                            contentDescription = "expand",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                }
                 Checkbox(checked = event.checked, onCheckedChange = {
                     check(event)
                 })
             }
-            if (event.subList.isNotEmpty()) {
+            if (event.subList.isNotEmpty()&&expend) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
