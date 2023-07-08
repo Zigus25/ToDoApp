@@ -231,7 +231,7 @@ fun TaskList(
                                                 taskRepo.delCategory(category.id)
                                                 titles = taskRepo.getCategory()
                                                 category = titles[0]
-                                                i = 0
+                                                --i
                                                 options = false
                                             }
                                         }
