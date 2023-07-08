@@ -1,20 +1,18 @@
 package pl.mazy.todoapp.ui.components.task
 
 import android.graphics.Color.parseColor
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.RadioButtonChecked
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,14 +27,23 @@ fun Task(
     event: Event,
     check:(event: Event) -> Unit
 ){
+    var expend by remember {
+        mutableStateOf(true)
+    }
     Card(
         border = if (event.mainTask_id==null) {
-            BorderStroke(1.dp, Color(parseColor(event.color)))
+            BorderStroke(2.dp, Color(parseColor(event.color)).copy(alpha = 0.6F))
         }else{
             BorderStroke(0.dp,MaterialTheme.colorScheme.background)
         },
         modifier = Modifier
-            .padding(if (event.mainTask_id==null) {10.dp}else{0.dp})
+            .padding(
+                if (event.mainTask_id == null) {
+                    10.dp
+                } else {
+                    0.dp
+                }
+            )
             .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
@@ -48,7 +55,15 @@ fun Task(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.background)
-                    .clickable { navController.navigate(Destinations.EventAdd(event, event.type, event.category_id)) }
+                    .clickable {
+                        navController.navigate(
+                            Destinations.EventAdd(
+                                event,
+                                event.type,
+                                event.category_id
+                            )
+                        )
+                    }
                     .padding(
                         start = if (event.mainTask_id != null) {
                             30.dp
@@ -58,49 +73,43 @@ fun Task(
                     ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (event.mainTask_id != null) {
-                    Icon(
-                        Icons.Filled.RadioButtonChecked,
-                        tint = if (!event.checked) {
-                            MaterialTheme.colorScheme.onBackground
-                        } else {
-                            Color.Red
-                        },
-                        contentDescription = "",
-                    )
-                }
                 Text(
                     text = event.name,
                     fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    maxLines = 1,
+                    color = if(!event.checked){MaterialTheme.colorScheme.onBackground}else{MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4F)},
+                    maxLines = 2,
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 10.dp),
-                    overflow = TextOverflow.Ellipsis,
-                    style = TextStyle(
-                        textDecoration = if (event.checked) {
-                            TextDecoration.LineThrough
-                        } else {
-                            TextDecoration.None
-                        }
-                    )
+                    overflow = TextOverflow.Ellipsis
                 )
+                if (event.subList.isNotEmpty()) {
+                    IconButton(onClick = { expend = !expend }) {
+                        Icon(
+                            imageVector = if (expend) {
+                                Icons.Filled.ExpandMore
+                            } else {
+                                Icons.Filled.ExpandLess
+                            },
+                            contentDescription = "expand",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                }
                 Checkbox(checked = event.checked, onCheckedChange = {
                     check(event)
                 })
             }
-            if (event.subList.isNotEmpty()) {
+            if (event.subList.isNotEmpty()&&expend) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 10.dp)
+                        .padding(start = 20.dp)
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     event.subList.forEach { subEvent ->
                         Task(navController = navController, event = subEvent, check = {
                             check(it)
-                            Log.i("asd", subEvent.id.toString())
                         })
                     }
                 }
