@@ -153,6 +153,16 @@ fun TaskList(
                         }else{
                             hidden - idE
                         }
+                    },
+                    clicked = {
+                        navController.navigate(
+                            Destinations.EventAdd(
+                                it,
+                                it.type,
+                                it.category_id,
+                                hidden
+                            )
+                        )
                     })
                 }
                 item {

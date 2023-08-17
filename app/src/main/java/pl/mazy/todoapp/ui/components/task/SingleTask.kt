@@ -27,7 +27,8 @@ fun Task(
     event: Event,
     hidden: List<Int>,
     check:(event: Event) -> Unit,
-    hide:(idE: Int,ope:Boolean) -> Unit
+    hide:(idE: Int,ope:Boolean) -> Unit,
+    clicked:(e:Event)->Unit
 ){
     var hiddenE:List<Int> = remember { mutableListOf() }
     var expend by remember { mutableStateOf(!hidden.contains(event.id)) }
@@ -57,14 +58,7 @@ fun Task(
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.background)
                     .clickable {
-                        navController.navigate(
-                            Destinations.EventAdd(
-                                event,
-                                event.type,
-                                event.category_id,
-                                hidden
-                            )
-                        )
+                        clicked(event)
                     }
                     .padding(
                         start = if (event.mainTask_id != null) {
@@ -125,7 +119,7 @@ fun Task(
                             }else{
                                 hidden - idE
                             }
-                        })
+                        },clicked = {})
                     }
                 }
             }
