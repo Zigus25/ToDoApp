@@ -31,7 +31,8 @@ import pl.mazy.todoapp.ui.components.task.*
 @Composable
 fun TaskList(
     navController: NavController<Destinations>,
-    backCategory: Int
+    backCategory: Int,
+    hiddenD:List<Int>
 ) {
     var i by remember {
         mutableStateOf(0)
@@ -46,7 +47,7 @@ fun TaskList(
         val taR: TasksRepo by localDI().instance()
         taR
     }
-    var hidden:List<Int> = remember { mutableListOf() }
+    var hidden:List<Int> = remember { hiddenD.toMutableList() }
     var logRe by remember { mutableStateOf(LoginData.login) }
     var checked by remember { mutableStateOf(0) }
     var titles:List<Category> by remember { mutableStateOf(listOf()) }
@@ -277,7 +278,8 @@ fun TaskList(
                                         Destinations.EventAdd(
                                             null,
                                             true,
-                                            category.id
+                                            category.id,
+                                            hidden
                                         )
                                     )
                                 },

@@ -61,7 +61,8 @@ fun Task(
                             Destinations.EventAdd(
                                 event,
                                 event.type,
-                                event.category_id
+                                event.category_id,
+                                hidden
                             )
                         )
                     }

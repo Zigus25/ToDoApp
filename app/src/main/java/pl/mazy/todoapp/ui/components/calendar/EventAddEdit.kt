@@ -57,7 +57,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:Boolean, cId:Int?) {
+fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:Boolean, cId:Int?,hid:List<Int>) {
 
     val taskRepo: TasksInter = if (LoginData.token==""){
         val taR: TasksRepoLocal by localDI().instance()
@@ -451,7 +451,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                 IconButton(onClick = {
                     val cat = options.find { it.shareId == ev.category_id }?.id
                     navController.navigate(if (isTask){
-                        Destinations.TaskList(cat?:ev.category_id)}else{
+                        Destinations.TaskList(cat?:ev.category_id,hid)}else{
                         Destinations.Schedule})
                     scope.launch { calRepo.delEvent(ev) }
                 }) {
@@ -478,7 +478,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                                         calRepo.addEvent(event, subList.toList())
                                         navController.navigate(
                                             if (isTask) {
-                                                Destinations.TaskList(cat.id)
+                                                Destinations.TaskList(cat.id,hid)
                                             } else {
                                                 Destinations.Schedule
                                             }
@@ -489,7 +489,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                                         calRepo.updateEvent(event, subList.toList())
                                         navController.navigate(
                                             if (isTask) {
-                                                Destinations.TaskList(cat.id)
+                                                Destinations.TaskList(cat.id,hid)
                                             } else {
                                                 Destinations.Schedule
                                             }

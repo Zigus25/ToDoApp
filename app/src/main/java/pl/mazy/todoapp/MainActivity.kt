@@ -59,8 +59,9 @@ class MainActivity : ComponentActivity() {
                 ToDoAPpTheme {
                     val userRepository: AccountRep by localDI().instance()
                     val scope = rememberCoroutineScope()
+                    var hidden:List<Int> = remember { mutableListOf() }
                     val controller: NavController<Destinations> by remember {
-                        mutableStateOf(NavController(Destinations.TaskList(0)))
+                        mutableStateOf(NavController(Destinations.TaskList(0,hidden)))
                     }
                     var program by remember {
                         mutableStateOf("Task List")
@@ -98,7 +99,7 @@ class MainActivity : ComponentActivity() {
                                 onClick = {
                                     program = "Tasks"
                                     scope.launch { drawerState.close() }
-                                    controller.navigate(Destinations.TaskList(0))
+                                    controller.navigate(Destinations.TaskList(0,hidden))
                                 },
                                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                             )
@@ -184,7 +185,8 @@ class MainActivity : ComponentActivity() {
                                 Box(modifier = Modifier.weight(1f)) {
                                     when (val x = controller.currentBackStackEntry.value) {
                                         is Destinations.TaskList ->{
-                                            TaskList(controller,x.bacCat)
+                                            TaskList(controller,x.bacCat,x.hiddenD)
+                                            hidden = x.hiddenD
                                             program = "Tasks"
                                         }
                                         is Destinations.NoteDetails -> NoteAdding(controller,x.noteP)
@@ -196,7 +198,7 @@ class MainActivity : ComponentActivity() {
                                             Schedule(controller)
                                             program = "Calendar"
                                         }
-                                        is Destinations.EventAdd -> EventAddEdit(controller,x.event,x.isTask,x.cId)
+                                        is Destinations.EventAdd -> EventAddEdit(controller,x.event,x.isTask,x.cId,x.hid)
                                         is Destinations.SignIn -> {
                                             SignIn(controller,x.user)
                                             program = ""
