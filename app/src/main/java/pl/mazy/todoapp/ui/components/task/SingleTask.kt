@@ -25,11 +25,12 @@ import pl.mazy.todoapp.navigation.NavController
 fun Task(
     navController: NavController<Destinations>,
     event: Event,
-    check:(event: Event) -> Unit
+    hidden: List<Int>,
+    check:(event: Event) -> Unit,
+    hide:(idE: Int,ope:Boolean) -> Unit
 ){
-    var expend by remember {
-        mutableStateOf(true)
-    }
+    var hiddenE:List<Int> = remember { mutableListOf() }
+    var expend by remember { mutableStateOf(!hidden.contains(event.id)) }
     Card(
         border = if (event.mainTask_id==null) {
             BorderStroke(2.dp, Color(parseColor(event.color)).copy(alpha = 0.6F))
@@ -84,7 +85,14 @@ fun Task(
                     overflow = TextOverflow.Ellipsis
                 )
                 if (event.subList.isNotEmpty()) {
-                    IconButton(onClick = { expend = !expend }) {
+                    IconButton(onClick = {
+                        if (expend){
+                            event.id?.let { hide(it,true) }
+                        }else{
+                            event.id?.let { hide(it,false) }
+                        }
+                        expend = !expend
+                    }) {
                         Icon(
                             imageVector = if (expend) {
                                 Icons.Filled.ExpandMore
@@ -108,8 +116,14 @@ fun Task(
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     event.subList.forEach { subEvent ->
-                        Task(navController = navController, event = subEvent, check = {
+                        Task(navController = navController, event = subEvent,hidden = hiddenE, check = {
                             check(it)
+                        },hide = {idE, ope ->
+                            hiddenE = if (ope){
+                                hidden + idE
+                            }else{
+                                hidden - idE
+                            }
                         })
                     }
                 }

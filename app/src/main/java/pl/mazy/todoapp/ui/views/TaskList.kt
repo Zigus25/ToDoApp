@@ -46,6 +46,7 @@ fun TaskList(
         val taR: TasksRepo by localDI().instance()
         taR
     }
+    var hidden:List<Int> = remember { mutableListOf() }
     var logRe by remember { mutableStateOf(LoginData.login) }
     var checked by remember { mutableStateOf(0) }
     var titles:List<Category> by remember { mutableStateOf(listOf()) }
@@ -135,12 +136,23 @@ fun TaskList(
                     .background(MaterialTheme.colorScheme.background)
             ) {
                 items(todos) { ev ->
-                    Task(navController, ev){
-                        scope.launch {
-                            taskRepo.toggle(it)
-                            checked++
+                    Task(
+                        navController,
+                        ev,
+                        hidden,
+                        check = {
+                            scope.launch {
+                                taskRepo.toggle(it)
+                                checked++
+                            }
+                        },
+                    hide = { idE, ope ->
+                        hidden = if (ope){
+                            hidden + idE
+                        }else{
+                            hidden - idE
                         }
-                    }
+                    })
                 }
                 item {
                     Row(
