@@ -472,7 +472,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                             if (cat?.shareId != null) {
                                 event = event.copy(category_id = cat.shareId)
                             }
-                            if(ev!=event) {
+                            if(ev!=event||subList.size != ev.subList.size) {
                                 if (cat != null) {
                                     if (ev == null) {
                                         scope.launch {
