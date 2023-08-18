@@ -26,11 +26,12 @@ fun Task(
     navController: NavController<Destinations>,
     event: Event,
     hidden: List<Int>,
-    check:(event: Event) -> Unit,
+    check:(event: Event,opp:Boolean) -> Unit,
     hide:(idE: Int,ope:Boolean) -> Unit,
     clicked:(e:Event)->Unit
 ){
     var expend by remember { mutableStateOf(!hidden.contains(event.id)) }
+    var expendUA by remember { mutableStateOf(false )}
     Card(
         border = if (event.mainTask_id==null) {
             BorderStroke(2.dp, Color(parseColor(event.color)).copy(alpha = 0.6F))
@@ -99,7 +100,7 @@ fun Task(
                     }
                 }
                 Checkbox(checked = event.checked, onCheckedChange = {
-                    check(event)
+                    check(event,true)
                 })
             }
             if (event.subList.isNotEmpty()&&expend) {
@@ -110,11 +111,33 @@ fun Task(
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     event.subList.forEach { subEvent ->
-                        Task(navController = navController, event = subEvent,hidden = hidden, check = {
-                            check(it)
+                        Task(navController = navController, event = subEvent,hidden = hidden, check = { eve,opp->
+                            check(eve,true)
                         },hide = {idE, ope ->
                             hide(idE,ope)
                         },clicked = {clicked(it)})
+                    }
+                }
+            }
+            if (event.mainTask_id == null&&expend){
+                Column (horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                    IconButton(onClick = {
+                        expendUA = !expendUA
+                    }) {
+                        Icon(
+                            imageVector = if (expendUA) {
+                                Icons.Filled.ExpandMore
+                            } else {
+                                Icons.Filled.ExpandLess
+                            },
+                            contentDescription = "expand",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                    if (expendUA) {
+                        Text(text = "Unmark ALL", modifier = Modifier.clickable {
+                            check(event,false)
+                        }.padding(bottom = 10.dp), color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }

@@ -141,9 +141,13 @@ fun TaskList(
                         navController,
                         ev,
                         hidden,
-                        check = {
+                        check = {eve,opp->
                             scope.launch {
-                                taskRepo.toggle(it)
+                                if (opp) {
+                                    taskRepo.toggle(eve)
+                                }else{
+                                    taskRepo.unmarkAll(eve)
+                                }
                                 checked++
                             }
                         },

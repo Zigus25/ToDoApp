@@ -34,6 +34,7 @@ interface TDAService {
         //Tasks
         suspend fun getTasksByCat(token: String,cId: Int):List<Event>
         suspend fun toggleTask(token: String,ev: Event)
+        suspend fun unmarkAll(token: String,ev:Event)
 
     //Notes
     suspend fun newNote(token: String,note: Note)

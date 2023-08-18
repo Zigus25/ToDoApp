@@ -1,6 +1,5 @@
 package pl.mazy.todoapp.data.remote
 
-
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.HttpResponse
@@ -114,6 +113,17 @@ class TDAServiceImp(
     override suspend fun toggleTask(token: String, ev: Event) {
         client.post<HttpResponse> {
             url("https://mazy.dev/events/t")
+            contentType(ContentType.Application.Json)
+            body = ev
+            headers{
+                append(HttpHeaders.Authorization, "Bearer $token")
+            }
+        }
+    }
+
+    override suspend fun unmarkAll(token: String, ev: Event) {
+        client.post<HttpResponse> {
+            url("https://mazy.dev/events/uA")
             contentType(ContentType.Application.Json)
             body = ev
             headers{
