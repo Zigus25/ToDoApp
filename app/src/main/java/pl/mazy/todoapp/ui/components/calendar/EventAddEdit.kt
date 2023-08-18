@@ -469,32 +469,44 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                     SmallFloatingActionButton(
                         onClick = {
                             val cat = options.find { it.id == event.category_id }
-                            if (cat?.shareId != null){
+                            if (cat?.shareId != null) {
                                 event = event.copy(category_id = cat.shareId)
                             }
-                            if (cat!=null) {
-                                if (ev == null) {
-                                    scope.launch {
-                                        calRepo.addEvent(event, subList.toList())
-                                        navController.navigate(
-                                            if (isTask) {
-                                                Destinations.TaskList(cat.id,hid)
-                                            } else {
-                                                Destinations.Schedule
-                                            }
-                                        )
+                            if(ev!=event) {
+                                if (cat != null) {
+                                    if (ev == null) {
+                                        scope.launch {
+                                            calRepo.addEvent(event, subList.toList())
+                                            navController.navigate(
+                                                if (isTask) {
+                                                    Destinations.TaskList(cat.id, hid)
+                                                } else {
+                                                    Destinations.Schedule
+                                                }
+                                            )
+                                        }
+                                    } else {
+                                        scope.launch {
+                                            calRepo.updateEvent(event, subList.toList())
+                                            navController.navigate(
+                                                if (isTask) {
+                                                    Destinations.TaskList(cat.id, hid)
+                                                } else {
+                                                    Destinations.Schedule
+                                                }
+                                            )
+                                        }
                                     }
-                                } else {
-                                    scope.launch {
-                                        calRepo.updateEvent(event, subList.toList())
-                                        navController.navigate(
-                                            if (isTask) {
-                                                Destinations.TaskList(cat.id,hid)
-                                            } else {
-                                                Destinations.Schedule
-                                            }
-                                        )
-                                    }
+                                }
+                            }else{
+                                if (cat != null) {
+                                    navController.navigate(
+                                        if (isTask) {
+                                            Destinations.TaskList(cat.id, hid)
+                                        } else {
+                                            Destinations.Schedule
+                                        }
+                                    )
                                 }
                             }
                         },

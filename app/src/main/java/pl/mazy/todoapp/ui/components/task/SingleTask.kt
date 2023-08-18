@@ -30,7 +30,6 @@ fun Task(
     hide:(idE: Int,ope:Boolean) -> Unit,
     clicked:(e:Event)->Unit
 ){
-    var hiddenE:List<Int> = remember { mutableListOf() }
     var expend by remember { mutableStateOf(!hidden.contains(event.id)) }
     Card(
         border = if (event.mainTask_id==null) {
@@ -111,15 +110,11 @@ fun Task(
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     event.subList.forEach { subEvent ->
-                        Task(navController = navController, event = subEvent,hidden = hiddenE, check = {
+                        Task(navController = navController, event = subEvent,hidden = hidden, check = {
                             check(it)
                         },hide = {idE, ope ->
-                            hiddenE = if (ope){
-                                hidden + idE
-                            }else{
-                                hidden - idE
-                            }
-                        },clicked = {})
+                            hide(idE,ope)
+                        },clicked = {clicked(it)})
                     }
                 }
             }
