@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Edit
@@ -60,6 +61,7 @@ class MainActivity : ComponentActivity() {
                     val userRepository: AccountRep by localDI().instance()
                     val scope = rememberCoroutineScope()
                     var hidden:List<Int> = remember { mutableListOf() }
+                    var xcID:Int by remember { mutableStateOf(0) }
                     val controller: NavController<Destinations> by remember {
                         mutableStateOf(NavController(Destinations.TaskList(0,hidden)))
                     }
@@ -159,10 +161,51 @@ class MainActivity : ComponentActivity() {
                                 Row(modifier = Modifier
                                     .fillMaxWidth()
                                     .background(MaterialTheme.colorScheme.background), verticalAlignment = Alignment.CenterVertically) {
-                                    IconButton(onClick = {
-                                        scope.launch { drawerState.open() }
-                                    }) {
-                                        Icon(Icons.Filled.Menu, contentDescription = "Menu Icon", tint = MaterialTheme.colorScheme.onBackground)
+                                    when (controller.currentBackStackEntry.value) {
+                                        is Destinations.EventAdd -> {
+                                            IconButton(onClick = {
+                                                if (program == "Tasks") {
+                                                    controller.navigate(
+                                                        Destinations.TaskList(
+                                                            xcID,
+                                                            hidden
+                                                        )
+                                                    )
+                                                }else{
+                                                    controller.navigate(Destinations.Schedule)
+                                                }
+                                            }) {
+                                                Icon(
+                                                    Icons.Filled.ArrowBack,
+                                                    contentDescription = "ArrowBack Icon",
+                                                    tint = MaterialTheme.colorScheme.onBackground
+                                                )
+                                            }
+                                        }
+
+                                        is Destinations.NoteDetails -> {
+                                            IconButton(onClick = {
+                                                controller.navigate(Destinations.Notes)
+                                            }) {
+                                                Icon(
+                                                    Icons.Filled.ArrowBack,
+                                                    contentDescription = "ArrowBack Icon",
+                                                    tint = MaterialTheme.colorScheme.onBackground
+                                                )
+                                            }
+                                        }
+
+                                        else -> {
+                                            IconButton(onClick = {
+                                                scope.launch { drawerState.open() }
+                                            }) {
+                                                Icon(
+                                                    Icons.Filled.Menu,
+                                                    contentDescription = "Menu Icon",
+                                                    tint = MaterialTheme.colorScheme.onBackground
+                                                )
+                                            }
+                                        }
                                     }
                                     Spacer(modifier = Modifier.weight(1f))
                                     Text(text = program, fontSize = 24.sp, color = MaterialTheme.colorScheme.onBackground)
@@ -201,6 +244,7 @@ class MainActivity : ComponentActivity() {
                                         is Destinations.EventAdd -> {
                                             EventAddEdit(controller,x.event,x.isTask,x.cId,x.hid)
                                             hidden = x.hid
+                                            xcID = if (x.cId!=null){x.cId}else{0}
                                         }
                                         is Destinations.SignIn -> {
                                             SignIn(controller,x.user)

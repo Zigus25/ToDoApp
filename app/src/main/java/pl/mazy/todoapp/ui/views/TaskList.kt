@@ -80,6 +80,9 @@ fun TaskList(
             titles = taskRepo.getCategory()
             if (s==-1&& titles.isNotEmpty()&&backCategory!=0){
                 i = titles.indexOfFirst{ it.id == backCategory }
+                if (i==-1){
+                    i = titles.indexOfFirst{ it.shareId == backCategory }
+                }
                 s=0
             }
         }
