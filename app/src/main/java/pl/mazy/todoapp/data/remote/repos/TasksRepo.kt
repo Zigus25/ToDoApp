@@ -1,6 +1,5 @@
 package pl.mazy.todoapp.data.remote.repos
 
-import kotlinx.coroutines.flow.Flow
 import pl.mazy.todoapp.data.LoginData
 import pl.mazy.todoapp.data.interfaces.TasksInter
 import pl.mazy.todoapp.data.model.Category
@@ -31,6 +30,10 @@ class TasksRepo(private val api: TDAService):TasksInter {
 
     override suspend fun getTusks(id: Int): List<Event> {
         return api.getTasksByCat(LoginData.token,id)
+    }
+
+    override suspend fun unmarkAll(ev: Event) {
+        api.unmarkAll(LoginData.token,ev)
     }
 
     override suspend fun toggle(event: Event) {

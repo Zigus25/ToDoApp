@@ -1,6 +1,5 @@
 package pl.mazy.todoapp.data.local
 
-import kotlinx.coroutines.flow.Flow
 import pl.mazy.todoapp.Database
 import pl.mazy.todoapp.data.interfaces.TasksInter
 import pl.mazy.todoapp.data.model.Category
@@ -61,6 +60,15 @@ class TasksRepoLocal(
             ))
         }
         return consolidate(list.toList())
+    }
+
+    override suspend fun unmarkAll(ev: Event) {
+        database.calendarQueries.changeStateFalse(ev.id!!.toLong())
+        if (ev.subList.isNotEmpty()){
+            for (e:Event in ev.subList){
+                unmarkAll(e)
+            }
+        }
     }
 
     override suspend fun toggle(event: Event) {

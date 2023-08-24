@@ -57,7 +57,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:Boolean, cId:Int?) {
+fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:Boolean, cId:Int?,hid:List<Int>) {
 
     val taskRepo: TasksInter = if (LoginData.token==""){
         val taR: TasksRepoLocal by localDI().instance()
@@ -451,7 +451,7 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                 IconButton(onClick = {
                     val cat = options.find { it.shareId == ev.category_id }?.id
                     navController.navigate(if (isTask){
-                        Destinations.TaskList(cat?:ev.category_id)}else{
+                        Destinations.TaskList(cat?:ev.category_id,hid)}else{
                         Destinations.Schedule})
                     scope.launch { calRepo.delEvent(ev) }
                 }) {
@@ -469,32 +469,44 @@ fun EventAddEdit(navController: NavController<Destinations>, ev: Event?, isTask:
                     SmallFloatingActionButton(
                         onClick = {
                             val cat = options.find { it.id == event.category_id }
-                            if (cat?.shareId != null){
+                            if (cat?.shareId != null) {
                                 event = event.copy(category_id = cat.shareId)
                             }
-                            if (cat!=null) {
-                                if (ev == null) {
-                                    scope.launch {
-                                        calRepo.addEvent(event, subList.toList())
-                                        navController.navigate(
-                                            if (isTask) {
-                                                Destinations.TaskList(cat.id)
-                                            } else {
-                                                Destinations.Schedule
-                                            }
-                                        )
+                            if(ev!=event||subList.size != ev.subList.size) {
+                                if (cat != null) {
+                                    if (ev == null) {
+                                        scope.launch {
+                                            calRepo.addEvent(event, subList.toList())
+                                            navController.navigate(
+                                                if (isTask) {
+                                                    Destinations.TaskList(cat.id, hid)
+                                                } else {
+                                                    Destinations.Schedule
+                                                }
+                                            )
+                                        }
+                                    } else {
+                                        scope.launch {
+                                            calRepo.updateEvent(event, subList.toList())
+                                            navController.navigate(
+                                                if (isTask) {
+                                                    Destinations.TaskList(cat.id, hid)
+                                                } else {
+                                                    Destinations.Schedule
+                                                }
+                                            )
+                                        }
                                     }
-                                } else {
-                                    scope.launch {
-                                        calRepo.updateEvent(event, subList.toList())
-                                        navController.navigate(
-                                            if (isTask) {
-                                                Destinations.TaskList(cat.id)
-                                            } else {
-                                                Destinations.Schedule
-                                            }
-                                        )
-                                    }
+                                }
+                            }else{
+                                if (cat != null) {
+                                    navController.navigate(
+                                        if (isTask) {
+                                            Destinations.TaskList(cat.id, hid)
+                                        } else {
+                                            Destinations.Schedule
+                                        }
+                                    )
                                 }
                             }
                         },

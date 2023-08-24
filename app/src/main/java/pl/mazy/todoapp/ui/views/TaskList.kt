@@ -31,7 +31,8 @@ import pl.mazy.todoapp.ui.components.task.*
 @Composable
 fun TaskList(
     navController: NavController<Destinations>,
-    backCategory: Int
+    backCategory: Int,
+    hiddenD:List<Int>
 ) {
     var i by remember {
         mutableStateOf(0)
@@ -46,6 +47,7 @@ fun TaskList(
         val taR: TasksRepo by localDI().instance()
         taR
     }
+    var hidden:List<Int> = remember { hiddenD.toMutableList() }
     var logRe by remember { mutableStateOf(LoginData.login) }
     var checked by remember { mutableStateOf(0) }
     var titles:List<Category> by remember { mutableStateOf(listOf()) }
@@ -78,6 +80,9 @@ fun TaskList(
             titles = taskRepo.getCategory()
             if (s==-1&& titles.isNotEmpty()&&backCategory!=0){
                 i = titles.indexOfFirst{ it.id == backCategory }
+                if (i==-1){
+                    i = titles.indexOfFirst{ it.shareId == backCategory }
+                }
                 s=0
             }
         }
@@ -135,12 +140,37 @@ fun TaskList(
                     .background(MaterialTheme.colorScheme.background)
             ) {
                 items(todos) { ev ->
-                    Task(navController, ev){
-                        scope.launch {
-                            taskRepo.toggle(it)
-                            checked++
+                    Task(
+                        navController,
+                        ev,
+                        hidden,
+                        check = {eve,opp->
+                            scope.launch {
+                                if (opp) {
+                                    taskRepo.toggle(eve)
+                                }else{
+                                    taskRepo.unmarkAll(eve)
+                                }
+                                checked++
+                            }
+                        },
+                    hide = { idE, ope ->
+                        hidden = if (ope){
+                            hidden + idE
+                        }else{
+                            hidden - idE
                         }
-                    }
+                    },
+                    clicked = {
+                        navController.navigate(
+                            Destinations.EventAdd(
+                                it,
+                                it.type,
+                                it.category_id,
+                                hidden
+                            )
+                        )
+                    })
                 }
                 item {
                     Row(
@@ -265,7 +295,8 @@ fun TaskList(
                                         Destinations.EventAdd(
                                             null,
                                             true,
-                                            category.id
+                                            category.id,
+                                            hidden
                                         )
                                     )
                                 },
