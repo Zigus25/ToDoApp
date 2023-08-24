@@ -119,7 +119,7 @@ fun Task(
                     }
                 }
             }
-            if (event.mainTask_id == null&&expend){
+            if (event.mainTask_id == null&&event.subList.isNotEmpty()&&expend){
                 Column (horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                     IconButton(onClick = {
                         expendUA = !expendUA
